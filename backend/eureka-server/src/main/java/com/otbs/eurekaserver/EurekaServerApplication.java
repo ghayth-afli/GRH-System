@@ -1,4 +1,4 @@
-package com.amigoscode.eurekaserver;
+package com.otbs.eurekaserver;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
