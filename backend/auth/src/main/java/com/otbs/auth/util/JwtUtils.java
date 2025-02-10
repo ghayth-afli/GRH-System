@@ -1,9 +1,6 @@
 package com.otbs.auth.util;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
@@ -23,8 +20,46 @@ public class JwtUtils {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
+    @Value("${jwt.access-expiration-ms}")
+    private int accessExpirationMs;
+
+    @Value("${jwt.refresh-expiration-ms}")
+    private long refreshExpirationMs;
+
     @Value("${jwt.expiration-ms}")
     private int jwtExpirationMs;
+
+    public String generateAccessToken(String username) {
+        return buildToken(username, accessExpirationMs, "access");
+    }
+
+    public String generateRefreshToken(String username) {
+        return buildToken(username, refreshExpirationMs, "refresh");
+    }
+
+    private String buildToken(String username, long expiration, String tokenType) {
+        return Jwts.builder()
+                .subject(username)
+                .claim("token_type", tokenType)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSigningKey())
+                .compact();
+    }
+
+    public boolean validateRefreshToken(String token) {
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith((SecretKey) getSigningKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+            return "refresh".equals(claims.get("token_type"));
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
     public String generateJwtToken(Authentication authentication) {
         UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
@@ -58,7 +93,7 @@ public class JwtUtils {
         } catch (MalformedJwtException e) {
             // Log exception
         } catch (ExpiredJwtException e) {
-            // Log exception
+
         } catch (UnsupportedJwtException e) {
             // Log exception
         } catch (IllegalArgumentException e) {

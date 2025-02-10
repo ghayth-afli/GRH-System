@@ -2,46 +2,90 @@ package com.otbs.auth.controller;
 
 import com.otbs.auth.dto.AuthRequest;
 import com.otbs.auth.dto.JwtResponse;
+import com.otbs.auth.dto.RefreshRequest;
+import com.otbs.auth.mapper.UserAttributesMapper;
+import com.otbs.auth.model.User;
 import com.otbs.auth.util.JwtUtils;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.query.LdapQueryBuilder;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+import java.util.List;
+
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Slf4j
+@RestController
 public class AuthController {
 
-    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
+    private final LdapTemplate ldapTemplate;
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody AuthRequest authRequest) {
+        log.info("User {} authenticated", authRequest.username());
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         authRequest.username(),
                         authRequest.password()
                 )
         );
-        log.info(authentication.getAuthorities().toString());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
+
+        log.info("User {} authenticated", authRequest.username());
+        log.info(authRequest.password());
+
+        String username = authentication.getName();
+        log.info(username);
+        String accessToken = jwtUtils.generateAccessToken(username);
+        log.info(accessToken);
+        String refreshToken = jwtUtils.generateRefreshToken(username);
+        log.info(accessToken);
 
         return ResponseEntity.ok(new JwtResponse(
-                jwt,
-                jwtUtils.getJwtExpirationMs()
+                accessToken,
+                refreshToken,
+                jwtUtils.getAccessExpirationMs(),
+                jwtUtils.getRefreshExpirationMs()
         ));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@RequestBody RefreshRequest refreshRequest) {
+        String refreshToken = refreshRequest.refreshToken();
+
+        if (jwtUtils.validateRefreshToken(refreshToken)) {
+            String username = jwtUtils.getUserNameFromJwtToken(refreshToken);
+
+            // Verify user still exists in LDAP
+            List<User> users = ldapTemplate.search(
+                    LdapQueryBuilder.query().where("sAMAccountName").is(username),
+                    new UserAttributesMapper()
+            );
+
+            if (!users.isEmpty()) {
+                String newAccessToken = jwtUtils.generateAccessToken(username);
+                String newRefreshToken = jwtUtils.generateRefreshToken(username);
+
+                return ResponseEntity.ok(new JwtResponse(
+                        newAccessToken,
+                        newRefreshToken,
+                        jwtUtils.getAccessExpirationMs(),
+                        jwtUtils.getRefreshExpirationMs()
+                ));
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }
