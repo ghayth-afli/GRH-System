@@ -18,18 +18,24 @@ public class LdapConfig {
     @Value("${spring.ldap.password}")
     private String managerPassword;
 
+    @Value("${spring.ldap.base}")
+    private String baseDn;
+
     @Bean
     public LdapContextSource contextSource() {
         LdapContextSource contextSource = new LdapContextSource();
         contextSource.setUrl(ldapUrl);
         contextSource.setUserDn(managerDn);
         contextSource.setPassword(managerPassword);
+        contextSource.setBase(baseDn);  // Set base DN here
         contextSource.setReferral("follow");
         return contextSource;
     }
 
     @Bean
     public LdapTemplate ldapTemplate() {
-        return new LdapTemplate(contextSource());
+        LdapTemplate template = new LdapTemplate(contextSource());
+        template.setIgnorePartialResultException(true);  // Important for Active Directory
+        return template;
     }
 }

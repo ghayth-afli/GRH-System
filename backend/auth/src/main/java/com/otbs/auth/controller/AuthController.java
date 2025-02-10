@@ -42,15 +42,10 @@ public class AuthController {
                 )
         );
 
-        log.info("User {} authenticated", authRequest.username());
-        log.info(authRequest.password());
 
         String username = authentication.getName();
-        log.info(username);
         String accessToken = jwtUtils.generateAccessToken(username);
-        log.info(accessToken);
         String refreshToken = jwtUtils.generateRefreshToken(username);
-        log.info(accessToken);
 
         return ResponseEntity.ok(new JwtResponse(
                 accessToken,
@@ -63,6 +58,7 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(@RequestBody RefreshRequest refreshRequest) {
         String refreshToken = refreshRequest.refreshToken();
+        log.info("User {} refreshed token", jwtUtils.getUserNameFromJwtToken(refreshToken));
 
         if (jwtUtils.validateRefreshToken(refreshToken)) {
             String username = jwtUtils.getUserNameFromJwtToken(refreshToken);
