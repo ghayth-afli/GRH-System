@@ -34,15 +34,12 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody AuthRequest authRequest) {
-        log.info("User {} authenticated", authRequest.username());
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         authRequest.username(),
                         authRequest.password()
                 )
         );
-
-
         String username = authentication.getName();
         String accessToken = jwtUtils.generateAccessToken(username);
         String refreshToken = jwtUtils.generateRefreshToken(username);
@@ -58,7 +55,6 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(@RequestBody RefreshRequest refreshRequest) {
         String refreshToken = refreshRequest.refreshToken();
-        log.info("User {} refreshed token", jwtUtils.getUserNameFromJwtToken(refreshToken));
 
         if (jwtUtils.validateRefreshToken(refreshToken)) {
             String username = jwtUtils.getUserNameFromJwtToken(refreshToken);
@@ -68,6 +64,7 @@ public class AuthController {
                     LdapQueryBuilder.query().where("sAMAccountName").is(username),
                     new UserAttributesMapper()
             );
+
 
             if (!users.isEmpty()) {
                 String newAccessToken = jwtUtils.generateAccessToken(username);

@@ -27,7 +27,7 @@ public class LdapConfig {
         contextSource.setUrl(ldapUrl);
         contextSource.setUserDn(managerDn);
         contextSource.setPassword(managerPassword);
-        contextSource.setBase(baseDn);  // Set base DN here
+        contextSource.setBase(baseDn);
         contextSource.setReferral("follow");
         return contextSource;
     }
@@ -35,7 +35,7 @@ public class LdapConfig {
     @Bean
     public LdapTemplate ldapTemplate() {
         LdapTemplate template = new LdapTemplate(contextSource());
-        template.setIgnorePartialResultException(true);  // Important for Active Directory
+        template.setIgnorePartialResultException(true);
         return template;
     }
 }

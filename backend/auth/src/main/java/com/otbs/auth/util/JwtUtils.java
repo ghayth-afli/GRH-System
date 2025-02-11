@@ -4,8 +4,8 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 @Getter
 public class JwtUtils {
 
+    private static final Logger log = LoggerFactory.getLogger(JwtUtils.class);
     @Value("${jwt.secret}")
     private String jwtSecret;
 
@@ -39,11 +40,11 @@ public class JwtUtils {
 
     private String buildToken(String username, long expiration, String tokenType) {
         return Jwts.builder()
-                .subject(username)
+                .setSubject(username)
                 .claim("token_type", tokenType)
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getSigningKey())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(new Date().getTime() + expiration))
+                .signWith((SecretKey) getSigningKey())
                 .compact();
     }
 
@@ -57,19 +58,9 @@ public class JwtUtils {
 
             return "refresh".equals(claims.get("token_type"));
         } catch (Exception e) {
+            log.error("Invalid JWT token: {}", e.getMessage());
             return false;
         }
-    }
-
-    public String generateJwtToken(Authentication authentication) {
-        UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
-
-        return Jwts.builder()
-                .subject(userPrincipal.getUsername())
-                .issuedAt(new Date())
-                .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
-                .signWith(getSigningKey())
-                .compact();
     }
 
     private Key getSigningKey() {
@@ -91,14 +82,23 @@ public class JwtUtils {
             Jwts.parser().verifyWith((SecretKey) getSigningKey()).build().parse(authToken);
             return true;
         } catch (MalformedJwtException e) {
-            // Log exception
+            log.error("Invalid JWT token: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
-
+            log.error("JWT token is expired: {}", e.getMessage());
         } catch (UnsupportedJwtException e) {
-            // Log exception
+            log.error("JWT token is unsupported: {}", e.getMessage());
         } catch (IllegalArgumentException e) {
-            // Log exception
+            log.error("JWT claims string is empty: {}", e.getMessage());
         }
         return false;
+    }
+
+    public String getAuthoritiesFromJwtToken(String jwt) {
+        return Jwts.parser()
+                .verifyWith((SecretKey) getSigningKey())
+                .build()
+                .parseSignedClaims(jwt)
+                .getPayload()
+                .get("authorities", String.class);
     }
 }

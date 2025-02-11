@@ -14,6 +14,7 @@ public class UserAttributesMapper implements AttributesMapper<User> {
     public User mapFromAttributes(Attributes attributes) throws NamingException {
         User user = new User();
         user.setUsername(attributes.get("sAMAccountName").get().toString());
+        user.setAuthorities(attributes.get("memberOf").get().toString().split(",")[0].split("=")[1]);
         return user;
     }
 }
