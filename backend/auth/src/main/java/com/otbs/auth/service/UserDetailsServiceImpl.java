@@ -1,6 +1,7 @@
 package com.otbs.auth.service;
 
 import com.otbs.auth.mapper.UserAttributesMapper;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.query.LdapQueryBuilder;
@@ -13,14 +14,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final LdapTemplate ldapTemplate;
-
-    @Autowired
-    public UserDetailsServiceImpl(LdapTemplate ldapTemplate) {
-        this.ldapTemplate = ldapTemplate;
-    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -15,9 +16,9 @@ import org.springframework.beans.factory.annotation.Value;
 
 @Component
 @Getter
+@Slf4j
 public class JwtUtils {
 
-    private static final Logger log = LoggerFactory.getLogger(JwtUtils.class);
     @Value("${jwt.secret}")
     private String jwtSecret;
 
@@ -91,14 +92,5 @@ public class JwtUtils {
             log.error("JWT claims string is empty: {}", e.getMessage());
         }
         return false;
-    }
-
-    public String getAuthoritiesFromJwtToken(String jwt) {
-        return Jwts.parser()
-                .verifyWith((SecretKey) getSigningKey())
-                .build()
-                .parseSignedClaims(jwt)
-                .getPayload()
-                .get("authorities", String.class);
     }
 }
