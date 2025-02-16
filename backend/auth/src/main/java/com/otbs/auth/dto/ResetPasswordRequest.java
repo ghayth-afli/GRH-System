@@ -1,4 +1,4 @@
 package com.otbs.auth.dto;
 
-public record ResetPasswordRequest (String email, String password) {
+public record ResetPasswordRequest (String password) {
 }

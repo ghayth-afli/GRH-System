@@ -1,10 +1,10 @@
 package com.otbs.auth.service;
 
 import com.otbs.auth.model.PasswordResetToken;
-import com.otbs.auth.model.User;
+
+import java.util.Optional;
 
 public interface PasswordResetService {
-    void createPasswordResetTokenForUser(User user, String token);
-    PasswordResetToken getPasswordResetToken(String token);
-    void deletePasswordResetToken(PasswordResetToken passwordResetToken);
+    void createPasswordResetTokenForUser(String email);
+    void resetPassword(String token, String password);
 }

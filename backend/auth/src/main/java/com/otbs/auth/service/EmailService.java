@@ -1,5 +1,5 @@
 package com.otbs.auth.service;
 
 public interface EmailService {
-    void send(String to, String email);
+    void sendEmail(String to, String text);
 }

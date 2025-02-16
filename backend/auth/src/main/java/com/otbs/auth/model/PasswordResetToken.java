@@ -6,23 +6,39 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.naming.Name;
 import java.time.Instant;
 
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 public class PasswordResetToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String token;
 
+    @Column(nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private Instant expiryDate;
+
+    @Column(nullable = false)
+    private Name dn;
+
+    public boolean isExpired() {
+        return Instant.now().isAfter(expiryDate);
+    }
+
+    public PasswordResetToken(Name dn, String token, String email, Instant expiryDate) {
+        this.dn = dn;
+        this.token = token;
+        this.email = email;
+        this.expiryDate = expiryDate;
+    }
 }
 
