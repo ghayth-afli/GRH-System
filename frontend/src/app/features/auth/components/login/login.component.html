@@ -16,16 +16,11 @@
           class="auth-input"
           placeholder="Enter your username"
         />
-        <div
-          class="error-message"
-          *ngIf="
-            loginForm.get('username')?.invalid &&
-            (loginForm.get('username')?.dirty ||
-              loginForm.get('username')?.touched)
-          "
-        >
-          Username is required
-        </div>
+        @if(loginForm.get('username')?.invalid &&
+        (loginForm.get('username')?.dirty ||
+        loginForm.get('username')?.touched)){
+        <div class="error-message">Username is required</div>
+        }
       </div>
 
       <div class="form-group">
@@ -37,16 +32,11 @@
           class="auth-input"
           placeholder="Enter your password"
         />
-        <div
-          class="error-message"
-          *ngIf="
-            loginForm.get('password')?.invalid &&
-            (loginForm.get('password')?.dirty ||
-              loginForm.get('password')?.touched)
-          "
-        >
-          Password is required
-        </div>
+        @if(loginForm.get('password')?.invalid &&
+        (loginForm.get('password')?.dirty ||
+        loginForm.get('password')?.touched)){
+        <div class="error-message">Password is required</div>
+        }
       </div>
 
       <div class="form-group">
@@ -59,9 +49,10 @@
         <a routerLink="/auth/forgot-password">Forgot Password?</a>
       </div>
     </form>
-
-    <div class="message" *ngIf="responseMessage">
+    @if(responseMessage){
+    <div class="message">
       {{ responseMessage }}
     </div>
+    }
   </div>
 </div>
