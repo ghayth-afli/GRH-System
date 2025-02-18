@@ -35,7 +35,6 @@ public class LdapUser {
     @Attribute(name = "ou")
     private String organizationalUnit;
 
-    //password
     @Attribute(name = "userPassword")
-    private String password;
+    private byte[] password;
 }

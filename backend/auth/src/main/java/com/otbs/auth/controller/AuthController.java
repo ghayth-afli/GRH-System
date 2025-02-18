@@ -15,10 +15,7 @@ import org.springframework.ldap.query.LdapQueryBuilder;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 @RestController
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;

@@ -14,9 +14,6 @@ public class LdapConfig {
     @Value("${spring.ldap.urls}")
     private String ldapUrl;
 
-    @Value("${LDAP_SERVER_SECURE_URL}")
-    private String secureLdapUrl;
-
     @Value("${spring.ldap.username}")
     private String managerDn;
 
@@ -27,40 +24,21 @@ public class LdapConfig {
     private String baseDn;
 
     @Bean
-    @Primary
     public LdapContextSource ldapContextSource() {
         LdapContextSource contextSource = new LdapContextSource();
         contextSource.setUrl(ldapUrl);
         contextSource.setBase(baseDn);
         contextSource.setUserDn(managerDn);
         contextSource.setPassword(managerPassword);
-        contextSource.setReferral("follow");
+        contextSource.setReferral("ignore");
         return contextSource;
     }
 
-    // Secure LDAPS (port 636)
-    @Bean(name = "secureLdapContextSource")
-    public LdapContextSource secureLdapContextSource() {
-        LdapContextSource contextSource = new LdapContextSource();
-        contextSource.setUrl(secureLdapUrl);
-        contextSource.setBase(baseDn);
-        contextSource.setUserDn(managerDn);
-        contextSource.setPassword(managerPassword);
-        contextSource.setReferral("follow");
-        return contextSource;
-    }
-
-    // Regular LDAP template
     @Bean
     @Primary
     public LdapTemplate ldapTemplate(LdapContextSource ldapContextSource) {
-        return new LdapTemplate(ldapContextSource);
-    }
-
-    // Secure LDAPS template
-    @Bean(name = "secureLdapTemplate")
-    public LdapTemplate secureLdapTemplate(
-            @Qualifier("secureLdapContextSource") LdapContextSource secureLdapContextSource) {
-        return new LdapTemplate(secureLdapContextSource);
+        LdapTemplate template = new LdapTemplate(ldapContextSource);
+        template.setIgnorePartialResultException(true);
+        return template;
     }
 }
