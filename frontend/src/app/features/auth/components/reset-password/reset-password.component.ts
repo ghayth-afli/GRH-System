@@ -8,10 +8,7 @@ import { ResetPasswordResponse } from '../../models/auth-responses.interface';
   selector: 'app-reset-password',
   standalone: false,
   templateUrl: './reset-password.component.html',
-  styleUrls: [
-    './reset-password.component.css',
-    '../../shared/auth/auth-shared.css',
-  ],
+  styleUrls: ['./reset-password.component.css', '../../shared/auth-shared.css'],
 })
 export class ResetPasswordComponent {
   resetForm: FormGroup;

@@ -8,7 +8,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   standalone: false,
 
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css', '../../shared/auth/auth-shared.css'],
+  styleUrls: ['./login.component.css', '../../shared/auth-shared.css'],
 })
 export class LoginComponent {
   loginForm: FormGroup;
