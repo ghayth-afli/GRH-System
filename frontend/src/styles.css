@@ -1,0 +1,27 @@
+:root {
+  --black-pearl: #030a23;
+  --white: #ffffff;
+  --blaze-orange: #fd5b00;
+  --cornflower-blue: #6195ed;
+  --endeavour: #004f99;
+  --blue-zodiac: #0e274e;
+  --silver: #cacaca;
+  --dove-gray: #666666;
+  --gun-powder: #43475a;
+  --base-font-size: 18px;
+  --mobile-base: 16px;
+  --base-line-height: 1.5;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "KodeMono-Regular", monospace;
+}
+
+body {
+  background-color: var(--black-pearl);
+  min-height: 100vh;
+  overflow: hidden;
+}

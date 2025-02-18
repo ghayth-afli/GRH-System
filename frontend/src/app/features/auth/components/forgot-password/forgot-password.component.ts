@@ -7,7 +7,10 @@ import { ForgotPasswordResponse } from '../../models/auth-responses.interface';
   selector: 'app-forgot-password',
   standalone: false,
   templateUrl: './forgot-password.component.html',
-  styleUrl: './forgot-password.component.css',
+  styleUrls: [
+    './forgot-password.component.css',
+    '../../shared/auth-shared.css',
+  ],
 })
 export class ForgotPasswordComponent {
   forgotForm: FormGroup;

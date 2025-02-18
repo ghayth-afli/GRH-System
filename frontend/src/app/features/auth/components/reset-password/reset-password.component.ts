@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
@@ -8,24 +8,26 @@ import { ResetPasswordResponse } from '../../models/auth-responses.interface';
   selector: 'app-reset-password',
   standalone: false,
   templateUrl: './reset-password.component.html',
-  styleUrl: './reset-password.component.css',
+  styleUrls: [
+    './reset-password.component.css',
+    '../../shared/auth/auth-shared.css',
+  ],
 })
 export class ResetPasswordComponent {
   resetForm: FormGroup;
-  sending = false;
   responseMessage: string = '';
-  passwordMismatchError = false;
+  sending = false;
   token: string | null = null;
 
-  constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router,
-    private route: ActivatedRoute
-  ) {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private fb = inject(FormBuilder);
+
+  constructor() {
     this.token = this.route.snapshot.queryParamMap.get('token');
     if (!this.token) {
-      this.router.navigate(['/', 'auth', 'forgot-password']);
+      this.router.navigate(['/auth/login']);
     }
 
     this.resetForm = this.fb.group(
@@ -33,7 +35,9 @@ export class ResetPasswordComponent {
         password: ['', [Validators.required, Validators.minLength(8)]],
         confirmPassword: ['', Validators.required],
       },
-      { validators: this.passwordMatchValidator }
+      {
+        validator: this.passwordMatchValidator,
+      }
     );
   }
 
@@ -43,23 +47,23 @@ export class ResetPasswordComponent {
       : { mismatch: true };
   }
 
-  onSubmit() {
+  onSubmit(): void {
+    if (this.resetForm.invalid) return;
+
     this.sending = true;
     const password = this.resetForm.value.password;
-    this.authService.resetPassword(this.token!, password).subscribe({
-      next: (response: ResetPasswordResponse) => {
-        this.sending = false;
-        this.responseMessage = response.message;
-        this.resetForm.disable();
 
-        setTimeout(() => {
-          this.router.navigate(['/', 'auth', 'login']);
-        }, 3000);
+    this.authService.resetPassword(this.token!, password).subscribe({
+      next: (response) => {
+        this.sending = false;
+        this.responseMessage =
+          response.message || 'Password updated successfully';
+        this.router.navigate(['/auth/login']);
       },
       error: (error) => {
         this.sending = false;
-        console.error(error);
-        this.responseMessage = 'An error occurred. Please try again.';
+        this.responseMessage =
+          error.error?.message || 'Failed to update password';
       },
     });
   }

@@ -1,3 +1,67 @@
-<p>login works!</p>
+<div class="auth-container">
+  <div class="auth-brand">
+    <img src="assets/images/logo.png" alt="Logo" />
+  </div>
+  <div class="auth-card">
+    <div class="auth-title">Login</div>
+    <div class="auth-subtitle">Welcome back! Please sign in</div>
 
-<button (click)="login()">Login</button>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input
+          type="text"
+          id="username"
+          formControlName="username"
+          class="auth-input"
+          placeholder="Enter your username"
+        />
+        <div
+          class="error-message"
+          *ngIf="
+            loginForm.get('username')?.invalid &&
+            (loginForm.get('username')?.dirty ||
+              loginForm.get('username')?.touched)
+          "
+        >
+          Username is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
+          class="auth-input"
+          placeholder="Enter your password"
+        />
+        <div
+          class="error-message"
+          *ngIf="
+            loginForm.get('password')?.invalid &&
+            (loginForm.get('password')?.dirty ||
+              loginForm.get('password')?.touched)
+          "
+        >
+          Password is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <button [disabled]="loginForm.invalid || sending" class="auth-btn">
+          {{ sending ? "Signing In..." : "Sign In" }}
+        </button>
+      </div>
+
+      <div class="auth-links">
+        <a routerLink="/auth/forgot-password">Forgot Password?</a>
+      </div>
+    </form>
+
+    <div class="message" *ngIf="responseMessage">
+      {{ responseMessage }}
+    </div>
+  </div>
+</div>

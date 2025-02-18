@@ -1,0 +1,11 @@
+.login-form p {
+  color: var(--dove-gray);
+  margin-bottom: 1rem;
+  font-family: "Montserrat-Regular", sans-serif;
+}
+
+.error-message {
+  color: var(--dove-gray);
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
