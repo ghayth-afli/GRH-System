@@ -2,7 +2,6 @@ package com.otbs.auth.service;
 
 import com.otbs.auth.mapper.UserAttributesMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.query.LdapQueryBuilder;
 import com.otbs.auth.model.User;

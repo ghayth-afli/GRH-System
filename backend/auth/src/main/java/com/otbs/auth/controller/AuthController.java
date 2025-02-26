@@ -1,7 +1,7 @@
 package com.otbs.auth.controller;
 
-import com.otbs.auth.dto.AuthRequest;
 import com.otbs.auth.dto.JwtResponse;
+import com.otbs.auth.dto.AuthRequest;
 import com.otbs.auth.dto.RefreshRequest;
 import com.otbs.auth.mapper.UserAttributesMapper;
 import com.otbs.auth.model.User;

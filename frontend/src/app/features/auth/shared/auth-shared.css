@@ -11,8 +11,9 @@
   width: 90%;
   max-width: 400px;
   padding: 2rem;
-  background-color: var(--blue-zodiac);
-  border-radius: 0.5rem;
+  background-color: var(--white);
+  border-radius: 0rem;
+  clip-path: polygon(100% 0, 95% 0, 100% 5%, 100% 100%, 5% 100%, 0 95%, 0 0);
   box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.16);
   position: relative;
 }
@@ -24,13 +25,13 @@
 }
 
 .auth-title {
-  color: var(--white);
+  color: var(--blaze-orange);
   font-size: 1.2rem;
   margin-bottom: 1rem;
 }
 
 .auth-subtitle {
-  color: var(--silver);
+  color: var(--blue-zodiac);
   margin-bottom: 1.5rem;
 }
 
@@ -40,7 +41,7 @@
 
 label {
   display: block;
-  color: var(--dove-gray);
+  color: var(--blue-zodiac);
   margin-bottom: 0.5rem;
   font-size: 0.85rem;
 }
@@ -51,7 +52,7 @@ label {
   background-color: var(--black-pearl);
   color: var(--white);
   border: none;
-  border-radius: 0.25rem;
+  border-radius: 0rem;
   outline: none;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
   transition: box-shadow 0.2s;
@@ -71,7 +72,7 @@ label {
   color: var(--white);
   background-color: var(--blaze-orange);
   border: none;
-  border-radius: 0.25rem;
+  border-radius: 0rem;
   font-weight: bold;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
   transition: all 0.2s;

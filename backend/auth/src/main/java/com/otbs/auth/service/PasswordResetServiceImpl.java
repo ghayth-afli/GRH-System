@@ -1,12 +1,12 @@
 package com.otbs.auth.service;
 
-import com.otbs.auth.exception.InvalidTokenException;
-import com.otbs.auth.exception.TokenExpiredException;
 import com.otbs.auth.exception.UserNotFoundException;
 import com.otbs.auth.model.LdapUser;
-import com.otbs.auth.model.PasswordResetToken;
 import com.otbs.auth.repositories.PasswordResetTokenRepository;
 import com.otbs.auth.repositories.UserRepository;
+import com.otbs.auth.exception.InvalidTokenException;
+import com.otbs.auth.exception.TokenExpiredException;
+import com.otbs.auth.model.PasswordResetToken;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         PasswordResetToken passwordResetToken = new PasswordResetToken(user.getDn(), token, email, expiryDate);
         passwordResetTokenRepository.save(passwordResetToken);
 
-        String resetPasswordLink = "http://localhost:8080/reset-password?token=" + token;
+        String resetPasswordLink = "http://localhost:4200/auth/reset-password?token=" + token;
         emailService.sendEmail(email, "Password Reset Link: " + resetPasswordLink);
     }
 
@@ -62,7 +62,9 @@ public class PasswordResetServiceImpl implements PasswordResetService {
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         // Update the password and save via repository
-        ModificationItem item = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("userPassword", ("\""+newPassword+"\"").getBytes(StandardCharsets.UTF_16LE)));
+        ModificationItem item = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("unicodePwd",
+                passwordEncoder.encode(newPassword).getBytes(StandardCharsets.UTF_16LE)));
+
         ldapTemplate.modifyAttributes(user.getDn(), new ModificationItem[]{item});
 
 

@@ -1,7 +1,7 @@
 package com.otbs.auth.controller;
 
-import com.otbs.auth.dto.ForgotPasswordRequest;
 import com.otbs.auth.dto.MessageResponse;
+import com.otbs.auth.dto.ForgotPasswordRequest;
 import com.otbs.auth.dto.ResetPasswordRequest;
 import com.otbs.auth.service.PasswordResetService;
 import lombok.RequiredArgsConstructor;
