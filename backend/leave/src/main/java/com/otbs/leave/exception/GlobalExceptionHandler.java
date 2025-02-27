@@ -27,4 +27,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleEmptyAttachment() {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Empty attachment"));
     }
+
+    @ExceptionHandler({LeaveNotFoundException.class})
+    public ResponseEntity<?> handleLeaveNotFound() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Leave not found"));
+    }
+
+    @ExceptionHandler({LeaveBalanceNotFoundException.class})
+    public ResponseEntity<?> handleLeaveBalanceNotFound() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Leave balance not found"));
+    }
 }

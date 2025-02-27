@@ -15,6 +15,8 @@ import java.time.LocalTime;
 public record LeaveRequest(
         @NotBlank(message = "Leave type is required") ELeaveType leaveType,
 
+
+
         @NotNull(message = "Start date is required")
         @FutureOrPresent(message = "Start date must be today or in the future") LocalDate startDate,
 
