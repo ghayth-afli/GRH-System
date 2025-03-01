@@ -59,7 +59,7 @@ public class Leave {
 
     @Lob
     @Basic(fetch = FetchType.LAZY)
-    @Column(columnDefinition = "LONGBLOB")
+    @Column(columnDefinition = "BYTEA")
     private byte[] attachment;
 
     @CreationTimestamp

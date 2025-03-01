@@ -143,7 +143,7 @@ public class LeaveServiceImpl implements LeaveService {
     }
 
     @Override
-    @Scheduled(cron = "0 0 1 * *")
+    @Scheduled(cron = "0 0 0 1 * *")
     public void addMonthlyLeaveForAllEmployees() {
         List<LeaveBalance> leaveBalances = leaveBalanceRepository.findAll();
 

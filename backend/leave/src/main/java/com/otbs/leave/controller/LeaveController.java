@@ -3,6 +3,7 @@ package com.otbs.leave.controller;
 import com.otbs.leave.dto.LeaveRequest;
 import com.otbs.leave.dto.MessageResponse;
 import com.otbs.leave.model.Leave;
+import com.otbs.leave.service.LeaveService;
 import com.otbs.leave.service.LeaveServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class LeaveController {
 
-    private final LeaveServiceImpl leaveService;
+    private final LeaveService leaveService;
 
     @PostMapping("/apply")
     public ResponseEntity<?> applyLeave(@RequestBody LeaveRequest leaveRequest) {

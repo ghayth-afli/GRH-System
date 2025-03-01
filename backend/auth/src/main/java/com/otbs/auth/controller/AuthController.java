@@ -6,6 +6,7 @@ import com.otbs.auth.dto.RefreshRequest;
 import com.otbs.auth.mapper.UserAttributesMapper;
 import com.otbs.auth.model.User;
 import com.otbs.auth.util.JwtUtils;
+import com.otbs.clients.employee.EmployeeClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final LdapTemplate ldapTemplate;
+    private final EmployeeClient employeeClient;
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody AuthRequest authRequest) {
@@ -41,6 +43,9 @@ public class AuthController {
         String username = authentication.getName();
         String accessToken = jwtUtils.generateAccessToken(username);
         String refreshToken = jwtUtils.generateRefreshToken(username);
+        ResponseEntity<?> employee = employeeClient.getEmployeeByEmail("khaledt@gmail.com");
+        log.info("Employee: {}", employee.getBody());
+
 
         return ResponseEntity.ok(new JwtResponse(
                 accessToken,

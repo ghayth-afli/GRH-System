@@ -16,6 +16,8 @@
     <module>auth</module>
       <module>clients</module>
       <module>leave</module>
+      <module>employee</module>
+      <module>apigw</module>
   </modules>
 
   <properties>
