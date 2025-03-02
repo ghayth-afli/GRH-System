@@ -7,16 +7,15 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="apigw" />
-        <module name="clients" />
-        <module name="employee" />
+        <module name="leave-service" />
+        <module name="api-gateway" />
+        <module name="feign-clients" />
+        <module name="auth-service" />
         <module name="eureka-server" />
-        <module name="auth" />
-        <module name="leave" />
+        <module name="employee-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="auth-service" target="22" />
       <module name="authService" target="22" />
       <module name="security" target="22" />
     </bytecodeTargetLevel>

@@ -13,11 +13,11 @@
   <url>http://www.example.com</url>
   <modules>
     <module>eureka-server</module>
-    <module>auth</module>
-      <module>clients</module>
-      <module>leave</module>
-      <module>employee</module>
-      <module>apigw</module>
+    <module>auth-service</module>
+      <module>feign-clients</module>
+      <module>leave-service</module>
+      <module>employee-service</module>
+      <module>api-gateway</module>
   </modules>
 
   <properties>
