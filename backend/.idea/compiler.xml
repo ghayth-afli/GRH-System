@@ -7,11 +7,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="leave-service" />
-        <module name="api-gateway" />
         <module name="feign-clients" />
         <module name="auth-service" />
+        <module name="leave-service" />
+        <module name="api-gateway" />
         <module name="eureka-server" />
+        <module name="mail-service" />
         <module name="employee-service" />
       </profile>
     </annotationProcessing>

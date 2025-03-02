@@ -4,16 +4,14 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
-public class EmployeeResponse {
+public record EmployeeResponse(
+        @JsonDeserialize(as = String.class) String id,
+        String username,
+        String firstName,
+        String lastName,
+        String email,
+        String department,
+        String role
+) {
 
-    @JsonDeserialize(as = String.class)
-    private String id;
-    private String username;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String department;
-    private String role;
 }

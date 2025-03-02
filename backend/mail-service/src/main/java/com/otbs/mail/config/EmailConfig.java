@@ -1,4 +1,4 @@
-package com.otbs.auth.config;
+package com.otbs.mail.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

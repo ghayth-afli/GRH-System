@@ -18,10 +18,10 @@ public class UserDetailsImpl  implements UserDetails {
 
     public static UserDetailsImpl build(EmployeeResponse user) {
         Set<GrantedAuthority> authorities = new HashSet<>();
-        authorities.add(new SimpleGrantedAuthority(user.getRole()));
+        authorities.add(new SimpleGrantedAuthority(user.role()));
 
         return new UserDetailsImpl(
-                user.getUsername(),
+                user.username(),
                 authorities);
     }
 

@@ -63,6 +63,10 @@ public class LeaveServiceImpl implements LeaveService {
         //TODO: send email to user
 
         //TODO: update leave balance
+        updateLeaveBalance(leaveId);
+    }
+
+    private void updateLeaveBalance(Long leaveId) {
         leaveBalanceRepository.findByUserDn(leaveRepository.findById(leaveId).get().getUserDn())
                 .ifPresent(leaveBalance -> {
                     leaveBalance.setUsedLeave(leaveBalance.getUsedLeave() - (int) ChronoUnit.DAYS.between(leaveRepository.findById(leaveId).get().getStartDate(), leaveRepository.findById(leaveId).get().getEndDate()));
@@ -94,12 +98,7 @@ public class LeaveServiceImpl implements LeaveService {
         //TODO: send email to user
 
         //update leave balance
-        leaveBalanceRepository.findByUserDn(leaveRepository.findById(leaveId).get().getUserDn())
-                .ifPresent(leaveBalance -> {
-                    leaveBalance.setUsedLeave(leaveBalance.getUsedLeave() - (int) ChronoUnit.DAYS.between(leaveRepository.findById(leaveId).get().getStartDate(), leaveRepository.findById(leaveId).get().getEndDate()));
-                    leaveBalance.setRemainingLeave(leaveBalance.getTotalLeave() - leaveBalance.getUsedLeave());
-                    leaveBalanceRepository.save(leaveBalance);
-                });
+        updateLeaveBalance(leaveId);
 
     }
 

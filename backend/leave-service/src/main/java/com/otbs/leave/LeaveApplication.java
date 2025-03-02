@@ -7,7 +7,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableFeignClients(basePackages = "com.otbs.clients")
+@EnableFeignClients(basePackages = "com.otbs.feign")
 public class LeaveApplication {
     public static void main(String[] args) {
         SpringApplication.run(LeaveApplication.class, args);
