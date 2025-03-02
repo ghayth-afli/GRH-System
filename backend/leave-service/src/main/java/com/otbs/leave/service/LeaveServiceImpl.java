@@ -1,5 +1,6 @@
 package com.otbs.leave.service;
 
+import com.otbs.feign.client.MailClient;
 import com.otbs.leave.dto.LeaveRequest;
 import com.otbs.leave.exception.LeaveBalanceNotFoundException;
 import com.otbs.leave.exception.LeaveNotFoundException;
@@ -27,6 +28,8 @@ public class LeaveServiceImpl implements LeaveService {
     private final LeaveRepository leaveRepository;
 
     private final LeaveAttributesMapper leaveAttributesMapper;
+
+    private final MailClient mailClient;
 
 
     @Override
@@ -61,6 +64,7 @@ public class LeaveServiceImpl implements LeaveService {
         leaveRepository.deleteById(leaveId);
 
         //TODO: send email to user
+
 
         //TODO: update leave balance
         updateLeaveBalance(leaveId);

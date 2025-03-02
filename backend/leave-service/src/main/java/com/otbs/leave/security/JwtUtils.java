@@ -1,20 +1,17 @@
-package com.otbs.auth.util;
+package com.otbs.leave.security;
 
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Value;
 
 @Component
 @Getter

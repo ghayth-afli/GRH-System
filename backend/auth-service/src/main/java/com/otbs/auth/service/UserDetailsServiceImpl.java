@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final LdapTemplate ldapTemplate;
     private final EmployeeClient employeeClient;
 
     @Override
