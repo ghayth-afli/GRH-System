@@ -37,4 +37,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleLeaveBalanceNotFound() {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Leave balance not found"));
     }
+
+    @ExceptionHandler({InsufficientLeaveBalanceException.class})
+    public ResponseEntity<?> handleInsufficientLeaveBalance() {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Insufficient leave balance"));
+    }
 }

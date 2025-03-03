@@ -57,10 +57,10 @@ public class Leave {
     @NotNull(message = "Status is required")
     private EStatus status;
 
-    @Lob
+    /*@Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(columnDefinition = "BYTEA")
-    private byte[] attachment;
+    private byte[] attachment;*/
 
     @CreationTimestamp
     @Column(updatable = false)

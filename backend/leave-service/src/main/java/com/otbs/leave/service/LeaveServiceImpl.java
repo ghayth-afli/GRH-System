@@ -1,7 +1,10 @@
 package com.otbs.leave.service;
 
 import com.otbs.feign.client.MailClient;
+import com.otbs.feign.dto.EmployeeResponse;
 import com.otbs.leave.dto.LeaveRequest;
+import com.otbs.leave.exception.InsufficientLeaveBalanceException;
+import com.otbs.leave.exception.InvalidDateRangeException;
 import com.otbs.leave.exception.LeaveBalanceNotFoundException;
 import com.otbs.leave.exception.LeaveNotFoundException;
 import com.otbs.leave.mapper.LeaveAttributesMapper;
@@ -11,9 +14,11 @@ import com.otbs.leave.model.LeaveBalance;
 import com.otbs.leave.repository.LeaveBalanceRepository;
 import com.otbs.leave.repository.LeaveRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.temporal.ChronoUnit;
@@ -21,6 +26,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LeaveServiceImpl implements LeaveService {
 
     private final LeaveBalanceRepository leaveBalanceRepository;
@@ -36,11 +42,26 @@ public class LeaveServiceImpl implements LeaveService {
     public void applyLeave(LeaveRequest leaveRequest) {
 
         Leave leave = leaveAttributesMapper.toEntity(leaveRequest);
-        //TODO: get userDn from security context
+        //get userDn from security context
+        EmployeeResponse user = (EmployeeResponse) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        leave.setUserDn(user.id());
 
-        //TODO: check if leave balance is sufficient
+        //check if leave balance is sufficient
+        leaveBalanceRepository.findByUserDn(leave.getUserDn())
+                .ifPresent(leaveBalance -> {
+                    if (leaveBalance.getRemainingLeave() < (int) ChronoUnit.DAYS.between(leave.getStartDate(), leave.getEndDate())) {
+                        throw new InsufficientLeaveBalanceException("Insufficient leave balance");
+                    }
+                });
 
-        //TODO: check if leave is overlapping with existing leaves
+
+        //check if leave is overlapping with existing leaves
+        leaveRepository.findAllByUserDn(leave.getUserDn())
+                .forEach(existingLeave -> {
+                    if (leave.getStartDate().isBefore(existingLeave.getEndDate()) && leave.getEndDate().isAfter(existingLeave.getStartDate())) {
+                        throw new InvalidDateRangeException("Leave is overlapping with existing leave");
+                    }
+                });
 
         //TODO: check if leave is overlapping with public holidays in tunisia
 

@@ -1,10 +1,13 @@
 package com.otbs.leave.security;
 
+import com.otbs.feign.client.EmployeeClient;
+import com.otbs.feign.dto.EmployeeResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,6 +26,7 @@ import java.util.stream.Collectors;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
+    private final EmployeeClient employeeClient;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -34,13 +38,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUserNameFromJwtToken(jwt);
                 List<String> roles = jwtUtils.getRolesFromJwtToken(jwt);
+                EmployeeResponse user = employeeClient.getEmployeeByUsername(username).getBody();
 
                 List<GrantedAuthority> authorities = roles.stream()
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
-                        username, null, authorities);
+                        user,
+                        null,
+                        authorities
+                );
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }

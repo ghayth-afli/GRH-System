@@ -14,7 +14,7 @@ public class LeaveAttributesMapper {
                 .endDate(leaveRequest.endDate())
                 .leaveType(leaveRequest.leaveType())
                 .status(EStatus.EN_ATTENTE)
-                .attachment(leaveRequest.attachment())
+                //.attachment(leaveRequest.attachment())
                 .startTime(leaveRequest.startHOURLY())
                 .endTime(leaveRequest.endHOURLY())
                 .build();
@@ -26,7 +26,7 @@ public class LeaveAttributesMapper {
                 leave.getLeaveType(),
                 leave.getStartDate(),
                 leave.getEndDate(),
-                leave.getAttachment(),
+                //leave.getAttachment(),
                 leave.getStartTime(),
                 leave.getEndTime()
         );
@@ -36,7 +36,7 @@ public class LeaveAttributesMapper {
         leave.setStartDate(leaveRequest.startDate());
         leave.setEndDate(leaveRequest.endDate());
         leave.setLeaveType(leaveRequest.leaveType());
-        leave.setAttachment(leaveRequest.attachment());
+        //leave.setAttachment(leaveRequest.attachment());
         leave.setStartTime(leaveRequest.startHOURLY());
         leave.setEndTime(leaveRequest.endHOURLY());
     }

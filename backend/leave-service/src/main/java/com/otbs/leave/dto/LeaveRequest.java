@@ -23,7 +23,7 @@ public record LeaveRequest(
         @NotNull(message = "End date is required")
         @FutureOrPresent(message = "End date must be today or in the future") LocalDate endDate,
 
-        byte[] attachment,
+        //byte[] attachment,
 
         LocalTime startHOURLY,
 
@@ -33,9 +33,9 @@ public record LeaveRequest(
         if (startDate.isAfter(endDate)) {
             throw new InvalidDateRangeException("Start date must be before or equal to end date");
         }
-        if (attachment != null && attachment.length == 0) {
+        /*if (attachment != null && attachment.length == 0) {
             throw new EmptyAttachmentException("Attachment cannot be empty");
-        }
+        }*/
         if (startHOURLY != null && endHOURLY != null && startHOURLY.isAfter(endHOURLY)) {
             throw new InvalidTimeRangeException("Start time must be before or equal to end time");
         }

@@ -4,7 +4,6 @@ import com.otbs.leave.dto.LeaveRequest;
 import com.otbs.leave.dto.MessageResponse;
 import com.otbs.leave.model.Leave;
 import com.otbs.leave.service.LeaveService;
-import com.otbs.leave.service.LeaveServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,14 +23,14 @@ public class LeaveController {
     private final LeaveService leaveService;
 
     @PostMapping("/apply")
-    @PreAuthorize("hasAuthority('Employee')")
+    @PreAuthorize("hasAuthority('Manager')")
     public ResponseEntity<?> applyLeave(@RequestBody LeaveRequest leaveRequest) {
         leaveService.applyLeave(leaveRequest);
         return ResponseEntity.ok().body(new MessageResponse("Leave applied successfully"));
     }
 
     @DeleteMapping("/cancel/{leaveId}")
-    @PreAuthorize("hasAuthority('Employee')")
+    @PreAuthorize("hasAuthority('Manager')")
     public ResponseEntity<?> cancelLeave(@PathVariable Long leaveId) {
         leaveService.cancelLeave(leaveId);
         return ResponseEntity.ok().body(new MessageResponse("Leave cancelled successfully"));
@@ -52,13 +51,14 @@ public class LeaveController {
     }
 
     @PutMapping("/update/{leaveId}")
+    @PreAuthorize("hasAuthority('Manager')")
     public ResponseEntity<?> updateLeave(@PathVariable Long leaveId, @RequestBody LeaveRequest leaveRequest) {
         leaveService.updateLeave(leaveId, leaveRequest);
         return ResponseEntity.ok().body(new MessageResponse("Leave updated successfully"));
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAuthority('Employee')")
+    @PreAuthorize("hasAuthority('Manager')")
     public ResponseEntity<Page<Leave>> getAllLeaves(
             @PageableDefault(size = 10, sort = "startDate") Pageable pageable) {
         return ResponseEntity.ok(leaveService.getAllLeaves(pageable));

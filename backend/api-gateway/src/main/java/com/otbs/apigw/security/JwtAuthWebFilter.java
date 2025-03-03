@@ -53,7 +53,7 @@ public class JwtAuthWebFilter implements WebFilter {
                         .contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication));
             }
         } catch (Exception e) {
-            log.error("Authentication error", e);
+            log.error("Cannot set user authentication: {}", e.getMessage());
         }
 
         return unauthorizedResponse(exchange.getResponse());
