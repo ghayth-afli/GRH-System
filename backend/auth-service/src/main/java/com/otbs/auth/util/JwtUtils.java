@@ -24,14 +24,11 @@ public class JwtUtils {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
-    @Value("${jwt.access-expiration-ms}")
+    @Value("${jwt.expiration-ms}")
     private int accessExpirationMs;
 
     @Value("${jwt.refresh-expiration-ms}")
     private long refreshExpirationMs;
-
-    @Value("${jwt.expiration-ms}")
-    private int jwtExpirationMs;
 
     public String generateAccessToken(String username,List<String> roles) {
         return buildToken(username, accessExpirationMs, "access", roles);

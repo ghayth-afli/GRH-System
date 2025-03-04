@@ -1,1 +1,15 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  <!-- Sidebar Section -->
+  <app-sidebar></app-sidebar>
+
+  <!-- Main Content Section -->
+  <div class="main-content">
+    <!-- Header -->
+    <app-header></app-header>
+
+    <!-- Dynamic Content -->
+    <div class="content">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

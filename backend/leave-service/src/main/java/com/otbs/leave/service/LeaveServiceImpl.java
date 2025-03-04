@@ -42,6 +42,7 @@ public class LeaveServiceImpl implements LeaveService {
     public void applyLeave(LeaveRequest leaveRequest) {
 
         Leave leave = leaveAttributesMapper.toEntity(leaveRequest);
+
         //get userDn from security context
         EmployeeResponse user = (EmployeeResponse) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         leave.setUserDn(user.id());
