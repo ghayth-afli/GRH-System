@@ -46,7 +46,7 @@ export class AuthService {
   // Refresh token method to get new access token and refresh token
   refreshToken(): Observable<LoginResponse> {
     return this.http
-      .post<LoginResponse>(`${environment.apiUrl}/api/auth/refresh`, {
+      .post<LoginResponse>(`${environment.apiUrl}/auth/refresh`, {
         refreshToken: this._refreshToken,
       })
       .pipe(
@@ -67,7 +67,7 @@ export class AuthService {
   forgotPassword(email: string): Observable<ForgotPasswordResponse> {
     return this.http
       .post<ForgotPasswordResponse>(
-        `${environment.apiUrl}/auth/forgot-password`,
+        `${environment.apiUrl}/auth/v1/forgot-password`,
         {
           email,
         }
