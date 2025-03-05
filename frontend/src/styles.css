@@ -27,6 +27,116 @@ body {
   overflow: hidden;
 }
 
+/* ----------auth component styles---------- */
+.auth-container {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  background-color: var(--black-pearl);
+}
+
+.image-side {
+  flex: 1;
+  background: url("assets/images/login-image.png") no-repeat center center;
+  background-size: cover;
+  position: relative;
+  clip-path: polygon(0 0, 33% 0, 100% 0, 71% 100%, 32% 100%, 0 100%);
+}
+
+.auth-side-container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 0 50px;
+  color: var(--white);
+  width: 100%;
+}
+
+.auth-logo {
+  align-self: flex-end;
+}
+
+.auth-header {
+  margin-bottom: 30px;
+}
+
+.auth-header h1 {
+  color: var(--white);
+  font-family: "Kode Mono";
+  font-size: 40px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.auth-header p {
+  color: var(--white);
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  margin-top: 10px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-form input {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid var(--dove-gray);
+  background-color: var(--white);
+  color: var(--blue-zodiac);
+  margin-top: 7px;
+}
+
+.auth-form .remember-forgot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  color: var(--blaze-orange);
+}
+
+.auth-form .remember-forgot a {
+  color: var(--blaze-orange);
+  text-decoration: none;
+}
+
+.social-auth {
+  align-self: flex-end;
+}
+
+.auth-btn {
+  background-color: var(--blaze-orange);
+  color: var(--white);
+  border: none;
+  padding: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+  width: 50%;
+  align-self: center;
+  clip-path: polygon(0 0, 33% 0, 100% 0, 100% 100%, 18% 100%, 0 48%);
+  margin-top: 107px;
+}
+
+.auth-btn:hover {
+  background-color: var(--blaze-orange);
+}
+
+.social-auth a {
+  margin: 0 10px;
+  color: var(--white);
+  text-decoration: none;
+}
+
+/* ----------dashboard component styles---------- */
 .dashboard-container {
   display: flex;
   height: 100vh;
@@ -140,7 +250,7 @@ app-sidebar {
   height: 150px;
   overflow: hidden;
   border-radius: 50%;
-  border: 1px solid #000;
+  border: 1px solid var(--black-pearl);
 }
 
 .avatar {

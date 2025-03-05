@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ForgotPasswordResponse } from '../../models/auth-responses.interface';
 
@@ -13,24 +13,23 @@ import { ForgotPasswordResponse } from '../../models/auth-responses.interface';
   ],
 })
 export class ForgotPasswordComponent {
-  forgotForm: FormGroup;
+  email: string = '';
   sending = false;
   responseMessage: string = '';
+  isDisabled = false;
 
-  constructor(private fb: FormBuilder, private authService: AuthService) {
-    this.forgotForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-    });
-  }
+  constructor(private authService: AuthService) {}
 
-  onSubmit() {
+  onSubmit(form: NgForm) {
+    if (form.invalid) return;
+
     this.sending = true;
-    const email = this.forgotForm.value.email;
-    this.authService.forgotPassword(email).subscribe({
+
+    this.authService.forgotPassword(this.email).subscribe({
       next: (response: ForgotPasswordResponse) => {
         this.sending = false;
         this.responseMessage = response.message;
-        this.forgotForm.disable();
+        this.isDisabled = true;
       },
       error: (error) => {
         this.sending = false;

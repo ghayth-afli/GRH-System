@@ -1,7 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
@@ -11,28 +10,20 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styleUrls: ['./login.component.css', '../../shared/auth-shared.css'],
 })
 export class LoginComponent {
-  loginForm: FormGroup;
+  username: string = '';
+  password: string = '';
   responseMessage: string = '';
   sending = false;
 
   private authService = inject(AuthService);
   private router = inject(Router);
-  private fb = inject(FormBuilder);
-
-  constructor() {
-    this.loginForm = this.fb.group({
-      username: ['', Validators.required],
-      password: ['', Validators.required],
-    });
-  }
 
   onSubmit(): void {
-    if (this.loginForm.invalid) return;
+    if (!this.username || !this.password) return;
 
     this.sending = true;
-    const { username, password } = this.loginForm.value;
 
-    this.authService.login(username, password).subscribe({
+    this.authService.login(this.username, this.password).subscribe({
       next: () => {
         this.sending = false;
         this.router.navigate(['/dashboard']);
