@@ -18,6 +18,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,17 +42,19 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(authRequest.username(), authRequest.password()));
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
         String accessToken = jwtUtils.generateAccessToken(authRequest.username(), roles);
-
+        EmployeeResponse user = employeeClient.getEmployeeByUsername(authRequest.username()).getBody();
         return ResponseEntity.ok(new JwtResponse(
                 accessToken,
                 jwtUtils.generateRefreshToken(authRequest.username(), roles),
                 jwtUtils.getAccessExpirationMs(),
-                jwtUtils.getRefreshExpirationMs()
+                jwtUtils.getRefreshExpirationMs(),
+                user
         ));
     }
 
@@ -75,7 +78,8 @@ public class AuthController {
                         newAccessToken,
                         newRefreshToken,
                         jwtUtils.getAccessExpirationMs(),
-                        jwtUtils.getRefreshExpirationMs()
+                        jwtUtils.getRefreshExpirationMs(),
+                        user
             ));
 
         }
