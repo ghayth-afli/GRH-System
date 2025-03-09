@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 
 @Entity
 @Table(name = "leave_balance")
@@ -34,7 +33,6 @@ public class LeaveBalance {
     @Column(nullable = false)
     private LocalDate lastUpdatedDate;
 
-
     public LeaveBalance(String userDn, Integer totalLeave, Integer usedLeave, Integer remainingLeave, LocalDate lastUpdatedDate) {
         this.userDn = userDn;
         this.totalLeave = totalLeave;
@@ -43,12 +41,10 @@ public class LeaveBalance {
         this.lastUpdatedDate = lastUpdatedDate;
     }
 
-    // Method to add leave balance every month
     public void addMonthlyLeave() {
         if (lastUpdatedDate != null && lastUpdatedDate.plusMonths(1).isBefore(LocalDate.now())) {
             totalLeave += 2;
             remainingLeave = totalLeave - usedLeave;
-
             lastUpdatedDate = LocalDate.now();
         }
     }

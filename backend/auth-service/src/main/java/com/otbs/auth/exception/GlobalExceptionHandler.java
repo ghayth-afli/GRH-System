@@ -8,23 +8,28 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler({InvalidTokenException.class})
-    public ResponseEntity<?> handleInvalidToken() {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Invalid token"));
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<MessageResponse> handleInvalidToken() {
+        return buildResponse(HttpStatus.BAD_REQUEST, "Invalid token");
     }
 
-    @ExceptionHandler({TokenExpiredException.class})
-    public ResponseEntity<?> handleExpiredToken() {
-        return ResponseEntity.status(HttpStatus.GONE).body(new MessageResponse("Token expired"));
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<MessageResponse> handleExpiredToken() {
+        return buildResponse(HttpStatus.GONE, "Token expired");
     }
 
-    @ExceptionHandler({UserNotFoundException.class})
-    public ResponseEntity<?> handleUserNotFound() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("User not found"));
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<MessageResponse> handleUserNotFound() {
+        return buildResponse(HttpStatus.NOT_FOUND, "User not found");
     }
 
-    @ExceptionHandler({MailFailedException.class})
-    public ResponseEntity<?> handleMailFailed() {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Failed to send email"));
+    @ExceptionHandler(MailFailedException.class)
+    public ResponseEntity<MessageResponse> handleMailFailed() {
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to send email");
+    }
+
+    private ResponseEntity<MessageResponse> buildResponse(HttpStatus status, String message) {
+        return ResponseEntity.status(status).body(new MessageResponse(message));
     }
 }

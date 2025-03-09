@@ -1,21 +1,14 @@
 package com.otbs.auth.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 import org.springframework.ldap.odm.annotations.Attribute;
 import org.springframework.ldap.odm.annotations.Entry;
 import org.springframework.ldap.odm.annotations.Id;
 
 import javax.naming.Name;
 
-@Entry(
-        objectClasses = {"top", "person", "organizationalPerson", "user"},
-        base = "dc=otbs,dc=local"
-)
-@Getter
-@Setter
-@ToString
+@Entry(objectClasses = {"top", "person", "organizationalPerson", "user"}, base = "dc=otbs,dc=local")
+@Data
 public class LdapUser {
     @Id
     private Name dn;

@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.naming.Name;
 import java.time.Instant;
 
 @Entity
@@ -40,4 +39,3 @@ public class PasswordResetToken {
         this.expiryDate = expiryDate;
     }
 }
-

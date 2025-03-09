@@ -12,10 +12,7 @@ import org.springframework.ldap.odm.annotations.Id;
 import javax.naming.Name;
 import java.util.Set;
 
-@Entry(
-        objectClasses = {"top", "person", "organizationalPerson", "user"},
-        base = "dc=otbs,dc=local"
-)
+@Entry(objectClasses = {"top", "person", "organizationalPerson", "user"}, base = "dc=otbs,dc=local")
 @Getter
 @Setter
 @ToString

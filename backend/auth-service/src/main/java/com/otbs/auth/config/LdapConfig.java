@@ -36,8 +36,6 @@ public class LdapConfig {
     @Bean
     @Primary
     public LdapTemplate ldapTemplate(LdapContextSource ldapContextSource) {
-        LdapTemplate template = new LdapTemplate(ldapContextSource);
-        template.setIgnorePartialResultException(true);
-        return template;
+        return new LdapTemplate(ldapContextSource);
     }
 }

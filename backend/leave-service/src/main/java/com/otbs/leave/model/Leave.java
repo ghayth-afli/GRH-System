@@ -1,18 +1,12 @@
 package com.otbs.leave.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.*;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-
+import java.time.*;
 
 @Entity
 @Table(name = "leaves")
@@ -57,10 +51,10 @@ public class Leave {
     @NotNull(message = "Status is required")
     private EStatus status;
 
-    /*@Lob
+    @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(columnDefinition = "BYTEA")
-    private byte[] attachment;*/
+    private byte[] attachment;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -69,4 +63,3 @@ public class Leave {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 }
-

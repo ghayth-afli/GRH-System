@@ -9,7 +9,6 @@ import com.otbs.feign.client.EmployeeClient;
 import com.otbs.feign.client.MailClient;
 import com.otbs.feign.dto.EmployeeResponse;
 import com.otbs.feign.dto.MailRequest;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ldap.core.LdapTemplate;
@@ -24,7 +23,6 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class PasswordResetServiceImpl implements PasswordResetService {
 
     private static final Logger log = LoggerFactory.getLogger(PasswordResetServiceImpl.class);
@@ -34,10 +32,17 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     private final EmployeeClient employeeClient;
     private final MailClient mailClient;
 
+    public PasswordResetServiceImpl(PasswordResetTokenRepository passwordResetTokenRepository, LdapTemplate ldapTemplate, BCryptPasswordEncoder passwordEncoder, EmployeeClient employeeClient, MailClient mailClient) {
+        this.passwordResetTokenRepository = passwordResetTokenRepository;
+        this.ldapTemplate = ldapTemplate;
+        this.passwordEncoder = passwordEncoder;
+        this.employeeClient = employeeClient;
+        this.mailClient = mailClient;
+    }
+
     @Override
     public void createPasswordResetTokenForUser(String email) {
         EmployeeResponse user = employeeClient.getEmployeeByEmail(email).getBody();
-
         if (user == null) {
             throw new UserNotFoundException("User not found");
         }
@@ -51,7 +56,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         passwordResetTokenRepository.save(passwordResetToken);
 
         String resetPasswordLink = "http://localhost:4200/auth/reset-password?token=" + token;
-        MailRequest mailRequest = new MailRequest(email,"Reset Password","Password Reset Link: " + resetPasswordLink);
+        MailRequest mailRequest = new MailRequest(email, "Reset Password", "Password Reset Link: " + resetPasswordLink);
         mailClient.sendMail(mailRequest);
     }
 
@@ -64,22 +69,15 @@ public class PasswordResetServiceImpl implements PasswordResetService {
             throw new TokenExpiredException("Token expired");
         }
 
-
         EmployeeResponse user = employeeClient.getEmployeeByEmail(resetToken.getEmail()).getBody();
-
         if (user == null) {
             throw new UserNotFoundException("User not found");
         }
 
-        // Update the password and save via repository
         ModificationItem item = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("unicodePwd",
                 passwordEncoder.encode(newPassword).getBytes(StandardCharsets.UTF_16LE)));
-
         ldapTemplate.modifyAttributes(user.id(), new ModificationItem[]{item});
 
-
-        // Delete the token
         passwordResetTokenRepository.delete(resetToken);
     }
 }
-

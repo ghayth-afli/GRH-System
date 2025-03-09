@@ -9,8 +9,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({MailFailedException.class})
-    public ResponseEntity<?> handleMailFailed() {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Failed to send email"));
+    @ExceptionHandler(MailFailedException.class)
+    public ResponseEntity<MessageResponse> handleMailFailed() {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new MessageResponse("Failed to send email"));
     }
 }

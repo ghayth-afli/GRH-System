@@ -10,7 +10,6 @@
   <packaging>pom</packaging>
 
   <name>grhservices</name>
-  <url>http://www.example.com</url>
   <modules>
     <module>eureka-server</module>
     <module>auth-service</module>
@@ -32,6 +31,12 @@
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-devtools</artifactId>
+        <version>3.4.3</version>
+      </dependency>
+
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>

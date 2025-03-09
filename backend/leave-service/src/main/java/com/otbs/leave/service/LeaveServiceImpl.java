@@ -1,28 +1,29 @@
 package com.otbs.leave.service;
 
+import com.otbs.feign.client.EmployeeClient;
 import com.otbs.feign.client.MailClient;
 import com.otbs.feign.dto.EmployeeResponse;
+import com.otbs.feign.dto.MailRequest;
 import com.otbs.leave.dto.LeaveRequest;
-import com.otbs.leave.exception.InsufficientLeaveBalanceException;
-import com.otbs.leave.exception.InvalidDateRangeException;
-import com.otbs.leave.exception.LeaveBalanceNotFoundException;
-import com.otbs.leave.exception.LeaveNotFoundException;
+import com.otbs.leave.exception.*;
 import com.otbs.leave.mapper.LeaveAttributesMapper;
-import com.otbs.leave.model.EStatus;
-import com.otbs.leave.model.Leave;
-import com.otbs.leave.model.LeaveBalance;
-import com.otbs.leave.repository.LeaveBalanceRepository;
-import com.otbs.leave.repository.LeaveRepository;
+import com.otbs.leave.model.*;
+import com.otbs.leave.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,107 +31,123 @@ import java.util.List;
 public class LeaveServiceImpl implements LeaveService {
 
     private final LeaveBalanceRepository leaveBalanceRepository;
-
     private final LeaveRepository leaveRepository;
-
     private final LeaveAttributesMapper leaveAttributesMapper;
-
     private final MailClient mailClient;
-
-
+    private final EmployeeClient employeeClient;
     @Override
     public void applyLeave(LeaveRequest leaveRequest) {
-
         Leave leave = leaveAttributesMapper.toEntity(leaveRequest);
-
-        //get userDn from security context
         EmployeeResponse user = (EmployeeResponse) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         leave.setUserDn(user.id());
 
-        //check if leave balance is sufficient
-        leaveBalanceRepository.findByUserDn(leave.getUserDn())
-                .ifPresent(leaveBalance -> {
-                    if (leaveBalance.getRemainingLeave() < (int) ChronoUnit.DAYS.between(leave.getStartDate(), leave.getEndDate())) {
-                        throw new InsufficientLeaveBalanceException("Insufficient leave balance");
-                    }
-                });
+
+        if (leaveRequest.attachment() != null && !leaveRequest.attachment().isEmpty()) {
+            try {
+                leave.setAttachment(leaveRequest.attachment().getBytes());
+            } catch (IOException e) {
+                throw new FileUploadException("Failed to upload attachment");
+            }
+        }
 
 
-        //check if leave is overlapping with existing leaves
-        leaveRepository.findAllByUserDn(leave.getUserDn())
-                .forEach(existingLeave -> {
-                    if (leave.getStartDate().isBefore(existingLeave.getEndDate()) && leave.getEndDate().isAfter(existingLeave.getStartDate())) {
-                        throw new InvalidDateRangeException("Leave is overlapping with existing leave");
-                    }
-                });
+        //Validate leave balance
+        leaveBalanceRepository.findByUserDn(leave.getUserDn()).ifPresentOrElse(leaveBalance -> {
+            int daysBetween = (int) ChronoUnit.DAYS.between(leave.getStartDate(), leave.getEndDate());
+            if (leaveBalance.getRemainingLeave() < daysBetween) {
+                throw new InsufficientLeaveBalanceException("Insufficient leave balance");
+            }
+        }, () -> {
+            throw new LeaveBalanceNotFoundException("Leave balance not found");
+        });
 
-        //TODO: check if leave is overlapping with public holidays in tunisia
-
-        //TODO: check if leave is overlapping with weekends
-
+        //Validate leave date range
+        leaveRepository.findAllByUserDn(leave.getUserDn()).forEach(existingLeave -> {
+            if (leave.getStartDate().isBefore(existingLeave.getEndDate()) && leave.getEndDate().isAfter(existingLeave.getStartDate())) {
+                throw new InvalidDateRangeException("Leave is overlapping with existing leave");
+            }
+        });
 
         leaveRepository.saveAndFlush(leave);
 
-        //update leave balance
-        leaveBalanceRepository.findByUserDn(leave.getUserDn())
-                .ifPresent(leaveBalance -> {
-                    leaveBalance.setUsedLeave(leaveBalance.getUsedLeave() + (int) ChronoUnit.DAYS.between(leave.getStartDate(), leave.getEndDate()));
-                    leaveBalance.setRemainingLeave(leaveBalance.getTotalLeave() - leaveBalance.getUsedLeave());
-                    leaveBalanceRepository.save(leaveBalance);
-                });
+        //TODO: Send Notification to Manager
 
+        mailClient.sendMail(new MailRequest(user.email(), "Leave Application", "Your leave application has been submitted successfully"));
+
+        //send mail to manager
+        EmployeeResponse manager = employeeClient.getManagerByDepartment(user.department()).getBody();
+        mailClient.sendMail(new MailRequest(manager.email(), "Leave Application", "You have a new leave application to approve"));
+
+        //Update leave balance
+        leaveBalanceRepository.findByUserDn(leave.getUserDn()).ifPresentOrElse(leaveBalance -> {
+            int daysBetween = (int) ChronoUnit.DAYS.between(leave.getStartDate(), leave.getEndDate());
+            leaveBalance.setUsedLeave(leaveBalance.getUsedLeave() + daysBetween);
+            leaveBalance.setRemainingLeave(leaveBalance.getTotalLeave() - leaveBalance.getUsedLeave());
+            leaveBalanceRepository.save(leaveBalance);
+        }, () -> {
+            throw new LeaveBalanceNotFoundException("Leave balance not found");
+        });
     }
 
     @Override
     public void cancelLeave(Long leaveId) {
-        leaveRepository.deleteById(leaveId);
-
-        //TODO: send email to user
-
-
-        //TODO: update leave balance
         updateLeaveBalance(leaveId);
+        leaveRepository.deleteById(leaveId);
+        EmployeeResponse user = (EmployeeResponse) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        mailClient.sendMail(new MailRequest(user.email(), "Leave Application", "Your leave application has been cancelled successfully"));
     }
 
     private void updateLeaveBalance(Long leaveId) {
-        leaveBalanceRepository.findByUserDn(leaveRepository.findById(leaveId).get().getUserDn())
-                .ifPresent(leaveBalance -> {
-                    leaveBalance.setUsedLeave(leaveBalance.getUsedLeave() - (int) ChronoUnit.DAYS.between(leaveRepository.findById(leaveId).get().getStartDate(), leaveRepository.findById(leaveId).get().getEndDate()));
-                    leaveBalance.setRemainingLeave(leaveBalance.getTotalLeave() - leaveBalance.getUsedLeave());
-                    leaveBalanceRepository.save(leaveBalance);
-                });
+        leaveRepository.findById(leaveId).ifPresentOrElse(leave -> {
+            leaveBalanceRepository.findByUserDn(leave.getUserDn()).ifPresentOrElse(leaveBalance -> {
+                int daysBetween = (int) ChronoUnit.DAYS.between(leave.getStartDate(), leave.getEndDate());
+                leaveBalance.setUsedLeave(leaveBalance.getUsedLeave() - daysBetween);
+                leaveBalance.setRemainingLeave(leaveBalance.getTotalLeave() - leaveBalance.getUsedLeave());
+                leaveBalanceRepository.save(leaveBalance);
+                EmployeeResponse user = (EmployeeResponse) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                mailClient.sendMail(new MailRequest(user.email(), "Leave Application", "Your leave application has been cancelled successfully"));
+            }, () -> {
+                throw new LeaveBalanceNotFoundException("Leave balance not found");
+            });
+        }, () -> {
+            throw new LeaveNotFoundException("Leave not found");
+        });
     }
 
     @Override
     public void approveLeave(Long leaveId) {
-
-        leaveRepository.findById(leaveId)
-                .ifPresent(leave -> {
-                    leave.setStatus(EStatus.APPROUVÉE);
-                    leaveRepository.save(leave);
-                });
-        //TODO: send email to user
-
+        leaveRepository.findById(leaveId).ifPresentOrElse(leave -> {
+            leave.setStatus(EStatus.APPROUVÉE);
+            leaveRepository.save(leave);
+            //TODO:send mail to employee
+            EmployeeResponse user = employeeClient.getEmployeeByDn(leave.getUserDn()).getBody();
+            mailClient.sendMail(new MailRequest(user.email(), "Leave Application", "Your leave application has been approved successfully"));
+            //TODO: Send Notification to HR
+            //TODO: Send Notification to Employee
+        }, () -> {
+            throw new LeaveNotFoundException("Leave not found");
+        });
     }
 
     @Override
     public void rejectLeave(Long leaveId) {
-
-        leaveRepository.findById(leaveId)
-                .ifPresent(leave -> {
-                    leave.setStatus(EStatus.REFUSÉE);
-                    leaveRepository.save(leave);
-                });
-        //TODO: send email to user
-
-        //update leave balance
-        updateLeaveBalance(leaveId);
-
+        leaveRepository.findById(leaveId).ifPresentOrElse(leave -> {
+            leave.setStatus(EStatus.REFUSÉE);
+            leaveRepository.save(leave);
+            updateLeaveBalance(leaveId);
+            //TODO:send mail to employee
+            EmployeeResponse user = employeeClient.getEmployeeByDn(leave.getUserDn()).getBody();
+            mailClient.sendMail(new MailRequest(user.email(), "Leave Application", "Your leave application has been approved successfully"));
+            //TODO: Send Notification to HR
+            //TODO: Send Notification to Employee
+        }, () -> {
+            throw new LeaveNotFoundException("Leave not found");
+        });
     }
 
     @Override
-    public List<Leave> getLeaveHistory(String userDn) {
-        return leaveRepository.findAllByUserDn(userDn);
+    public Page<Leave> getLeaveHistory(String userDn,Pageable pageable) {
+        return leaveRepository.findAllByUserDn(userDn, pageable);
     }
 
     @Override
@@ -138,15 +155,6 @@ public class LeaveServiceImpl implements LeaveService {
         return leaveBalanceRepository.findByUserDn(userDn).orElseThrow(() -> new LeaveBalanceNotFoundException("Leave balance not found"));
     }
 
-    @Override
-    public String getLeaveStatus(Long leaveId) {
-        return leaveRepository.findById(leaveId).map(Leave::getStatus).map(EStatus::name).orElseThrow(() -> new LeaveNotFoundException("Leave not found"));
-    }
-
-    @Override
-    public Leave getLeaveDetails(Long leaveId) {
-        return leaveRepository.findById(leaveId).orElseThrow(() -> new LeaveNotFoundException("Leave not found"));
-    }
 
     @Override
     public Page<Leave> getAllLeaves(Pageable pageable) {
@@ -154,28 +162,47 @@ public class LeaveServiceImpl implements LeaveService {
     }
 
     @Override
+    public Page<Leave> getAllLeavesForManager(Pageable pageable) {
+        EmployeeResponse user = (EmployeeResponse) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (user == null || user.department() == null) {
+            throw new IllegalStateException("User or user department is null");
+        }
+        List<Leave> filteredLeaves = leaveRepository.findAll(pageable).stream().filter(leave -> {
+            EmployeeResponse employee = employeeClient.getEmployeeByDn(leave.getUserDn()).getBody();
+            return employee != null && employee.department() != null && employee.department().equals(user.department());
+        }).collect(Collectors.toList());
+        return new PageImpl<>(filteredLeaves, pageable, filteredLeaves.size());
+    }
+
+    @Override
     public void updateLeave(Long leaveId, LeaveRequest leaveRequest) {
-        try {
-            leaveRepository.findById(leaveId)
-                    .ifPresent(leave -> {
-                        leaveAttributesMapper.updateEntity(leave, leaveRequest);
-                        leaveRepository.save(leave);
-                    });
-        }
-        catch (Exception e) {
+        leaveRepository.findById(leaveId).ifPresentOrElse(leave -> {
+            leaveAttributesMapper.updateEntity(leave, leaveRequest);
+            leaveRepository.save(leave);
+        }, () -> {
             throw new LeaveNotFoundException("Leave not found");
+        });
+    }
+
+    @Override
+    public byte[] downloadAttachment(Long leaveId) {
+        EmployeeResponse user = (EmployeeResponse) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Optional<Leave> attachment = leaveRepository.findById(leaveId);
+        if ("HR".equals(user.department())) {
+            return attachment.map(Leave::getAttachment).orElseThrow(() -> new AttachmentNotFoundException("Attachment not found"));
         }
+        return attachment.filter(leave -> {
+            EmployeeResponse employee = employeeClient.getEmployeeByDn(leave.getUserDn()).getBody();
+            return employee.department().equals(user.department());
+        }).map(Leave::getAttachment).orElseThrow(() -> new LeaveNotFoundException("Leave not found"));
     }
 
     @Override
     @Scheduled(cron = "0 0 0 1 * *")
     public void addMonthlyLeaveForAllEmployees() {
-        List<LeaveBalance> leaveBalances = leaveBalanceRepository.findAll();
-
-        for (LeaveBalance leaveBalance : leaveBalances) {
+        leaveBalanceRepository.findAll().forEach(leaveBalance -> {
             leaveBalance.addMonthlyLeave();
             leaveBalanceRepository.save(leaveBalance);
-        }
-
+        });
     }
 }

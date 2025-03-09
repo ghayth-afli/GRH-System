@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 public class EmailServiceImpl implements EmailService {
     private final MailSender mailSender;
     private final SimpleMailMessage templateMessage;
+
     @Override
     public void sendEmail(String subject, String to, String text) {
         SimpleMailMessage message = new SimpleMailMessage(templateMessage);
@@ -18,7 +19,7 @@ public class EmailServiceImpl implements EmailService {
         message.setSubject(subject);
         message.setText(text);
         try {
-            this.mailSender.send(message);
+            mailSender.send(message);
         } catch (Exception e) {
             throw new MailFailedException("Failed to send email");
         }

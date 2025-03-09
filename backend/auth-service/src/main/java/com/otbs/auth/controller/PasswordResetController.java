@@ -16,14 +16,14 @@ public class PasswordResetController {
     private final PasswordResetService passwordResetService;
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+    public ResponseEntity<MessageResponse> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         passwordResetService.createPasswordResetTokenForUser(request.email());
-        return ResponseEntity.ok().body(new MessageResponse("Password reset token sent to email"));
+        return ResponseEntity.ok(new MessageResponse("Password reset token sent to email"));
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request, @RequestParam("token") String token) {
+    public ResponseEntity<MessageResponse> resetPassword(@RequestBody ResetPasswordRequest request, @RequestParam("token") String token) {
         passwordResetService.resetPassword(token, request.password());
-        return ResponseEntity.ok().body(new MessageResponse("Password reset successfully"));
+        return ResponseEntity.ok(new MessageResponse("Password reset successfully"));
     }
 }

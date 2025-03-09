@@ -42,4 +42,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleInsufficientLeaveBalance() {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Insufficient leave balance"));
     }
+
+    @ExceptionHandler({FileUploadException.class})
+    public ResponseEntity<?> handleFileUploadException() {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Failed to upload attachment"));
+    }
+
+    @ExceptionHandler({AttachmentNotFoundException.class})
+    public ResponseEntity<?> handleAttachmentNotFound() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Attachment not found"));
+    }
 }

@@ -3,7 +3,6 @@ package com.otbs.employee.util;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-
 import javax.naming.ldap.LdapName;
 import java.io.IOException;
 

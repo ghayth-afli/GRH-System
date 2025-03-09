@@ -1,4 +1,4 @@
-package com.otbs.leave.security;
+package com.otbs.leave.util;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
