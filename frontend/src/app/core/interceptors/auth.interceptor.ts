@@ -16,7 +16,7 @@ import {
 } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { Injectable } from '@angular/core';
-import { ApiErrorResponse } from '../../features/auth/models/auth-responses.interface';
+import { ApiErrorResponse } from '../models/auth-responses.interface';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {

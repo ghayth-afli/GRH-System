@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
+import { catchError, Observable, tap, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
   ApiErrorResponse,
   ForgotPasswordResponse,
   LoginResponse,
   ResetPasswordResponse,
-} from '../../features/auth/models/auth-responses.interface';
+  User,
+} from '../models/auth-responses.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -27,6 +28,12 @@ export class AuthService {
     return this._accessToken;
   }
 
+  // Getter for the authenticated user
+  get authenticatedUser(): User | null {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
+  }
+
   // login method to get access token and refresh token
   login(username: string, password: string): Observable<LoginResponse> {
     return this.http
@@ -35,7 +42,13 @@ export class AuthService {
         password,
       })
       .pipe(
-        tap((response: LoginResponse) => this._setTokens(response)),
+        tap({
+          next: (response: LoginResponse) => {
+            this._setTokens(response);
+            this._setUser(response.user);
+          },
+          error: (error: ApiErrorResponse) => this._handleError(error),
+        }),
         catchError((error: ApiErrorResponse) => {
           this._handleError(error);
           return throwError(() => new Error(error.message));
@@ -43,14 +56,20 @@ export class AuthService {
       );
   }
 
-  // Refresh token method to get new access token and refresh token
+  // Refresh token method to get a new access token and refresh token
   refreshToken(): Observable<LoginResponse> {
     return this.http
       .post<LoginResponse>(`${environment.apiUrl}/auth/refresh`, {
         refreshToken: this._refreshToken,
       })
       .pipe(
-        tap((response: LoginResponse) => this._setTokens(response)),
+        tap({
+          next: (response: LoginResponse) => {
+            this._setTokens(response);
+            this._setUser(response.user);
+          },
+          error: (error: ApiErrorResponse) => this._handleError(error),
+        }),
         catchError((error: ApiErrorResponse) => {
           this._handleError(error);
           return throwError(() => new Error(error.message));
@@ -58,7 +77,7 @@ export class AuthService {
       );
   }
 
-  // Logout method to clear tokens from local storage
+  // Logout method to clear tokens and user data from local storage
   logout(): void {
     this._clearTokens();
   }
@@ -68,9 +87,7 @@ export class AuthService {
     return this.http
       .post<ForgotPasswordResponse>(
         `${environment.apiUrl}/auth/v1/forgot-password`,
-        {
-          email,
-        }
+        { email }
       )
       .pipe(
         catchError((error: ApiErrorResponse) => {
@@ -88,9 +105,7 @@ export class AuthService {
     return this.http
       .post<ResetPasswordResponse>(
         `${environment.apiUrl}/auth/reset-password?token=${token}`,
-        {
-          password,
-        }
+        { password }
       )
       .pipe(
         catchError((error: ApiErrorResponse) => {
@@ -116,6 +131,10 @@ export class AuthService {
     );
   }
 
+  private _setUser(user: User): void {
+    localStorage.setItem('user', JSON.stringify(user));
+  }
+
   // Load tokens from local storage
   private _loadTokens(): void {
     const tokens = localStorage.getItem('auth_tokens');
@@ -127,15 +146,21 @@ export class AuthService {
     }
   }
 
-  // Clear tokens from local storage
+  // Clear tokens and user data from local storage
   private _clearTokens(): void {
     this._accessToken = null;
     this._refreshToken = null;
     localStorage.removeItem('auth_tokens');
+    localStorage.removeItem('user');
   }
 
   // Handle API errors
   private _handleError(error: ApiErrorResponse): void {
     console.error('API Error:', error);
+  }
+
+  // Check if the token has expired
+  isTokenExpired(): boolean {
+    return Date.now() > this._accessExpiration;
   }
 }

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
-import { ForgotPasswordResponse } from '../../models/auth-responses.interface';
+import { ForgotPasswordResponse } from '../../../../core/models/auth-responses.interface';
 
 @Component({
   selector: 'app-forgot-password',
