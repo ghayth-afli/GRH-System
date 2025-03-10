@@ -4,6 +4,7 @@ import com.otbs.feign.client.EmployeeClient;
 import com.otbs.feign.client.MailClient;
 import com.otbs.feign.dto.EmployeeResponse;
 import com.otbs.feign.dto.MailRequest;
+import com.otbs.feign.dto.MailResponse;
 import com.otbs.leave.dto.LeaveRequest;
 import com.otbs.leave.exception.*;
 import com.otbs.leave.mapper.LeaveAttributesMapper;
@@ -17,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -28,6 +31,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class LeaveServiceImpl implements LeaveService {
 
     private final LeaveBalanceRepository leaveBalanceRepository;
@@ -36,15 +40,14 @@ public class LeaveServiceImpl implements LeaveService {
     private final MailClient mailClient;
     private final EmployeeClient employeeClient;
     @Override
-    public void applyLeave(LeaveRequest leaveRequest) {
+    public void applyLeave(LeaveRequest leaveRequest, MultipartFile attachment) {
         Leave leave = leaveAttributesMapper.toEntity(leaveRequest);
         EmployeeResponse user = (EmployeeResponse) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         leave.setUserDn(user.id());
 
-
-        if (leaveRequest.attachment() != null && !leaveRequest.attachment().isEmpty()) {
+        if (attachment != null && !attachment.isEmpty()) {
             try {
-                leave.setAttachment(leaveRequest.attachment().getBytes());
+                leave.setAttachment(attachment.getBytes());
             } catch (IOException e) {
                 throw new FileUploadException("Failed to upload attachment");
             }
@@ -70,14 +73,6 @@ public class LeaveServiceImpl implements LeaveService {
 
         leaveRepository.saveAndFlush(leave);
 
-        //TODO: Send Notification to Manager
-
-        mailClient.sendMail(new MailRequest(user.email(), "Leave Application", "Your leave application has been submitted successfully"));
-
-        //send mail to manager
-        EmployeeResponse manager = employeeClient.getManagerByDepartment(user.department()).getBody();
-        mailClient.sendMail(new MailRequest(manager.email(), "Leave Application", "You have a new leave application to approve"));
-
         //Update leave balance
         leaveBalanceRepository.findByUserDn(leave.getUserDn()).ifPresentOrElse(leaveBalance -> {
             int daysBetween = (int) ChronoUnit.DAYS.between(leave.getStartDate(), leave.getEndDate());
@@ -87,6 +82,16 @@ public class LeaveServiceImpl implements LeaveService {
         }, () -> {
             throw new LeaveBalanceNotFoundException("Leave balance not found");
         });
+
+        //TODO: Send Notification to Manager
+
+        MailResponse c = mailClient.sendMail(new MailRequest(user.email(), "Leave Application", "Your leave application has been submitted successfully"));
+        log.info("Mail sent to user: {}", c.message());
+
+        //send mail to manager
+        EmployeeResponse manager = employeeClient.getManagerByDepartment(user.department()).getBody();
+        MailResponse c1 = mailClient.sendMail(new MailRequest(manager.email(), "Leave Application", "You have a new leave application to approve"));
+        log.info("Mail sent to manager: {}", c1.message());
     }
 
     @Override

@@ -49,8 +49,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee getManagerByDepartment(String department) {
-        return employeeRepository.findByDepartment(department)
+        return employeeRepository.findAll().stream()
                 .map(userAttributesMapper)
+                .filter(employee -> employee.getDepartment().equals(department))
+                .filter(employee -> employee.getRole().equals("Manager"))
+                .findFirst()
                 .orElseThrow(() -> new EmployeeNotFoundException("Manager not found"));
+
     }
 }

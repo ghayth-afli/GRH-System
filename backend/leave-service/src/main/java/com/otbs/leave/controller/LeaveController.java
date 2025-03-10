@@ -33,45 +33,44 @@ public class LeaveController {
 
     private final LeaveService leaveService;
 
-    @PostMapping(value = "/apply", consumes = { "multipart/form-data" })
-    public ResponseEntity<String> applyLeave(
-            @RequestParam("leaveType") ELeaveType leaveType,
-            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @RequestParam(value = "attachment", required = false) MultipartFile attachment,
-            @RequestParam(value = "startHOURLY", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime startHOURLY,
-            @RequestParam(value = "endHOURLY", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime endHOURLY) {
+    @PostMapping("/apply")
+    @PreAuthorize("hasAuthority('Employee')")
+    public ResponseEntity<MessageResponse> applyLeave(@RequestParam("leaveType") ELeaveType leaveType,
+                                                      @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                                      @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+                                                      @RequestParam(value = "startHOURLY", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime startHOURLY,
+                                                      @RequestParam(value = "endHOURLY", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime endHOURLY,
+                                                      @RequestParam(value = "attachment", required = false) MultipartFile attachment) {
+        LeaveRequest leaveRequest = new LeaveRequest(leaveType, startDate, endDate, startHOURLY, endHOURLY);
 
-        LeaveRequest leaveRequest = new LeaveRequest(leaveType, startDate, endDate, attachment, startHOURLY, endHOURLY);
-        leaveService.applyLeave(leaveRequest);
-
-        return ResponseEntity.ok("Leave request submitted successfully");
+        leaveService.applyLeave(leaveRequest, attachment);
+        return ResponseEntity.ok(new MessageResponse("Leave applied successfully"));
     }
 
     @DeleteMapping("/cancel/{leaveId}")
     @PreAuthorize("hasAuthority('Employee')")
-    public ResponseEntity<MessageResponse> cancelLeave(@PathVariable Long leaveId) {
+    public ResponseEntity<MessageResponse> cancelLeave(@PathVariable("leaveId") Long leaveId) {
         leaveService.cancelLeave(leaveId);
         return ResponseEntity.ok(new MessageResponse("Leave cancelled successfully"));
     }
 
     @PutMapping("/approve/{leaveId}")
     @PreAuthorize("hasAuthority('Manager')")
-    public ResponseEntity<MessageResponse> approveLeave(@PathVariable Long leaveId) {
+    public ResponseEntity<MessageResponse> approveLeave(@PathVariable("leaveId") Long leaveId) {
         leaveService.approveLeave(leaveId);
         return ResponseEntity.ok(new MessageResponse("Leave approved successfully"));
     }
 
     @PutMapping("/reject/{leaveId}")
     @PreAuthorize("hasAuthority('Manager')")
-    public ResponseEntity<MessageResponse> rejectLeave(@PathVariable Long leaveId) {
+    public ResponseEntity<MessageResponse> rejectLeave(@PathVariable("leaveId") Long leaveId) {
         leaveService.rejectLeave(leaveId);
         return ResponseEntity.ok(new MessageResponse("Leave rejected successfully"));
     }
 
     @PutMapping("/update/{leaveId}")
     @PreAuthorize("hasAuthority('Employee')")
-    public ResponseEntity<MessageResponse> updateLeave(@PathVariable Long leaveId, @RequestBody LeaveRequest leaveRequest) {
+    public ResponseEntity<MessageResponse> updateLeave(@PathVariable("leaveId") Long leaveId, @RequestBody LeaveRequest leaveRequest) {
         leaveService.updateLeave(leaveId, leaveRequest);
         return ResponseEntity.ok(new MessageResponse("Leave updated successfully"));
     }
@@ -104,7 +103,7 @@ public class LeaveController {
 
     @GetMapping("/{leaveId}/receivedAttachment")
     @PreAuthorize("hasAuthority('Manager') or hasAuthority('HR')")
-    public ResponseEntity<byte[]> getReceivedAttachment(@PathVariable Long leaveId) {
+    public ResponseEntity<byte[]> getReceivedAttachment(@PathVariable("leaveId") Long leaveId) {
         byte[] attachment = leaveService.downloadAttachment(leaveId);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);

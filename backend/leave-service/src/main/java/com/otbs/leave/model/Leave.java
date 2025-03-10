@@ -52,8 +52,7 @@ public class Leave {
     private EStatus status;
 
     @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(columnDefinition = "BYTEA")
+    @Column(name = "attachment")
     private byte[] attachment;
 
     @CreationTimestamp

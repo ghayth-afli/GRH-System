@@ -1,6 +1,7 @@
 package com.otbs.leave.exception;
 
 import com.otbs.leave.dto.MessageResponse;
+import feign.FeignException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -51,5 +52,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({AttachmentNotFoundException.class})
     public ResponseEntity<?> handleAttachmentNotFound() {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Attachment not found"));
+    }
+
+    @ExceptionHandler(FeignException.class)
+    public ResponseEntity<?> handleFeignException(FeignException e) {
+        return ResponseEntity.status(e.status()).body(new MessageResponse(e.getMessage()));
     }
 }

@@ -16,6 +16,4 @@ public interface EmployeeRepository extends LdapRepository<LdapUser> {
     @Query("(sAMAccountName={0})")
     Optional<LdapUser> findByUsername(String username);
 
-    @Query("(OU={0})")
-    Optional<LdapUser> findByDepartment(String department);
 }

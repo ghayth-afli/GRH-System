@@ -14,7 +14,6 @@ public record LeaveRequest(
         @FutureOrPresent(message = "Start date must be today or in the future") LocalDate startDate,
         @NotNull(message = "End date is required")
         @FutureOrPresent(message = "End date must be today or in the future") LocalDate endDate,
-        MultipartFile attachment,
         LocalTime startHOURLY,
         LocalTime endHOURLY
 ) {
@@ -27,12 +26,6 @@ public record LeaveRequest(
     private void validateDates(LocalDate startDate, LocalDate endDate) {
         if (startDate.isAfter(endDate)) {
             throw new InvalidDateRangeException("Start date must be before or equal to end date");
-        }
-    }
-
-    private void validateAttachment(ELeaveType leaveType, byte[] attachment) {
-        if (isSpecialLeaveType(leaveType) && (attachment == null || attachment.length == 0)) {
-            throw new EmptyAttachmentException("Attachment cannot be empty");
         }
     }
 
