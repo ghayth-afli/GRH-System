@@ -5,6 +5,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { LeaveRequestComponent } from '../../components/leave-request/leave-request.component';
 import { AuthService } from '../../../../core/services/auth.service';
+import { LeaveService } from '../../services/leave.service';
 
 @Component({
   selector: 'app-home-page',
@@ -20,18 +21,15 @@ export class HomePageComponent {
   selectedEvents: EventInput[] = [];
 
   private authService = inject(AuthService);
+  private leaveService = inject(LeaveService);
 
   isManager() {
     return this.authService.hasRole('Manager');
   }
   isHr() {
-    return this.authService.hasRole('Hr');
+    return this.authService.hasRole('HR');
   }
   isEmployee() {
-    console.log(this.authService.hasRole('Manager'));
-    console.log(this.authService.hasRole('Hr'));
-    console.log(this.authService.hasRole('Employee'));
-
     return this.authService.hasRole('Employee');
   }
 

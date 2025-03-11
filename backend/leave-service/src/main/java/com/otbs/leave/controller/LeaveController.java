@@ -2,6 +2,7 @@ package com.otbs.leave.controller;
 
 import com.otbs.feign.dto.EmployeeResponse;
 import com.otbs.leave.dto.LeaveRequest;
+import com.otbs.leave.dto.LeaveResponse;
 import com.otbs.leave.dto.MessageResponse;
 import com.otbs.leave.model.ELeaveType;
 import com.otbs.leave.model.Leave;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @RequestMapping("/api/v1/leave")
 @RequiredArgsConstructor
@@ -75,10 +77,17 @@ public class LeaveController {
         return ResponseEntity.ok(new MessageResponse("Leave updated successfully"));
     }
 
+//    @GetMapping("/all")
+//    @PreAuthorize("hasAuthority('HR')")
+//    public ResponseEntity<Page<Leave>> getAllLeaves(@PageableDefault(size = 10, sort = "startDate") Pageable pageable) {
+//        return ResponseEntity.ok(leaveService.getAllLeaves(pageable));
+//    }
+
+
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('HR')")
-    public ResponseEntity<Page<Leave>> getAllLeaves(@PageableDefault(size = 10, sort = "startDate") Pageable pageable) {
-        return ResponseEntity.ok(leaveService.getAllLeaves(pageable));
+    public ResponseEntity<List<LeaveResponse>> getAllLeaves() {
+        return ResponseEntity.ok(leaveService.getAllLeaves());
     }
 
     @GetMapping("/received")

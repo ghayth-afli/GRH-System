@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HTTP_INTERCEPTORS, provideHttpClient } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 import { AuthModule } from './features/auth/auth.module';
 import { CoreModule } from './core/core.module';
@@ -19,6 +19,7 @@ import { CommonModule } from '@angular/common';
     AuthModule,
     CoreModule,
     DashboardModule,
+    HttpClientModule,
   ],
 
   providers: [
@@ -27,7 +28,6 @@ import { CommonModule } from '@angular/common';
       useClass: AuthInterceptor,
       multi: true,
     },
-    provideHttpClient(),
   ],
   bootstrap: [AppComponent],
 })

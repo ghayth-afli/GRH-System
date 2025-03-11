@@ -1,6 +1,7 @@
 package com.otbs.leave.mapper;
 
 import com.otbs.leave.dto.LeaveRequest;
+import com.otbs.leave.dto.LeaveResponse;
 import com.otbs.leave.model.EStatus;
 import com.otbs.leave.model.Leave;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,10 @@ public class LeaveAttributesMapper {
                 .build();
     }
 
+    public LeaveResponse toDto(Leave leave) {
+        return new LeaveResponse(leave.getUserDn().split(",")[0].split("=")[1], leave.getUserDn().split(",")[1].split("=")[1], leave.getStartDate()
+                ,leave.getEndDate(), leave.getLeaveType(), leave.getStatus());
+    }
 
     public void updateEntity(Leave leave, LeaveRequest leaveRequest) {
         leave.setStartDate(leaveRequest.startDate());

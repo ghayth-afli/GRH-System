@@ -6,6 +6,7 @@ import com.otbs.feign.dto.EmployeeResponse;
 import com.otbs.feign.dto.MailRequest;
 import com.otbs.feign.dto.MailResponse;
 import com.otbs.leave.dto.LeaveRequest;
+import com.otbs.leave.dto.LeaveResponse;
 import com.otbs.leave.exception.*;
 import com.otbs.leave.mapper.LeaveAttributesMapper;
 import com.otbs.leave.model.*;
@@ -162,8 +163,8 @@ public class LeaveServiceImpl implements LeaveService {
 
 
     @Override
-    public Page<Leave> getAllLeaves(Pageable pageable) {
-        return leaveRepository.findAll(pageable);
+    public List<LeaveResponse> getAllLeaves() {
+        return leaveRepository.findAll().stream().map(leaveAttributesMapper::toDto).collect(Collectors.toList());
     }
 
     @Override
