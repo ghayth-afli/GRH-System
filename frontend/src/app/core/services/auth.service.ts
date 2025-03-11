@@ -163,4 +163,8 @@ export class AuthService {
   isTokenExpired(): boolean {
     return Date.now() > this._accessExpiration;
   }
+
+  hasRole(role: string): boolean {
+    return localStorage.getItem('user')?.includes(role) ?? false;
+  }
 }

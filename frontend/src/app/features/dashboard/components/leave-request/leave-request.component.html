@@ -1,0 +1,24 @@
+<div class="modal-container">
+  <h2>Leave Request</h2>
+  <div class="modal-content">
+    <p>
+      <strong>Dates:</strong> {{ data.startDate }} -
+      {{ data.endDate }}
+    </p>
+    <p><strong>Type:</strong> {{ data.leaveType }}</p>
+    <div class="file-upload">
+      <label>Attachment:</label>
+      <input type="file" (change)="onFileSelected($event)" />
+    </div>
+  </div>
+  <div class="modal-actions">
+    <div class="modal-actions-right">
+      <button mat-button (click)="onCancel()" class="submit-button">
+        Cancel
+      </button>
+      <button mat-raised-button color="primary" (click)="onSubmit()">
+        Submit
+      </button>
+    </div>
+  </div>
+</div>
