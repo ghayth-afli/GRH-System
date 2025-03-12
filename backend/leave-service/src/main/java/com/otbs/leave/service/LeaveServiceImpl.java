@@ -164,6 +164,13 @@ public class LeaveServiceImpl implements LeaveService {
 
     @Override
     public List<LeaveResponse> getAllLeaves() {
+        EmployeeResponse user = (EmployeeResponse) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(user.role().equals("Manager")){
+            return leaveRepository.findAll().stream().filter(leave -> {
+                EmployeeResponse employee = employeeClient.getEmployeeByDn(leave.getUserDn()).getBody();
+                return employee != null && employee.department() != null && employee.department().equals(user.department());
+            }).map(leaveAttributesMapper::toDto).collect(Collectors.toList());
+        }
         return leaveRepository.findAll().stream().map(leaveAttributesMapper::toDto).collect(Collectors.toList());
     }
 

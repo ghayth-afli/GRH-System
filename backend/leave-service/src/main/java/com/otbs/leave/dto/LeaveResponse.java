@@ -6,6 +6,7 @@ import com.otbs.leave.model.EStatus;
 import java.time.LocalDate;
 
 public record LeaveResponse(
+        Long id,
         String Name,
         String Department,
         LocalDate startDate,

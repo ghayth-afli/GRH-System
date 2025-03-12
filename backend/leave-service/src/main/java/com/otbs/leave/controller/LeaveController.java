@@ -85,7 +85,7 @@ public class LeaveController {
 
 
     @GetMapping("/all")
-    @PreAuthorize("hasAuthority('HR')")
+    @PreAuthorize("hasAuthority('Manager') or hasAuthority('HR')")
     public ResponseEntity<List<LeaveResponse>> getAllLeaves() {
         return ResponseEntity.ok(leaveService.getAllLeaves());
     }

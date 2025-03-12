@@ -1,6 +1,7 @@
 import { ELeaveType } from './leave-type.enum';
 
 export interface Leave {
+  id: number;
   Name: string;
   Department: string;
   startDate: string;

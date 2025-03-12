@@ -21,7 +21,7 @@ public class LeaveAttributesMapper {
     }
 
     public LeaveResponse toDto(Leave leave) {
-        return new LeaveResponse(leave.getUserDn().split(",")[0].split("=")[1], leave.getUserDn().split(",")[1].split("=")[1], leave.getStartDate()
+        return new LeaveResponse(leave.getId(),leave.getUserDn().split(",")[0].split("=")[1], leave.getUserDn().split(",")[1].split("=")[1], leave.getStartDate()
                 ,leave.getEndDate(), leave.getLeaveType(), leave.getStatus());
     }
 

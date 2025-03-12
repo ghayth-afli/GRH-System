@@ -40,7 +40,52 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
         <td mat-cell *matCellDef="let element">{{ element.status }}</td>
       </ng-container>
-
+      @if(isHr() || isManager()){
+      <ng-container matColumnDef="attachments">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Attachment</th>
+        <td mat-cell *matCellDef="let element">
+          @if(element.leaveType == 'MALADIE' || element.leaveType == 'MATERNITÉ'
+          || element.leaveType == 'PATERNITÉ' || element.leaveType == 'DÉCÈS'){
+          <a
+            (click)="downloadAttachment(element.id)"
+            target="_blank"
+            class="download-link"
+          >
+            <img
+              src="assets/icons/icons8-view-48.png"
+              alt=""
+              class="download-icon"
+            />
+          </a>
+          }
+        </td>
+      </ng-container>
+      } @if(isManager()){
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
+        <td mat-cell *matCellDef="let element" class="actions">
+          @if(element.status != 'APPROUVÉE'){
+          <div>
+            <a (click)="approveLeave(element.id)">
+              <img
+                src="assets/icons/icons8-approve-48.png"
+                alt=""
+                class="icon-actions approve-icon"
+              />
+            </a>
+          </div>
+          <div>
+            <a (click)="rejectLeave(element.id)">
+              <img
+                src="assets/icons/icons8-reject-48.png"
+                alt=""
+                class="icon-actions reject-icon"
+            /></a>
+          </div>
+          }
+        </td>
+      </ng-container>
+      }
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>

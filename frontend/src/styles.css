@@ -368,6 +368,46 @@ mat-chip-listbox {
   gap: 1rem;
 }
 
+/* Data Table */
+.reject-icon {
+  background-color: var(--blaze-orange);
+  cursor: pointer;
+}
+
+.approve-icon {
+  background-color: var(--cornflower-blue);
+  cursor: pointer;
+}
+
+.download-icon {
+  background-color: var(--endeavour);
+  cursor: pointer;
+  width: 15%;
+  padding: 0.1rem;
+}
+
+.approve-icon:active {
+  background-color: var(--endeavour);
+}
+
+.reject-icon:active {
+  background-color: var(--blue-zodiac);
+}
+
+.download-icon:active {
+  background-color: var(--endeavour);
+}
+
+.actions {
+  display: flex;
+  margin-top: 1rem;
+  gap: 0.1rem;
+}
+
+.icon-actions {
+  width: 50%;
+}
+
 @media (max-width: 1200px) {
   .auth-side-container {
     padding: 0 1.6667rem;
