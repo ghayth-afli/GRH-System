@@ -105,9 +105,9 @@ public class LeaveController {
 
     @GetMapping("/history")
     @PreAuthorize("hasAuthority('Employee')")
-    public ResponseEntity<Page<Leave>> getLeaveHistory(@PageableDefault(size = 10, sort = "startDate") Pageable pageable) {
+    public ResponseEntity<List<Leave>> getLeaveHistory(@PageableDefault(size = 10, sort = "startDate") Pageable pageable) {
         EmployeeResponse user = (EmployeeResponse) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return ResponseEntity.ok(leaveService.getLeaveHistory(user.id(), pageable));
+        return ResponseEntity.ok(leaveService.getLeaveHistory(user.id()));
     }
 
     @GetMapping("/{leaveId}/receivedAttachment")

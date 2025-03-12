@@ -15,7 +15,7 @@ public interface LeaveService {
     void cancelLeave(Long leaveId);
     void approveLeave(Long leaveId);
     void rejectLeave(Long leaveId);
-    Page<Leave> getLeaveHistory(String userDn,Pageable pageable);
+    List<Leave> getLeaveHistory(String userDn);
     LeaveBalance getLeaveBalance(String userDn);
 //    Page<Leave> getAllLeaves(Pageable pageable);
     List<LeaveResponse> getAllLeaves();

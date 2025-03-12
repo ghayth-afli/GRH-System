@@ -42,14 +42,11 @@ export class LeaveService {
   }
 
   // Get leave history (Employee role required)
-  getLeaveHistory(
-    page: number = 0,
-    size: number = 10
-  ): Observable<LeaveResponse> {
+  getLeaveHistory(page: number = 0, size: number = 10): Observable<Leave[]> {
     const params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
-    return this.http.get<LeaveResponse>(`${this.apiUrl}/history`, { params });
+    return this.http.get<Leave[]>(`${this.apiUrl}/history`, { params });
   }
 
   // Apply for leave (Employee role required)

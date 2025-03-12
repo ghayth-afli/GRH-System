@@ -5,29 +5,16 @@
   </div>
   <div class="sidebar-section">
     <h3>Leave Types</h3>
-    <!-- Leave Types 
-    <div class="leave-types">
-      <mat-chip-listbox>
-        <mat-chip-option
-          *ngFor="let type of leaveTypes"
-          [selected]="selectedLeaveType === type.name"
-          [style.backgroundColor]="type.color"
-          (click)="selectLeaveType(type.name)"
-        >
-          {{ type.name }}
-        </mat-chip-option>
-      </mat-chip-listbox>
-    </div>
-    
-    <button
-      class="submit-button"
-      [disabled]="!isFormValid()"
-      (click)="openDialog()"
-    >
-      Submit Request
+
+    <button class="submit-button" (click)="openDialog()">
+      <img
+        src="assets/icons/icons8-send-48.png"
+        alt="plus icon"
+        class="request-icon"
+        width="20"
+      />
+      <div class="button-text">Request Leave</div>
     </button>
-    !-->
-    <button class="submit-button" (click)="openDialog()">Submit Request</button>
   </div>
 </div>
 } @if (isManager() || isHr()){

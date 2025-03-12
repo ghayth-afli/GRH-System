@@ -153,8 +153,8 @@ public class LeaveServiceImpl implements LeaveService {
     }
 
     @Override
-    public Page<Leave> getLeaveHistory(String userDn,Pageable pageable) {
-        return leaveRepository.findAllByUserDn(userDn, pageable);
+    public List<Leave> getLeaveHistory(String userDn) {
+        return leaveRepository.findAllByUserDn(userDn);
     }
 
     @Override

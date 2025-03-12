@@ -13,6 +13,14 @@
         <div class="post">{{ user.department }} {{ user.role }}</div>
       </div>
     </div>
+    <div class="header-leave-balances">
+      <div class="leave-balance">
+        <div class="balance">Remaining balance :</div>
+        <div class="days">
+          {{ remainingLeave | async }}/{{ totalLeave | async }}
+        </div>
+      </div>
+    </div>
     <div class="notification-container">
       <div class="notification-icon">
         <img
