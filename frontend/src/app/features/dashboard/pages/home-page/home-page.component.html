@@ -5,6 +5,7 @@
   </div>
   <div class="sidebar-section">
     <h3>Leave Types</h3>
+    <!-- Leave Types 
     <div class="leave-types">
       <mat-chip-listbox>
         <mat-chip-option
@@ -17,6 +18,7 @@
         </mat-chip-option>
       </mat-chip-listbox>
     </div>
+    
     <button
       class="submit-button"
       [disabled]="!isFormValid()"
@@ -24,6 +26,8 @@
     >
       Submit Request
     </button>
+    !-->
+    <button class="submit-button" (click)="openDialog()">Submit Request</button>
   </div>
 </div>
 } @if (isManager() || isHr()){

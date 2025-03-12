@@ -9,16 +9,22 @@ import { FullCalendarModule } from '@fullcalendar/angular';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DataTableComponent } from './components/data-table/data-table.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { LeaveRequestComponent } from './components/leave-request/leave-request.component';
 
 @NgModule({
-  declarations: [HomePageComponent, DashboardComponent, DataTableComponent],
+  declarations: [
+    HomePageComponent,
+    DashboardComponent,
+    DataTableComponent,
+    LeaveRequestComponent,
+  ],
   imports: [
     CommonModule,
     DashboardRoutingModule,
@@ -32,6 +38,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
     MatPaginatorModule,
     MatSortModule,
     MatCardModule,
+    ReactiveFormsModule,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

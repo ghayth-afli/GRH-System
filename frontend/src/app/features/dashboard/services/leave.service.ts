@@ -53,14 +53,21 @@ export class LeaveService {
   }
 
   // Apply for leave (Employee role required)
-  applyLeave(
-    leaveType: ELeaveType,
-    startDate: string,
-    endDate: string,
-    startTime?: string,
-    endTime?: string,
-    attachment?: File
-  ): Observable<{ message: string }> {
+  applyLeave({
+    leaveType,
+    startDate,
+    endDate,
+    startTime,
+    endTime,
+    attachment,
+  }: {
+    leaveType: ELeaveType;
+    startDate: string;
+    endDate: string;
+    startTime?: string;
+    endTime?: string;
+    attachment?: File;
+  }): Observable<{ message: string }> {
     const formData = new FormData();
     formData.append('leaveType', leaveType);
     formData.append('startDate', startDate);

@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -166,12 +167,13 @@ public class LeaveServiceImpl implements LeaveService {
     public List<LeaveResponse> getAllLeaves() {
         EmployeeResponse user = (EmployeeResponse) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(user.role().equals("Manager")){
-            return leaveRepository.findAll().stream().filter(leave -> {
+            return leaveRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt")).stream().filter(leave -> {
                 EmployeeResponse employee = employeeClient.getEmployeeByDn(leave.getUserDn()).getBody();
                 return employee != null && employee.department() != null && employee.department().equals(user.department());
             }).map(leaveAttributesMapper::toDto).collect(Collectors.toList());
         }
-        return leaveRepository.findAll().stream().map(leaveAttributesMapper::toDto).collect(Collectors.toList());
+
+        return leaveRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt")).stream().map(leaveAttributesMapper::toDto).collect(Collectors.toList());
     }
 
     @Override

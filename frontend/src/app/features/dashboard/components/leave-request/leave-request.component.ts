@@ -1,28 +1,84 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { LeaveService } from '../../services/leave.service';
 
 @Component({
   selector: 'app-leave-request',
+  standalone: false,
   templateUrl: './leave-request.component.html',
-  styleUrl: './leave-request.component.css',
+  styleUrls: ['./leave-request.component.css'],
 })
 export class LeaveRequestComponent {
-  selectedFile: File | null = null;
+  public leaveRequestForm!: FormGroup;
+  private leaveService = inject(LeaveService);
+  dialogRef = inject(MatDialogRef);
 
-  constructor(
-    public dialogRef: MatDialogRef<LeaveRequestComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  requestTypes = [
+    'ANNUEL',
+    'MALADIE',
+    'MATERNITÉ',
+    'PATERNITÉ',
+    'SANS_SOLDE',
+    'DÉCÈS',
+    'TÉLÉTRAVAIL',
+    'AUTORISATION',
+  ];
 
-  onFileSelected(event: any) {
-    this.selectedFile = event.target.files[0];
+  requestTypesRequireAttachment = [
+    'MALADIE',
+    'MATERNITÉ',
+    'PATERNITÉ',
+    'DÉCÈS',
+  ];
+
+  ngOnInit(): void {
+    this.leaveRequestForm = new FormGroup({
+      leaveType: new FormControl('', Validators.required),
+      startDate: new FormControl('', Validators.required),
+      endDate: new FormControl('', Validators.required),
+    });
+
+    this.leaveRequestForm.get('leaveType')?.valueChanges.subscribe({
+      next: (leaveType) => this.onLeaveTypeChange(leaveType),
+    });
+  }
+
+  onLeaveTypeChange(leaveType: string) {
+    if (leaveType === 'AUTORISATION') {
+      this.leaveRequestForm.addControl(
+        'startTime',
+        new FormControl('', Validators.required)
+      );
+      this.leaveRequestForm.addControl(
+        'endTime',
+        new FormControl('', Validators.required)
+      );
+    } else if (this.requestTypesRequireAttachment.includes(leaveType)) {
+      this.leaveRequestForm.addControl(
+        'attachment',
+        new FormControl('', Validators.required)
+      );
+    } else {
+      this.leaveRequestForm.removeControl('startTime');
+      this.leaveRequestForm.removeControl('endTime');
+      this.leaveRequestForm.removeControl('attachment');
+    }
   }
 
   onSubmit() {
-    this.dialogRef.close({ ...this.data, attachment: this.selectedFile });
-  }
-
-  onCancel() {
-    this.dialogRef.close();
+    if (this.leaveRequestForm.valid) {
+      this.leaveService.applyLeave(this.leaveRequestForm.value).subscribe({
+        next: (response: { message: string }) => {
+          console.log(response.message);
+          this.dialogRef.close();
+        },
+        error: (error) => {
+          console.error('There was an error!', error.message);
+        },
+      });
+    } else {
+      console.log('Form is invalid');
+    }
   }
 }

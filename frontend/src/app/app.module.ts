@@ -9,6 +9,7 @@ import { AuthModule } from './features/auth/auth.module';
 import { CoreModule } from './core/core.module';
 import { DashboardModule } from './features/dashboard/dashboard.module';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [AppComponent],
