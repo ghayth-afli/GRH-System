@@ -24,16 +24,22 @@ export class HeaderComponent {
     department: '',
     role: '',
   };
+
   authService = inject(AuthService);
   leaveService = inject(LeaveService);
 
   ngOnInit(): void {
     this.user = this.authService.authenticatedUser || this.user;
-    this.remainingLeave = this.leaveService
-      .getLeaveBalance()
-      .pipe(map((balance) => balance.remainingLeave));
-    this.totalLeave = this.leaveService
-      .getLeaveBalance()
-      .pipe(map((balance) => balance.totalLeave));
+    if (this.isEmployee()) {
+      this.remainingLeave = this.leaveService
+        .getLeaveBalance()
+        .pipe(map((balance) => balance.remainingLeave));
+      this.totalLeave = this.leaveService
+        .getLeaveBalance()
+        .pipe(map((balance) => balance.totalLeave));
+    }
+  }
+  isEmployee() {
+    return this.authService.hasRole('Employee');
   }
 }

@@ -4,8 +4,6 @@
     <full-calendar [options]="calendarOptions" #calendar></full-calendar>
   </div>
   <div class="sidebar-section">
-    <h3>Leave Types</h3>
-
     <button class="submit-button" (click)="openDialog()">
       <img
         src="assets/icons/icons8-send-48.png"
@@ -15,6 +13,21 @@
       />
       <div class="button-text">Request Leave</div>
     </button>
+    <div class="leave-types-container">
+      <div class="leave-types-tags">
+        <ul class="leave-types-list">
+          @for(leaveType of objectKeys(leaveTypes); track
+          leaveTypes[leaveType]){
+          <li
+            [style.backgroundColor]="leaveTypes[leaveType]"
+            class="leave-type-tag"
+          >
+            <span class="leave-type-name">{{ leaveType }}</span>
+          </li>
+          }
+        </ul>
+      </div>
+    </div>
   </div>
 </div>
 } @if (isManager() || isHr()){

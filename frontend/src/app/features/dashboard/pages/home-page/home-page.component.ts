@@ -32,34 +32,50 @@ export class HomePageComponent implements OnInit {
     selectOverlap: false,
   };
 
+  leaveTypes: { [key: string]: string } = {
+    Jour_Férié: '#ff0000',
+    ANNUEL: '#fd5b00',
+    MALADIE: '#6195ed',
+    MATERNITÉ: '#004f99',
+    PATERNITÉ: '#0e274e',
+    SANS_SOLDE: '#cacaca',
+    DÉCÈS: '#666666',
+    TÉLÉTRAVAIL: '#43475a',
+    AUTORISATION: '#030a23',
+  };
+
   ngOnInit(): void {
-    this.loadLeaveHistory();
+    if (this.isEmployee()) {
+      this.loadLeaveHistory();
+    }
   }
 
   loadLeaveHistory(): void {
-    this.leaveService.getLeaveHistory().subscribe((leaveHistory: Leave[]) => {
-      const events: EventInput[] = leaveHistory.map((leave) => ({
-        title: leave.leaveType,
-        start: leave.startDate,
-        end: leave.endDate,
-        color: this.getLeaveTypeColor(leave.leaveType),
-      }));
-      this.calendarOptions.events = events;
+    this.leaveService.getLeaveHistory().subscribe({
+      next: (data: Leave[]) => {
+        const events: EventInput[] = data
+          .filter((leave) => leave.status === 'APPROUVÉE')
+          .map((leave) => {
+            return {
+              start: leave.startDate,
+              end: leave.endDate,
+              backgroundColor: this.getLeaveTypeColor(leave.leaveType),
+            };
+          }, []);
+        this.calendarOptions.events = events;
+      },
+      error: (error) => {
+        console.error('There was an error!', error);
+      },
     });
   }
 
+  objectKeys(obj: any): string[] {
+    return Object.keys(obj);
+  }
+
   getLeaveTypeColor(leaveType: string): string {
-    const leaveTypes: { [key: string]: string } = {
-      ANNUEL: '#fd5b00',
-      MALADIE: '#6195ed',
-      MATERNITÉ: '#004f99',
-      PATERNITÉ: '#0e274e',
-      SANS_SOLDE: '#cacaca',
-      DÉCÈS: '#666666',
-      TÉLÉTRAVAIL: '#43475a',
-      AUTORISATION: '#ffffff',
-    };
-    return leaveTypes[leaveType] || '#000000';
+    return this.leaveTypes[leaveType] || '#000000';
   }
 
   openDialog() {

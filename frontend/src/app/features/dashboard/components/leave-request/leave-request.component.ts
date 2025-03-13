@@ -2,6 +2,8 @@ import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { LeaveService } from '../../services/leave.service';
+import { SnackBarComponent } from '../../../../shared/components/snack-bar/snack-bar.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-leave-request',
@@ -13,6 +15,8 @@ export class LeaveRequestComponent {
   public leaveRequestForm!: FormGroup;
   private leaveService = inject(LeaveService);
   dialogRef = inject(MatDialogRef);
+  snackBar = inject(MatSnackBar);
+  isLoading = false;
 
   requestTypes = [
     'ANNUEL',
@@ -68,12 +72,19 @@ export class LeaveRequestComponent {
 
   onSubmit() {
     if (this.leaveRequestForm.valid) {
+      this.isLoading = true;
       this.leaveService.applyLeave(this.leaveRequestForm.value).subscribe({
         next: (response: { message: string }) => {
           console.log(response.message);
+          this.isLoading = false;
           this.dialogRef.close();
+          this.snackBar.openFromComponent(SnackBarComponent, {
+            data: response.message,
+            duration: 5000,
+          });
         },
         error: (error) => {
+          this.isLoading = false;
           console.error('There was an error!', error.message);
         },
       });

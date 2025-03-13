@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400..700&display=swap");
+
 :root {
   --black-pearl: #030a23;
   --white: #ffffff;
@@ -338,6 +339,7 @@ app-sidebar {
 .sidebar-section {
   display: flex;
   flex-direction: column;
+  align-items: center;
   border-radius: 0.4444rem;
   color: white;
   width: 20%;
@@ -365,6 +367,31 @@ app-sidebar {
 
 .fc-highlight {
   opacity: 0.75 !important;
+}
+
+/* Leave Types Container */
+.leave-types-container {
+  margin-top: 2rem;
+}
+
+.leave-types-list {
+  display: flex;
+  flex-wrap: wrap-reverse;
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 1rem;
+}
+
+.leave-type-tag {
+  color: var(--white);
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.leave-type-name {
+  font-family: "Kode Mono", monospace;
 }
 
 /* Data Table */
@@ -539,6 +566,7 @@ app-sidebar {
   }
 
   .sidebar-section {
+    width: 100%;
     flex: 1;
   }
 }
@@ -595,6 +623,7 @@ app-sidebar {
   }
 
   .sidebar-section {
+    width: 100%;
     flex: 1;
   }
 }
@@ -651,6 +680,7 @@ app-sidebar {
   }
 
   .sidebar-section {
+    width: 100%;
     flex: 1;
   }
 }

@@ -64,7 +64,7 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
         <td mat-cell *matCellDef="let element" class="actions">
-          @if(element.status != 'APPROUVÉE'){
+          @if(element.status == 'EN_ATTENTE'){
           <div>
             <a (click)="approveLeave(element.id)">
               <img
