@@ -4,29 +4,36 @@
     <full-calendar [options]="calendarOptions" #calendar></full-calendar>
   </div>
   <div class="sidebar-section">
-    <button class="submit-button" (click)="openDialog()">
-      <img
-        src="assets/icons/icons8-send-48.png"
-        alt="plus icon"
-        class="request-icon"
-        width="20"
-      />
-      <div class="button-text">Request Leave</div>
-    </button>
+    <div class="sidebar-section-header">
+      <div class="sidebar-section-subtitle">Available Leave Types</div>
+    </div>
     <div class="leave-types-container">
       <div class="leave-types-tags">
-        <ul class="leave-types-list">
-          @for(leaveType of objectKeys(leaveTypes); track
-          leaveTypes[leaveType]){
-          <li
-            [style.backgroundColor]="leaveTypes[leaveType]"
-            class="leave-type-tag"
-          >
-            <span class="leave-type-name">{{ leaveType }}</span>
-          </li>
-          }
-        </ul>
+        @for(leaveType of objectKeys(leaveTypes); track leaveTypes[leaveType]){
+        <div class="leave-type">
+          <div
+            class="leave-type-color"
+            [style.background-color]="leaveTypes[leaveType]"
+          ></div>
+          <div class="leave-type-tag">
+            <span class="leave-type-name">{{
+              transformString(leaveType)
+            }}</span>
+          </div>
+        </div>
+        }
       </div>
+    </div>
+    <div class="leave-request-button">
+      <button class="submit-button" (click)="openDialog()">
+        <img
+          src="assets/icons/icons8-send-48.png"
+          alt="plus icon"
+          class="request-icon"
+          width="20"
+        />
+        <div class="button-text">Request Leave</div>
+      </button>
     </div>
   </div>
 </div>

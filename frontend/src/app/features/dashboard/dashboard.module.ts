@@ -17,6 +17,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { LeaveRequestComponent } from './components/leave-request/leave-request.component';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { LeaveRequestComponent } from './components/leave-request/leave-request.
     MatPaginatorModule,
     MatSortModule,
     MatCardModule,
+    MatSnackBarModule,
     ReactiveFormsModule,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

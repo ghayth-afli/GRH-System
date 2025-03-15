@@ -5,6 +5,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Leave, LeaveResponse } from '../../models/leave-responses.interface';
 import { LeaveService } from '../../services/leave.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-data-table',
@@ -16,6 +17,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 export class DataTableComponent implements OnInit {
   private leaveService = inject(LeaveService);
   private authService = inject(AuthService);
+  private snackBar = inject(MatSnackBar);
   displayedColumns: string[] = [
     'Name',
     'department',
@@ -74,13 +76,21 @@ export class DataTableComponent implements OnInit {
     this.leaveService.approveLeave(id).subscribe({
       next: (response: { message: string }) => {
         console.log(response.message);
+        this.snackBar.open(response.message, undefined, {
+          panelClass: ['snackbar-success'],
+          duration: 5000,
+        });
         this.leaveService.getAllLeaveRequests().subscribe((data: Leave[]) => {
           this.dataSource.data = data;
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
         });
       },
-      error: (error) => {
+      error: (error: { message: string }) => {
+        this.snackBar.open(error.message, undefined, {
+          panelClass: ['snackbar-error'],
+          duration: 5000,
+        });
         console.error('There was an error!', error);
       },
     });
@@ -89,13 +99,21 @@ export class DataTableComponent implements OnInit {
     this.leaveService.rejectLeave(id).subscribe({
       next: (response: { message: string }) => {
         console.log(response.message);
+        this.snackBar.open(response.message, undefined, {
+          panelClass: ['snackbar-success'],
+          duration: 5000,
+        });
         this.leaveService.getAllLeaveRequests().subscribe((data: Leave[]) => {
           this.dataSource.data = data;
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
         });
       },
-      error: (error) => {
+      error: (error: { message: string }) => {
+        this.snackBar.open(error.message, undefined, {
+          panelClass: ['snackbar-error'],
+          duration: 5000,
+        });
         console.error('There was an error!', error);
       },
     });

@@ -70,6 +70,12 @@ export class HomePageComponent implements OnInit {
     });
   }
 
+  transformString(input: string): string {
+    // Remove underscores, lowercase the string, and capitalize the first letter
+    const result = input.replace(/_/g, ' ').toLowerCase();
+    return result.charAt(0).toUpperCase() + result.slice(1);
+  }
+
   objectKeys(obj: any): string[] {
     return Object.keys(obj);
   }

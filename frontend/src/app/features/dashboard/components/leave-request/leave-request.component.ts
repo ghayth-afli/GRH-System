@@ -15,7 +15,7 @@ export class LeaveRequestComponent {
   public leaveRequestForm!: FormGroup;
   private leaveService = inject(LeaveService);
   dialogRef = inject(MatDialogRef);
-  snackBar = inject(MatSnackBar);
+  private snackBar = inject(MatSnackBar);
   isLoading = false;
 
   requestTypes = [
@@ -77,14 +77,18 @@ export class LeaveRequestComponent {
         next: (response: { message: string }) => {
           console.log(response.message);
           this.isLoading = false;
-          this.dialogRef.close();
-          this.snackBar.openFromComponent(SnackBarComponent, {
-            data: response.message,
+          this.snackBar.open(response.message, undefined, {
+            panelClass: ['snackbar-success'],
             duration: 5000,
           });
+          this.dialogRef.close();
         },
-        error: (error) => {
+        error: (error: { message: string }) => {
           this.isLoading = false;
+          this.snackBar.open(error.message, undefined, {
+            panelClass: ['snackbar-error'],
+            duration: 5000,
+          });
           console.error('There was an error!', error.message);
         },
       });
