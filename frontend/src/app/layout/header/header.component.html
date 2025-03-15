@@ -13,12 +13,12 @@
         <div class="post">{{ user.department }} {{ user.role }}</div>
       </div>
     </div>
-    @if(isEmployee()){
+    @if(this.authService.hasRole('Employee')){
     <div class="header-leave-balances">
-      <div class="leave-balance">
+      <div class="leave-balance" *ngIf="leaveBalance$ | async as leaveBalance">
         <div class="balance">Remaining balance :</div>
         <div class="days">
-          {{ remainingLeave | async }}/{{ totalLeave | async }}
+          {{ leaveBalance.remainingLeave }}/{{ leaveBalance.totalLeave }}
         </div>
       </div>
     </div>

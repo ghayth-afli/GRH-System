@@ -325,7 +325,7 @@ app-sidebar {
   display: flex;
   align-items: center;
   gap: 1rem;
-  background-color: var(--black-pearl);
+  background-color: var(--blaze-orange);
   padding: 0.5rem 1rem;
   border-radius: 0.2rem;
   color: var(--white);
@@ -344,9 +344,9 @@ app-sidebar {
 }
 
 .days {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: var(--blaze-orange);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--white);
 }
 /* Notification */
 .notification-container {
@@ -365,28 +365,28 @@ app-sidebar {
 
 /* Leave Section */
 
-.leave-container {
+.home-container {
   display: flex;
 }
 
-.calendar-section {
+app-calendar {
+  flex: 2;
   background-color: var(--white);
   padding: 2rem;
   border-top-left-radius: 0.4444rem;
   border-bottom-left-radius: 0.4444rem;
-  flex: 2;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.sidebar-section {
-  width: 20%;
+app-calendar-side-bar {
   background-color: var(--white);
   display: flex;
   flex-direction: column;
   border-left: 1px solid var(--silver);
   color: white;
-  height: auto;
   border-top-right-radius: 0.4444rem;
   border-bottom-right-radius: 0.4444rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-section-header {
@@ -397,7 +397,6 @@ app-sidebar {
 .sidebar-section-subtitle {
   font-size: 1.1111rem;
   font-weight: bold;
-  font-family: "Montserrat-Regular", sans-serif;
   color: var(--gun-powder);
 }
 
@@ -414,7 +413,7 @@ app-sidebar {
   flex-direction: row;
   align-items: center;
   padding: 0.5rem;
-  background-color: var(--blaze-orange);
+  background-color: var(--endeavour);
   color: var(--white);
   border: none;
   cursor: pointer;
@@ -422,6 +421,10 @@ app-sidebar {
   transition: background-color 0.3s;
   align-self: center;
   gap: 0.5rem;
+}
+
+.submit-button:active {
+  background-color: var(--blaze-orange);
 }
 
 .fc-highlight {
@@ -436,7 +439,7 @@ app-sidebar {
 .leave-types-tags {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
 .leave-type {
@@ -449,19 +452,34 @@ app-sidebar {
 }
 
 .leave-type-color {
-  width: 0.5rem;
-  height: 0.5rem;
+  width: 0.6rem;
+  height: 0.6rem;
   border-radius: 50%;
 }
 
 .leave-type-name {
-  font-size: 1rem;
   text-transform: capitalize;
   color: #4d6275;
-  font-family: "Montserrat" sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
 }
 
 /* Data Table */
+.table-container {
+  background-color: var(--white);
+  padding: 2rem;
+  border-radius: 0.4444rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.search-input {
+  padding: 0.5rem;
+  border: 1px solid var(--silver);
+  border-radius: 0.2rem;
+  font-size: 1rem;
+  color: var(--blue-zodiac);
+  margin-bottom: 1rem;
+}
 .reject-icon {
   background-color: var(--blaze-orange);
   cursor: pointer;
@@ -623,16 +641,16 @@ app-sidebar {
     font-size: 1.1111rem;
   }
 
-  .leave-container {
+  .home-container {
     flex-direction: column;
     gap: 1rem;
   }
 
-  .calendar-section {
+  app-calendar {
     flex: 1;
   }
 
-  .sidebar-section {
+  app-calendar-side-bar {
     width: 100%;
     flex: 1;
   }
@@ -680,16 +698,16 @@ app-sidebar {
     font-size: 1rem;
   }
 
-  .leave-container {
+  .home-container {
     flex-direction: column;
     gap: 0.5rem;
   }
 
-  .calendar-section {
+  app-calendar {
     flex: 1;
   }
 
-  .sidebar-section {
+  app-calendar-side-bar {
     width: 100%;
     flex: 1;
   }
@@ -737,16 +755,16 @@ app-sidebar {
     font-size: 0.8889rem;
   }
 
-  .leave-container {
+  .home-container {
     flex-direction: column;
     gap: 0.5rem;
   }
 
-  .calendar-section {
+  app-calendar {
     flex: 1;
   }
 
-  .sidebar-section {
+  app-calendar-side-bar {
     width: 100%;
     flex: 1;
   }

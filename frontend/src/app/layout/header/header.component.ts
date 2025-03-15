@@ -1,8 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 import { User } from '../../core/models/auth-responses.interface';
-import { LeaveService } from '../../features/dashboard/services/leave.service';
 import { map, Observable, of } from 'rxjs';
+import { LeaveService } from '../../modules/leave/services/leave.service';
+import { ActivatedRoute } from '@angular/router';
+import { LeaveBalance } from '../../modules/leave/models/leave-balance';
 
 @Component({
   selector: 'app-header',
@@ -12,9 +14,7 @@ import { map, Observable, of } from 'rxjs';
   styleUrl: './header.component.css',
 })
 export class HeaderComponent {
-  remainingLeave: Observable<number> = of(0);
-  totalLeave: Observable<number> = of(0);
-
+  leaveBalance$: Observable<LeaveBalance>;
   user: User = {
     id: '',
     username: '',
@@ -28,16 +28,14 @@ export class HeaderComponent {
   authService = inject(AuthService);
   leaveService = inject(LeaveService);
 
+  constructor(private route: ActivatedRoute) {
+    this.leaveBalance$ = this.route.data.pipe(
+      map((data) => data['leaveBalance'])
+    );
+  }
+
   ngOnInit(): void {
     this.user = this.authService.authenticatedUser || this.user;
-    if (this.isEmployee()) {
-      this.remainingLeave = this.leaveService
-        .getLeaveBalance()
-        .pipe(map((balance) => balance.remainingLeave));
-      this.totalLeave = this.leaveService
-        .getLeaveBalance()
-        .pipe(map((balance) => balance.totalLeave));
-    }
   }
   isEmployee() {
     return this.authService.hasRole('Employee');

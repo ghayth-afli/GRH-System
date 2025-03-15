@@ -2,25 +2,45 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
 import { AuthRedirectGuard } from './core/guards/auth-redirect.guard';
+import { LayoutComponent } from './layout/layout.component';
+import { RoleGuard } from './core/guards/role.guard';
+import { LeaveBalanceResolver } from './modules/leave/resolvers/leave-balance.resolver';
 
 const routes: Routes = [
   { path: '', redirectTo: '', pathMatch: 'full' },
   {
     path: 'auth',
     loadChildren: () =>
-      import('./features/auth/auth.module').then((m) => m.AuthModule),
+      import('./modules/auth/auth.module').then((m) => m.AuthModule),
     canActivate: [AuthRedirectGuard],
   },
   {
     path: '',
-    loadChildren: () =>
-      import('./features/dashboard/dashboard.module').then(
-        (m) => m.DashboardModule
-      ),
+    component: LayoutComponent,
     canActivate: [AuthGuard],
-  },
+    resolve: {
+      leaveBalance: LeaveBalanceResolver,
+    },
+    children: [
+      {
+        path: 'home',
+        loadChildren: () =>
+          import('./modules/home/home.module').then((m) => m.HomeModule),
+        canActivate: [RoleGuard],
+        data: { roles: ['Employee'] },
+      },
+      {
+        path: 'leave',
 
-  { path: '**', redirectTo: '' },
+        loadChildren: () =>
+          import('./modules/leave/leave.module').then((m) => m.LeaveModule),
+        canActivate: [RoleGuard],
+        data: { roles: ['Manager', 'HR'] },
+      },
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
+    ],
+  },
+  { path: '**', redirectTo: 'home' },
 ];
 
 @NgModule({
