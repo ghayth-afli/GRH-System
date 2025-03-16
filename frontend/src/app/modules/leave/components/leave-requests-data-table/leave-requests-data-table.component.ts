@@ -5,6 +5,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Leave } from '../../models/leave';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-leave-requests-data-table',
@@ -16,6 +18,7 @@ import { MatSort } from '@angular/material/sort';
 export class LeaveRequestsDataTableComponent {
   dataSource = new MatTableDataSource<Leave>();
   private leaveService = inject(LeaveService);
+  private snackBar = inject(MatSnackBar);
   authService = inject(AuthService);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -62,16 +65,24 @@ export class LeaveRequestsDataTableComponent {
   approveLeave(id: number) {
     this.leaveService.approveLeave(id).subscribe({
       next: (response: { message: string }) => {
-        console.log(response.message);
-
         this.leaveService.getAllLeaveRequests().subscribe((data: Leave[]) => {
           this.dataSource.data = data;
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
         });
+
+        this.snackBar.open(response.message, 'Close', {
+          duration: 5000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+        });
       },
       error: (error: { message: string }) => {
-        console.error('There was an error!', error);
+        this.snackBar.open(error.message, 'Close', {
+          duration: 5000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+        });
       },
     });
   }
@@ -83,9 +94,18 @@ export class LeaveRequestsDataTableComponent {
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
         });
+        this.snackBar.open(response.message, 'Close', {
+          duration: 5000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+        });
       },
       error: (error: { message: string }) => {
-        console.error('There was an error!', error);
+        this.snackBar.open(error.message, 'Close', {
+          duration: 5000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+        });
       },
     });
   }

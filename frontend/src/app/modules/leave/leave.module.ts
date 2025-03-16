@@ -10,9 +10,18 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { LeaveRequestsDataTableComponent } from './components/leave-requests-data-table/leave-requests-data-table.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { LeaveRequestFormModalComponent } from './components/leave-request-form-modal/leave-request-form-modal.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { SnackBarComponent } from '../../shared/components/snack-bar/snack-bar.component';
 
 @NgModule({
-  declarations: [LeaveRequestsPageComponent, LeaveRequestsDataTableComponent],
+  declarations: [
+    LeaveRequestsPageComponent,
+    LeaveRequestsDataTableComponent,
+    LeaveRequestFormModalComponent,
+  ],
   imports: [
     CommonModule,
     LeaveRoutingModule,
@@ -22,7 +31,12 @@ import { LeaveRequestsDataTableComponent } from './components/leave-requests-dat
     MatSortModule,
     MatCardModule,
     MatSnackBarModule,
+    MatDialogModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatProgressSpinnerModule,
   ],
+  exports: [LeaveRequestFormModalComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class LeaveModule {}

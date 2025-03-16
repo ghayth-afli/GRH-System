@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400..700&display=swap");
+@import "@angular/material/prebuilt-themes/deeppurple-amber.css";
 
 :root {
   --black-pearl: #030a23;
@@ -6,6 +7,10 @@
   --blaze-orange: #fd5b00;
   --cornflower-blue: #6195ed;
   --endeavour: #004f99;
+  --green: #00b300;
+  --green-2: #014601;
+  --red: #ff0000;
+  --red-2: #b30000;
   --blue-zodiac: #0e274e;
   --silver: #cacaca;
   --dove-gray: #666666;
@@ -21,11 +26,20 @@
   box-sizing: border-box;
   font-family: "KodeMono-Regular", monospace;
 }
-
 body {
   background-color: #f0f3f6;
   min-height: 100vh;
   overflow: hidden;
+}
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mat-mdc-progress-spinner {
+  --mdc-circular-progress-active-indicator-color: white;
 }
 
 .breadcrumb-navigation {
@@ -480,13 +494,33 @@ app-calendar-side-bar {
   color: var(--blue-zodiac);
   margin-bottom: 1rem;
 }
+
+.actions-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.icon-actions {
+  width: 70%;
+  border-radius: 0.2rem;
+}
+
 .reject-icon {
-  background-color: var(--blaze-orange);
+  background-color: var(--red);
   cursor: pointer;
 }
 
+.reject-icon:active {
+  background-color: var(--red-2);
+}
+
+.approve-icon:active {
+  background-color: var(--green-2);
+}
+
 .approve-icon {
-  background-color: var(--cornflower-blue);
+  background-color: var(--green);
   cursor: pointer;
 }
 
@@ -507,16 +541,6 @@ app-calendar-side-bar {
 
 .download-icon:active {
   background-color: var(--endeavour);
-}
-
-.actions {
-  display: flex;
-  margin-top: 1rem;
-  gap: 0.1rem;
-}
-
-.icon-actions {
-  width: 50%;
 }
 
 /* Leave Request Modal Styles */
@@ -588,6 +612,10 @@ app-calendar-side-bar {
   cursor: pointer;
   font-weight: bold;
   transition: background-color 0.3s;
+}
+
+.submit-button-modal:active {
+  background-color: var(--blue-zodiac);
 }
 
 .modal-actions button:disabled {

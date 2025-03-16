@@ -5,9 +5,9 @@ import { CalendarComponent } from './components/calendar/calendar.component';
 import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
-  declarations: [SnackBarComponent, CalendarComponent],
+  declarations: [CalendarComponent],
   imports: [CommonModule, FullCalendarModule],
-  exports: [SnackBarComponent, CalendarComponent],
+  exports: [CalendarComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class SharedModule {}

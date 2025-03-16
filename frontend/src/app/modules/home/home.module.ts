@@ -7,6 +7,7 @@ import { HomePageComponent } from './pages/home-page/home-page.component';
 
 import { LeaveModule } from '../leave/leave.module';
 import { SharedModule } from '../../shared/shared.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [CalendarSideBarComponent, HomePageComponent],

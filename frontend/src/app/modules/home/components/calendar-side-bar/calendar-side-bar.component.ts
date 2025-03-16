@@ -1,4 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { LeaveRequestFormModalComponent } from '../../../leave/components/leave-request-form-modal/leave-request-form-modal.component';
 
 @Component({
   selector: 'app-calendar-side-bar',
@@ -9,6 +11,7 @@ import { Component, Input } from '@angular/core';
 })
 export class CalendarSideBarComponent {
   @Input() leaveTypes: { [key: string]: string } = {};
+  public dialog = inject(MatDialog);
 
   transformString(input: string): string {
     const result = input.replace(/_/g, ' ').toLowerCase();
@@ -17,5 +20,9 @@ export class CalendarSideBarComponent {
 
   objectKeys(obj: any): string[] {
     return Object.keys(obj);
+  }
+
+  openDialog() {
+    this.dialog.open(LeaveRequestFormModalComponent, {});
   }
 }
