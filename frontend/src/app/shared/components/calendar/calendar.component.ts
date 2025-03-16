@@ -5,6 +5,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { AuthService } from '../../../core/services/auth.service';
 import { LeaveService } from '../../../modules/leave/services/leave.service';
 import { Leave } from '../../../modules/leave/models/leave';
+import { PublicHolidayService } from '../../../modules/home/services/public-holiday.service';
 
 @Component({
   selector: 'app-calendar',
@@ -15,6 +16,7 @@ import { Leave } from '../../../modules/leave/models/leave';
 })
 export class CalendarComponent {
   @Input() events: EventInput[] = [];
+  holidays = inject(PublicHolidayService);
 
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
@@ -31,5 +33,26 @@ export class CalendarComponent {
 
   ngOnInit(): void {
     this.calendarOptions.events = this.events;
+    this.loadHolidays();
+  }
+
+  loadHolidays(): void {
+    this.holidays.getPublicHolidays().subscribe({
+      next: (data) => {
+        const calendarEvents = data.map(
+          (holiday: { name: string; date: string }) => {
+            return {
+              title: holiday.name,
+              date: holiday.date,
+              backgroundColor: '#014601',
+            };
+          }
+        );
+        this.calendarOptions.events = [...this.events, ...calendarEvents];
+      },
+      error: (error) => {
+        console.error('There was an error!', error);
+      },
+    });
   }
 }

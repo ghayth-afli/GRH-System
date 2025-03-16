@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { EventInput } from '@fullcalendar/core/index.js';
 import { Leave } from '../../../leave/models/leave';
 import { ActivatedRoute } from '@angular/router';
 import { map, Observable } from 'rxjs';
+import { PublicHolidayService } from '../../services/public-holiday.service';
 
 @Component({
   selector: 'app-home-page',
@@ -14,6 +15,7 @@ import { map, Observable } from 'rxjs';
 export class HomePageComponent {
   leaves: EventInput[] = [];
   leaveHistory$: Observable<Leave[]>;
+  holidays = inject(PublicHolidayService);
 
   leaveTypes: { [key: string]: string } = {
     Jour_Férié: '#ff0000',
@@ -31,6 +33,14 @@ export class HomePageComponent {
     this.leaveHistory$ = this.route.data.pipe(
       map((data) => data['leaveHistory'])
     );
+    this.holidays.getPublicHolidays().subscribe({
+      next: (data) => {
+        console.log('Holidays', data);
+      },
+      error: (error) => {
+        console.error('There was an error!', error);
+      },
+    });
   }
 
   ngOnInit(): void {
