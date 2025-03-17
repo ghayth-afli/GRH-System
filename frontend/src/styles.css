@@ -378,6 +378,74 @@ app-sidebar {
   height: 1.4444rem;
 }
 
+.notification-badge {
+  position: absolute;
+  top: -0.5rem;
+  right: -0.5rem;
+  background-color: var(--red);
+  color: var(--white);
+  border-radius: 50%;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.notification-dropdown {
+  position: absolute;
+  top: 2rem;
+  right: 0;
+  background-color: var(--white);
+  border: 1px solid var(--silver);
+  border-radius: 0.2rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 20rem;
+  z-index: 1000;
+}
+
+.notification-item {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--silver);
+  color: var(--blue-zodiac);
+  display: flex;
+  flex-direction: column;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-item:hover {
+  background-color: var(--blaze-orange);
+  color: var(--white);
+}
+
+.notification-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.notification-icon-img {
+  width: 2rem;
+  height: 2rem;
+}
+
+.notification-title {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.notification-content {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+.notification-seen {
+  font-size: 0.75rem;
+  color: var(--dove-gray);
+  margin-top: 0.5rem;
+}
+
 /* Leave Section */
 
 .home-container {
@@ -525,7 +593,7 @@ app-calendar-side-bar {
 }
 
 .approve-icon:active {
-  background-color: var(--green-2);
+  background-color: var (--green-2);
 }
 
 .approve-icon {
@@ -581,7 +649,7 @@ app-calendar-side-bar {
 
 .modal-content label {
   font-size: 1rem;
-  color: var(--blue-zodiac);
+  color: var (--blue-zodiac);
   margin-bottom: 0.5rem;
 }
 

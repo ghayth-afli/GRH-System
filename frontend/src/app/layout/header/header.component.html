@@ -25,11 +25,31 @@
     }
 
     <div class="notification-container">
-      <div class="notification-icon">
+      <div class="notification-icon" (click)="toggleDropdown()">
         <img
           src="assets/icons/icons8-notification-48.png"
           alt="Notifications"
         />
+        <span class="notification-badge" *ngIf="unreadNotificationsCount > 0">{{
+          unreadNotificationsCount
+        }}</span>
+      </div>
+      <div class="notification-dropdown" *ngIf="isDropdownOpen">
+        <div
+          class="notification-item"
+          *ngFor="let notification of notifications"
+        >
+          <div class="notification-header">
+            <img
+              [src]="notification.icon"
+              alt="Notification Icon"
+              class="notification-icon-img"
+            />
+            <div class="notification-title">{{ notification.title }}</div>
+          </div>
+          <div class="notification-content">{{ notification.content }}</div>
+          <div class="notification-seen" *ngIf="notification.seen">Seen</div>
+        </div>
       </div>
     </div>
   </div>
