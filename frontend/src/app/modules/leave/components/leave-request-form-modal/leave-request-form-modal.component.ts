@@ -2,7 +2,6 @@ import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { LeaveService } from '../../services/leave.service';
 import { MatDialogRef } from '@angular/material/dialog';
-import { SnackBarComponent } from '../../../../shared/components/snack-bar/snack-bar.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
@@ -18,6 +17,12 @@ export class LeaveRequestFormModalComponent {
   dialogRef = inject(MatDialogRef);
   private snackBar = inject(MatSnackBar);
   isLoading = false;
+  minDate: string;
+
+  constructor() {
+    const today = new Date();
+    this.minDate = today.toISOString().split('T')[0];
+  }
 
   requestTypes = [
     'ANNUEL',
@@ -49,6 +54,14 @@ export class LeaveRequestFormModalComponent {
     });
   }
 
+  onAttachmentSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      this.leaveRequestForm.patchValue({ attachment: file });
+      this.leaveRequestForm.get('attachment')?.updateValueAndValidity();
+    }
+  }
   onLeaveTypeChange(leaveType: string) {
     if (leaveType === 'AUTORISATION') {
       this.leaveRequestForm.addControl(

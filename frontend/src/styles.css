@@ -507,6 +507,14 @@ app-calendar-side-bar {
   border-radius: 0.2rem;
 }
 
+.leave-status {
+  padding: 0.3rem;
+
+  color: var(--white);
+  border-radius: 0.3rem;
+  font-size: 0.9rem;
+}
+
 .reject-icon {
   background-color: var(--red);
   cursor: pointer;

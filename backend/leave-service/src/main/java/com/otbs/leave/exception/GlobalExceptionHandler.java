@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
     @ExceptionHandler({InvalidDateRangeException.class})
     public ResponseEntity<?> handleInvalidDateRange() {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Invalid date range"));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Leave date range is overlapping with existing leave"));
     }
 
     @ExceptionHandler({InvalidTimeRangeException.class})

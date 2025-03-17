@@ -17,7 +17,6 @@ public interface LeaveService {
     void rejectLeave(Long leaveId);
     List<Leave> getLeaveHistory(String userDn);
     LeaveBalance getLeaveBalance(String userDn);
-//    Page<Leave> getAllLeaves(Pageable pageable);
     List<LeaveResponse> getAllLeaves();
     Page<Leave> getAllLeavesForManager(Pageable pageable);
     void updateLeave(Long leaveId, LeaveRequest leaveRequest);

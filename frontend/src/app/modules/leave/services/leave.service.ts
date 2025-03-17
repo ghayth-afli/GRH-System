@@ -1,28 +1,22 @@
 import { Injectable } from '@angular/core';
-import {Leave} from '../models/leave';
-import {Observable} from 'rxjs';
-import {LeaveType} from '../models/leave-type';
-import {HttpClient, HttpParams} from '@angular/common/http';
-import {environment} from '../../../environments/environment';
-import {LeaveBalance} from '../models/leave-balance';
+import { Leave } from '../models/leave';
+import { Observable } from 'rxjs';
+import { LeaveType } from '../models/leave-type';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+import { LeaveBalance } from '../models/leave-balance';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class LeaveService {
-
   private apiUrl = `${environment.apiUrl}/leave`;
 
   constructor(private http: HttpClient) {}
 
-  // Get all leave requests (HR role required)
-  /*getAllLeaveRequests(): Observable<LeaveResponse> {
-    return this.http.get<LeaveResponse>(`${this.apiUrl}/all`);
-  }*/
   getAllLeaveRequests(): Observable<Leave[]> {
     return this.http.get<Leave[]>(`${this.apiUrl}/all`);
   }
-
 
   // Get leave balance (Employee role required)
   getLeaveBalance(): Observable<LeaveBalance> {
@@ -39,13 +33,13 @@ export class LeaveService {
 
   // Apply for leave (Employee role required)
   applyLeave({
-               leaveType,
-               startDate,
-               endDate,
-               startTime,
-               endTime,
-               attachment,
-             }: {
+    leaveType,
+    startDate,
+    endDate,
+    startTime,
+    endTime,
+    attachment,
+  }: {
     leaveType: LeaveType;
     startDate: string;
     endDate: string;
@@ -60,7 +54,7 @@ export class LeaveService {
     if (startTime) formData.append('startHOURLY', startTime);
     if (endTime) formData.append('endHOURLY', endTime);
     if (attachment) formData.append('attachment', attachment);
-
+    console.log(attachment);
     return this.http.post<any>(`${this.apiUrl}/apply`, formData);
   }
 

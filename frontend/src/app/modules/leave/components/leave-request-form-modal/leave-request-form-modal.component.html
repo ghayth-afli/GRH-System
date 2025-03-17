@@ -21,7 +21,12 @@
 
       <div>
         <label for="startDate">Start Date :</label>
-        <input type="date" formControlName="startDate" id="startDate" />
+        <input
+          type="date"
+          formControlName="startDate"
+          id="startDate"
+          [min]="minDate"
+        />
         <div
           *ngIf="
             leaveRequestForm.get('startDate')?.invalid &&
@@ -36,7 +41,12 @@
 
       <div>
         <label for="endDate">End Date :</label>
-        <input type="date" formControlName="endDate" id="endDate" />
+        <input
+          type="date"
+          formControlName="endDate"
+          id="endDate"
+          [min]="leaveRequestForm.get('startDate')?.value"
+        />
         <div
           *ngIf="
             leaveRequestForm.get('endDate')?.invalid &&
@@ -80,7 +90,12 @@
       </div>
       <div *ngIf="leaveRequestForm.get('attachment')">
         <label for="attachment">Attachment :</label>
-        <input type="file" formControlName="attachment" id="attachment" />
+        <input
+          type="file"
+          id="attachment"
+          (change)="onAttachmentSelected($event)"
+          accept=".pdf,.doc,.docx"
+        />
         <div
           *ngIf="
             leaveRequestForm.get('attachment')?.invalid &&

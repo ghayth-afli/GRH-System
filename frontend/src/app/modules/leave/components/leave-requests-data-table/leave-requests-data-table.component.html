@@ -38,7 +38,19 @@
 
       <ng-container matColumnDef="status">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
-        <td mat-cell *matCellDef="let element">{{ element.status }}</td>
+        <td mat-cell *matCellDef="let element">
+          @if(element.status === 'EN_ATTENTE'){
+          <span class="leave-status" [style.background-color]="'#004f99'">
+            {{ element.status }}
+          </span>
+          } @else if(element.status === 'APPROUVÉE'){
+          <span class="leave-status" [style.background-color]="'#014601'">
+            {{ element.status }} </span
+          >} @else{
+          <span class="leave-status" [style.background-color]="'#b30000'">
+            {{ element.status }} </span
+          >}
+        </td>
       </ng-container>
       @if(authService.hasRole('HR') || authService.hasRole('Manager')){
       <ng-container matColumnDef="attachments">
@@ -60,7 +72,7 @@
           }
         </td>
       </ng-container>
-      } @if(this.authService.hasRole('Manager')){
+      } @if(this.authService.hasRole('Manager') && showActionsColumn){
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
         <td mat-cell *matCellDef="let element">
@@ -91,6 +103,10 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
-    <mat-paginator [pageSize]="10" showFirstLastButtons></mat-paginator>
+    <mat-paginator
+      [pageSize]="10"
+      [pageSizeOptions]="[5, 10, 20, 50]"
+      showFirstLastButtons
+    ></mat-paginator>
   </mat-card>
 </div>

@@ -76,14 +76,6 @@ public class LeaveController {
         leaveService.updateLeave(leaveId, leaveRequest);
         return ResponseEntity.ok(new MessageResponse("Leave updated successfully"));
     }
-
-//    @GetMapping("/all")
-//    @PreAuthorize("hasAuthority('HR')")
-//    public ResponseEntity<Page<Leave>> getAllLeaves(@PageableDefault(size = 10, sort = "startDate") Pageable pageable) {
-//        return ResponseEntity.ok(leaveService.getAllLeaves(pageable));
-//    }
-
-
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('Manager') or hasAuthority('HR')")
     public ResponseEntity<List<LeaveResponse>> getAllLeaves() {
