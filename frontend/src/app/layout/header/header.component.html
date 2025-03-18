@@ -3,16 +3,26 @@
     <div class="employee-info">
       <div class="avatar-container">
         <img
-          src="assets/images/pexels-photo-6694422.jpg"
+          [src]="imageSrc || 'assets/images/nopicture.png'"
           alt="Employee Avatar"
           class="avatar"
         />
       </div>
       <div class="employee-details">
         <div class="name">{{ user.firstName }} {{ user.lastName }}</div>
-        <div class="post">{{ user.department }} {{ user.role }}</div>
+        <div class="post">
+          <div class="job-and-edit-container">
+            <div class="job-title">{{ user.jobTitle }}</div>
+            <div class="edit-info">
+              <button class="edit-info-btn" (click)="openEditModal()">
+                Edit Info
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+
     @if(this.authService.hasRole('Employee')){
     <div class="header-leave-balances">
       <div class="leave-balance" *ngIf="leaveBalance$ | async as leaveBalance">

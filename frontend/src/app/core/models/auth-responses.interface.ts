@@ -6,6 +6,7 @@ export interface User {
   email: string;
   department: string;
   role: string;
+  jobTitle: string;
 }
 
 export interface LoginResponse {

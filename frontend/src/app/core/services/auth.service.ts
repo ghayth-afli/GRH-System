@@ -131,7 +131,7 @@ export class AuthService {
     );
   }
 
-  private _setUser(user: User): void {
+  public _setUser(user: User): void {
     localStorage.setItem('user', JSON.stringify(user));
   }
 

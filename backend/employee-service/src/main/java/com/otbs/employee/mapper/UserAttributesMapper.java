@@ -12,7 +12,7 @@ public class UserAttributesMapper implements Function<LdapUser, Employee> {
     @Override
     public Employee apply(LdapUser ldapUser) {
         Employee employee = new Employee();
-        employee.setId(ldapUser.getDn());
+        employee.setId(ldapUser.getDn().toString());
         employee.setUsername(ldapUser.getUsername());
         employee.setFirstName(ldapUser.getFirstName());
         employee.setLastName(ldapUser.getLastName());
