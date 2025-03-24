@@ -617,9 +617,8 @@ app-calendar-side-bar {
 }
 
 .download-icon {
-  background-color: var(--endeavour);
   cursor: pointer;
-  width: 15%;
+  width: 20%;
   padding: 0.1rem;
 }
 
