@@ -304,6 +304,21 @@ app-sidebar {
   gap: 1.5rem;
 }
 
+.job-and-edit-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.edit-info-btn {
+  color: var(--blue-zodiac);
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: underline;
+  background: none;
+}
+
 .avatar-container {
   width: 8.3333rem;
   height: 8.3333rem;
@@ -361,7 +376,7 @@ app-sidebar {
 .days {
   font-size: 1rem;
   font-weight: 500;
-  color: var(--white);
+  color: var (--white);
 }
 /* Notification */
 .notification-container {
@@ -622,23 +637,21 @@ app-calendar-side-bar {
 
 /* Leave Request Modal Styles */
 .modal-container {
-  width: 500px;
+  width: 100%;
   padding: 2rem;
   background: var(--white);
   border-radius: 0.4444rem;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   max-width: 600px;
   margin: 2rem auto;
+  font-family: "KodeMono-Regular", monospace;
 }
 
 .modal-container h2 {
   font-size: 1.5rem;
   margin-bottom: 1rem;
   color: var(--blue-zodiac);
-}
-
-.modal-content {
-  margin: 1rem 0;
+  text-align: center;
 }
 
 .modal-content form {
@@ -649,7 +662,7 @@ app-calendar-side-bar {
 
 .modal-content label {
   font-size: 1rem;
-  color: var (--blue-zodiac);
+  color: var(--blue-zodiac);
   margin-bottom: 0.5rem;
 }
 
@@ -662,16 +675,25 @@ app-calendar-side-bar {
   color: var(--blue-zodiac);
 }
 
-.modal-content input[type="date"],
-.modal-content input[type="time"],
-.modal-content input[type="file"] {
-  width: 100%;
+.profile-picture-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
-.modal-content .error {
-  color: var(--blaze-orange);
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
+.profile-picture {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid var(--silver);
+  transition: border-color 0.3s;
+}
+
+.profile-picture:hover {
+  border-color: var(--blaze-orange);
 }
 
 .modal-actions {
@@ -679,6 +701,26 @@ app-calendar-side-bar {
   justify-content: flex-end;
   gap: 1rem;
   margin-top: 1rem;
+}
+
+.modal-actions button {
+  background-color: var(--blaze-orange);
+  color: var(--white);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+  border-radius: 0.2rem;
+}
+
+.modal-actions button:disabled {
+  background-color: var(--dove-gray);
+  cursor: not-allowed;
+}
+
+.modal-actions button:hover:not(:disabled) {
+  background-color: var(--endeavour);
 }
 
 .submit-button-modal {
@@ -873,4 +915,25 @@ app-calendar-side-bar {
     width: 100%;
     flex: 1;
   }
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+label {
+  font-size: 1rem;
+  color: var(--blue-zodiac);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="file"] {
+  padding: 0.5rem;
+  border: 1px solid var(--silver);
+  border-radius: 0.2rem;
+  font-size: 1rem;
+  color: var(--blue-zodiac);
 }

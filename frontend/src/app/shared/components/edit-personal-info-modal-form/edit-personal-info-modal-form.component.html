@@ -1,0 +1,35 @@
+<div class="modal-container">
+  <h2>Edit Personal Information</h2>
+  <form (ngSubmit)="onSubmit()" [formGroup]="editForm">
+    <div class="profile-picture-container">
+      <img
+        [src]="user.profilePicture"
+        alt="Profile Picture"
+        class="profile-picture"
+        (click)="triggerFileInput()"
+      />
+      <input
+        id="profilePicture"
+        type="file"
+        (change)="onFileChange($event)"
+        hidden
+      />
+    </div>
+    <label for="firstName">First Name</label>
+    <input id="firstName" formControlName="firstName" type="text" />
+
+    <label for="lastName">Last Name</label>
+    <input id="lastName" formControlName="lastName" type="text" />
+
+    <label for="email">Email</label>
+    <input id="email" formControlName="email" type="email" />
+
+    <label for="jobTitle">Job Title</label>
+    <input id="jobTitle" formControlName="jobTitle" type="text" />
+
+    <div class="modal-actions">
+      <button type="button" (click)="closeModal()">Cancel</button>
+      <button type="submit" [disabled]="editForm.invalid">Save</button>
+    </div>
+  </form>
+</div>

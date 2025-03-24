@@ -13,4 +13,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<MessageResponse> handleEmployeeNotFound() {
         return new ResponseEntity<>(new MessageResponse("Employee not found"), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(FileUploadException.class)
+    public ResponseEntity<MessageResponse> handleFileUploadException() {
+        return new ResponseEntity<>(new MessageResponse("File upload failed"), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
