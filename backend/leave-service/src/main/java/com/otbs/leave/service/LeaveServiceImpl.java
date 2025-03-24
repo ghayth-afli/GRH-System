@@ -119,7 +119,7 @@ public class LeaveServiceImpl implements LeaveService {
             leaveRepository.save(leave);
 
             EmployeeResponse user = employeeClient.getEmployeeByDn(leave.getUserDn()).getBody();
-            mailClient.sendMail(new MailRequest(user.email(), "Leave Application", "Your leave application has been approved successfully"));
+            mailClient.sendMail(new MailRequest(user.email(), "Leave Application", "Your leave application has been rejected successfully"));
             //TODO: Send Notification to HR
             //TODO: Send Notification to Employee
         }, () -> {
