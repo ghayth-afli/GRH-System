@@ -24,29 +24,29 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @GetMapping
-    public ResponseEntity<Employee> getEmployeeByEmail(@RequestParam("email") String email) {
-        return ResponseEntity.ok(employeeService.getEmployeeByEmail(email));
+    public Employee getEmployeeByEmail(@RequestParam("email") String email) {
+        return employeeService.getEmployeeByEmail(email);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Employee> getEmployeeByDn(@PathVariable("id") String id) {
-        return ResponseEntity.ok(employeeService.getEmployeeByDn(LdapUtils.newLdapName(id)));
+    public Employee getEmployeeByDn(@PathVariable("id") String id) {
+        return employeeService.getEmployeeByDn(LdapUtils.newLdapName(id));
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Employee>> getAllEmployees() {
-        return ResponseEntity.ok(employeeService.getAllEmployees());
+    public List<Employee> getAllEmployees() {
+        return employeeService.getAllEmployees();
     }
 
     @GetMapping("/username")
-    public ResponseEntity<Employee> getEmployeeByUsername(@RequestParam("username") String username) {
-        return ResponseEntity.ok(employeeService.getEmployeeByUsername(username));
+    public Employee getEmployeeByUsername(@RequestParam("username") String username) {
+        return employeeService.getEmployeeByUsername(username);
     }
 
     //get manager by department
     @GetMapping("/manager")
-    public ResponseEntity<Employee> getManagerByDepartment(@RequestParam("department") String department) {
-        return ResponseEntity.ok(employeeService.getManagerByDepartment(department));
+    public Employee getManagerByDepartment(@RequestParam("department") String department) {
+        return employeeService.getManagerByDepartment(department);
     }
 
 

@@ -42,8 +42,8 @@ public class AuthController {
 
         String accessToken = jwtUtils.generateAccessToken(authRequest.username(), roles);
 
-        ResponseEntity<EmployeeResponse> response = employeeClient.getEmployeeByUsername(authRequest.username());
-        EmployeeResponse user = response != null ? response.getBody() : null;
+        EmployeeResponse response = employeeClient.getEmployeeByUsername(authRequest.username());
+        EmployeeResponse user = response != null ? response : null;
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -63,8 +63,8 @@ public class AuthController {
 
         if (jwtUtils.validateRefreshToken(refreshToken)) {
             String username = jwtUtils.getUserNameFromJwtToken(refreshToken);
-            ResponseEntity<EmployeeResponse> response = employeeClient.getEmployeeByUsername(username);
-            EmployeeResponse user = response != null ? response.getBody() : null;
+            EmployeeResponse response = employeeClient.getEmployeeByUsername(username);
+            EmployeeResponse user = response != null ? response : null;
             if (user == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }

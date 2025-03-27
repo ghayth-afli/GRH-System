@@ -42,7 +42,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
 
     @Override
     public void createPasswordResetTokenForUser(String email) {
-        EmployeeResponse user = employeeClient.getEmployeeByEmail(email).getBody();
+        EmployeeResponse user = employeeClient.getEmployeeByEmail(email);
         if (user == null) {
             throw new UserNotFoundException("User not found");
         }
@@ -69,7 +69,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
             throw new TokenExpiredException("Token expired");
         }
 
-        EmployeeResponse user = employeeClient.getEmployeeByEmail(resetToken.getEmail()).getBody();
+        EmployeeResponse user = employeeClient.getEmployeeByEmail(resetToken.getEmail());
         if (user == null) {
             throw new UserNotFoundException("User not found");
         }

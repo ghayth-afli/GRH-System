@@ -77,7 +77,7 @@ public class LeaveServiceImpl implements LeaveService {
         log.info("Mail sent to user: {}", c.message());
 
         //send mail to manager
-        EmployeeResponse manager = employeeClient.getManagerByDepartment(user.department()).getBody();
+        EmployeeResponse manager = employeeClient.getManagerByDepartment(user.department());
         MailResponse c1 = mailClient.sendMail(new MailRequest(manager.email(), "Leave Application", "You have a new leave application to approve"));
         log.info("Mail sent to manager: {}", c1.message());
     }
@@ -103,7 +103,7 @@ public class LeaveServiceImpl implements LeaveService {
                 throw new LeaveBalanceNotFoundException("Leave balance not found");
             });
 
-            EmployeeResponse user = employeeClient.getEmployeeByDn(leave.getUserDn()).getBody();
+            EmployeeResponse user = employeeClient.getEmployeeByDn(leave.getUserDn());
             mailClient.sendMail(new MailRequest(user.email(), "Leave Application", "Your leave application has been approved successfully"));
             //TODO: Send Notification to HR
             //TODO: Send Notification to Employee
@@ -118,7 +118,7 @@ public class LeaveServiceImpl implements LeaveService {
             leave.setStatus(EStatus.REFUSÉE);
             leaveRepository.save(leave);
 
-            EmployeeResponse user = employeeClient.getEmployeeByDn(leave.getUserDn()).getBody();
+            EmployeeResponse user = employeeClient.getEmployeeByDn(leave.getUserDn());
             mailClient.sendMail(new MailRequest(user.email(), "Leave Application", "Your leave application has been rejected successfully"));
             //TODO: Send Notification to HR
             //TODO: Send Notification to Employee
@@ -143,7 +143,7 @@ public class LeaveServiceImpl implements LeaveService {
         EmployeeResponse user = (EmployeeResponse) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(user.role().equals("Manager")){
             return leaveRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt")).stream().filter(leave -> {
-                EmployeeResponse employee = employeeClient.getEmployeeByDn(leave.getUserDn()).getBody();
+                EmployeeResponse employee = employeeClient.getEmployeeByDn(leave.getUserDn());
                 return employee != null && employee.department() != null && employee.department().equals(user.department());
             }).map(leaveAttributesMapper::toDto).collect(Collectors.toList());
         }
@@ -158,7 +158,7 @@ public class LeaveServiceImpl implements LeaveService {
             throw new IllegalStateException("User or user department is null");
         }
         List<Leave> filteredLeaves = leaveRepository.findAll(pageable).stream().filter(leave -> {
-            EmployeeResponse employee = employeeClient.getEmployeeByDn(leave.getUserDn()).getBody();
+            EmployeeResponse employee = employeeClient.getEmployeeByDn(leave.getUserDn());
             return employee != null && employee.department() != null && employee.department().equals(user.department());
         }).collect(Collectors.toList());
         return new PageImpl<>(filteredLeaves, pageable, filteredLeaves.size());
@@ -182,7 +182,7 @@ public class LeaveServiceImpl implements LeaveService {
             return attachment.map(Leave::getAttachment).orElseThrow(() -> new AttachmentNotFoundException("Attachment not found"));
         }
         return attachment.filter(leave -> {
-            EmployeeResponse employee = employeeClient.getEmployeeByDn(leave.getUserDn()).getBody();
+            EmployeeResponse employee = employeeClient.getEmployeeByDn(leave.getUserDn());
             return employee.department().equals(user.department());
         }).map(Leave::getAttachment).orElseThrow(() -> new LeaveNotFoundException("Leave not found"));
     }
