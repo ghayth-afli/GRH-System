@@ -25,6 +25,14 @@ export class AppointmentService {
     );
   }
 
+  getAppointmentsByMedicalVisitId(
+    medVisitId: string
+  ): Observable<Appointment[]> {
+    return this.http.get<Appointment[]>(
+      `${this.apiUrl}/medVisit/${medVisitId}`
+    );
+  }
+
   createAppointment(appointment: Appointment): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(this.apiUrl, appointment);
   }

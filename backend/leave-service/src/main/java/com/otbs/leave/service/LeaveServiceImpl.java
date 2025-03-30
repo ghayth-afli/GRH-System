@@ -44,7 +44,8 @@ public class LeaveServiceImpl implements LeaveService {
     @Override
     public void applyLeave(LeaveRequest leaveRequest, MultipartFile attachment) {
         Leave leave = leaveAttributesMapper.toEntity(leaveRequest);
-        EmployeeResponse user = (EmployeeResponse) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String userDn = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        EmployeeResponse user = employeeClient.getEmployeeByDn(userDn);
         leave.setUserDn(user.id());
 
         //Upload attachment if present
@@ -85,7 +86,8 @@ public class LeaveServiceImpl implements LeaveService {
     @Override
     public void cancelLeave(Long leaveId) {
         leaveRepository.deleteById(leaveId);
-        EmployeeResponse user = (EmployeeResponse) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String userDn = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        EmployeeResponse user = employeeClient.getEmployeeByDn(userDn);
         mailClient.sendMail(new MailRequest(user.email(), "Leave Application", "Your leave application has been cancelled successfully"));
     }
 
@@ -140,7 +142,8 @@ public class LeaveServiceImpl implements LeaveService {
 
     @Override
     public List<LeaveResponse> getAllLeaves() {
-        EmployeeResponse user = (EmployeeResponse) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String userDn = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        EmployeeResponse user = employeeClient.getEmployeeByDn(userDn);
         if(user.role().equals("Manager")){
             return leaveRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt")).stream().filter(leave -> {
                 EmployeeResponse employee = employeeClient.getEmployeeByDn(leave.getUserDn());
@@ -153,7 +156,8 @@ public class LeaveServiceImpl implements LeaveService {
 
     @Override
     public Page<Leave> getAllLeavesForManager(Pageable pageable) {
-        EmployeeResponse user = (EmployeeResponse) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String userDn = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        EmployeeResponse user = employeeClient.getEmployeeByDn(userDn);
         if (user == null || user.department() == null) {
             throw new IllegalStateException("User or user department is null");
         }
@@ -176,7 +180,8 @@ public class LeaveServiceImpl implements LeaveService {
 
     @Override
     public byte[] downloadAttachment(Long leaveId) {
-        EmployeeResponse user = (EmployeeResponse) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String userDn = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        EmployeeResponse user = employeeClient.getEmployeeByDn(userDn);
         Optional<Leave> attachment = leaveRepository.findById(leaveId);
         if ("HR".equals(user.department())) {
             return attachment.map(Leave::getAttachment).orElseThrow(() -> new AttachmentNotFoundException("Attachment not found"));

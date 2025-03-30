@@ -1,1 +1,80 @@
-<p>appointments-page works!</p>
+<div class="component-container">
+  <div class="component-header">
+    <div class="component-title"><h3>Medical Visit</h3></div>
+    <div class="component-header-actions">
+      <div class="action-button pdf-export">
+        <button class="action-btn" (click)="exportPdf()">
+          <i class="icofont-file-pdf me-2 fs-6"></i>
+          Export PDF
+        </button>
+      </div>
+      <div class="action-button excel-export">
+        <button class="action-btn" (click)="exportcsv()">
+          <i class="icofont-file-excel me-2 fs-6"></i>
+          Export Excel
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="component-body">
+    <div class="data-table-container">
+      <mat-form-field style="float: right; margin-right: 5%">
+        <mat-label>Search:</mat-label>
+        <input matInput (keyup)="filter($event)" type="search" />
+      </mat-form-field>
+      <table mat-table [dataSource]="dataSource">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>id</th>
+          <td class="highlight-id" mat-cell *matCellDef="let element">
+            # {{ element.id }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="employeeFullName">
+          <th mat-header-cell *matHeaderCellDef>employee</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.employeeFullName }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="employeeEmail">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.employeeEmail }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="timeSlot">
+          <th mat-header-cell *matHeaderCellDef>time Slot</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.timeSlot | date : "shortTime" }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>status</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="highlight-status-green">{{ element.status }}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-icon-button class="edit-control" color="primary">
+              <mat-icon><i class="icofont-edit"></i></mat-icon>
+            </button>
+            <button mat-icon-button color="warn" class="delete-control">
+              <mat-icon><i class="icofont-ui-delete"></i></mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+
+      <mat-paginator
+        [pageSizeOptions]="pageSizeOptions"
+        [showFirstLastButtons]="true"
+        [pageSize]="pageSize"
+      >
+      </mat-paginator>
+    </div>
+  </div>
+</div>

@@ -40,6 +40,12 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentService.getAppointmentsByPatientId(employeeId));
     }
 
+    @GetMapping("/medVisit/{medVisitId}")
+    @PreAuthorize("hasAuthority('HR')")
+    public ResponseEntity<List<AppointmentResponse>> getAppointmentsByMedVisitId(@PathVariable("medVisitId") String medVisitId) {
+        return ResponseEntity.ok(appointmentService.getAppointmentsByMedVisitId(medVisitId));
+    }
+
     @PostMapping
     @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager')")
     public ResponseEntity<MessageResponse> createAppointment(@Valid @RequestBody AppointmentRequest appointmentRequest) {

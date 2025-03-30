@@ -19,9 +19,12 @@ export class MedicalVisitService {
     return this.http.get<MedicalVisit>(`${this.apiUrl}/${id}`);
   }
 
-  createMedicalVisit(
-    medicalVisit: MedicalVisit
-  ): Observable<{ message: string }> {
+  createMedicalVisit(medicalVisit: {
+    doctorName: string;
+    visitDate: Date;
+    startTime: string;
+    endTime: string;
+  }): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(this.apiUrl, medicalVisit);
   }
 

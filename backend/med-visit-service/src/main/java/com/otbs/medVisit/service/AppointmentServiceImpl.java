@@ -166,6 +166,17 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .toList();
     }
 
+    @Override
+    public List<AppointmentResponse> getAppointmentsByMedVisitId(String medVisitId) {
+        return appointmentRepository.findByMedicalVisitId(Long.parseLong(medVisitId)).stream()
+                .map(appointment -> {
+                    String employeeFullName = employeeClient.getEmployeeByDn(appointment.getEmployeeId()).firstName()+" "+employeeClient.getEmployeeByDn(appointment.getEmployeeId()).lastName();
+                    String employeeEmail = employeeClient.getEmployeeByDn(appointment.getEmployeeId()).email();
+                    return appointmentMapper.toDto(appointment, employeeFullName, employeeEmail);
+                })
+                .toList();
+    }
+
     private boolean isInvalidTimeSlot(AppointmentRequest appointmentRequest, Appointment appointment) {
         return appointmentRequest.timeSlot().isBefore(LocalDateTime.of(appointment.getMedicalVisit().getVisitDate(), appointment.getMedicalVisit().getStartTime())) ||
                 appointmentRequest.timeSlot().isAfter(LocalDateTime.of(appointment.getMedicalVisit().getVisitDate(), appointment.getMedicalVisit().getEndTime())) ||

@@ -1,0 +1,112 @@
+.form-modal-container {
+  padding: 16px;
+}
+
+.form-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+}
+
+.form-modal-header h5 {
+  font-size: 1.25rem;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-controller {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-controller-container {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
+.label-container {
+  margin-bottom: 8px;
+}
+.label-container label {
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.form-controller input {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #eeeeee;
+  border-radius: 0.375rem;
+  line-height: 1.5;
+  appearance: none;
+  background-clip: padding-box;
+  background-color: #ebebeb;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.form-controller input:focus {
+  border-color: #007bff;
+  background-color: #fff;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+}
+.form-buttons button {
+  padding: 0.375rem 0.75rem;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.form-buttons button.primary {
+  background-color: #007bff;
+  color: #fff;
+  transition: background-color 0.15s ease-in-out;
+}
+.form-buttons button.primary:hover {
+  background-color: #0056b3;
+}
+.form-buttons button.secondary {
+  background-color: #6c757d;
+  color: #fff;
+  transition: background-color 0.15s ease-in-out;
+}
+.form-buttons button.secondary:hover {
+  background-color: #5a6268;
+}
+.form-buttons button.disabled {
+  background-color: #e0e0e0;
+  color: #6c757d;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.form-buttons button.disabled:hover {
+  background-color: #e0e0e0;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #000;
+  transition: color 0.15s ease-in-out;
+}
+.close-button:hover {
+  color: #007bff;
+}
+.close-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}

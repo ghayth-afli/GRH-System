@@ -37,6 +37,15 @@ const routes: Routes = [
         canActivate: [RoleGuard],
         data: { roles: ['Manager', 'HR'] },
       },
+      {
+        path: 'medical-visits',
+        loadChildren: () =>
+          import('./modules/med-visit/med-visit.module').then(
+            (m) => m.MedVisitModule
+          ),
+        canActivate: [RoleGuard],
+        data: { roles: ['Manager', 'HR', 'Employee'] },
+      },
       { path: '', redirectTo: 'home', pathMatch: 'full' },
     ],
   },
