@@ -91,15 +91,13 @@ public class LeaveController {
     @GetMapping("/balance")
     @PreAuthorize("hasAuthority('Employee')")
     public ResponseEntity<LeaveBalance> getLeaveBalance() {
-        EmployeeResponse user = (EmployeeResponse) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return ResponseEntity.ok(leaveService.getLeaveBalance(user.id()));
+        return ResponseEntity.ok(leaveService.getLeaveBalance((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal()));
     }
 
     @GetMapping("/history")
     @PreAuthorize("hasAuthority('Employee')")
     public ResponseEntity<List<Leave>> getLeaveHistory(@PageableDefault(size = 10, sort = "startDate") Pageable pageable) {
-        EmployeeResponse user = (EmployeeResponse) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return ResponseEntity.ok(leaveService.getLeaveHistory(user.id()));
+        return ResponseEntity.ok(leaveService.getLeaveHistory((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal()));
     }
 
     @GetMapping("/{leaveId}/receivedAttachment")

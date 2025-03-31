@@ -41,7 +41,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/medVisit/{medVisitId}")
-    @PreAuthorize("hasAuthority('HR')")
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager')")
     public ResponseEntity<List<AppointmentResponse>> getAppointmentsByMedVisitId(@PathVariable("medVisitId") String medVisitId) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByMedVisitId(medVisitId));
     }

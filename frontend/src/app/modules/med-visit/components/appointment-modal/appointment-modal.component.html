@@ -1,0 +1,41 @@
+<div class="form-modal-container">
+  <div class="form-modal-header">
+    <h5>Take Appointment</h5>
+    <button class="close-button" (click)="onClose()">
+      <i class="icofont-close-line"></i>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="form-controller">
+      <div class="label-container">
+        <label for="timeSlot">Select Time Slot:</label>
+      </div>
+      <select id="timeSlot" [(ngModel)]="selectedTimeSlot">
+        <option *ngFor="let slot of timeSlots" [value]="slot.toISOString()">
+          {{ slot | date : "HH:mm" }}
+        </option>
+      </select>
+    </div>
+  </div>
+  <div class="form-buttons margintop-20">
+    <div class="button-submit">
+      <button
+        type="submit"
+        class="primary"
+        [disabled]="isLoading"
+        (click)="onSubmit()"
+      >
+        <span *ngIf="isLoading">Loading...</span>
+        <span *ngIf="!isLoading">
+          <span>Add</span>
+        </span>
+      </button>
+    </div>
+    <div class="button-cancel">
+      <button type="button" (click)="onClose()">
+        <span *ngIf="isLoading">Loading...</span>
+        <span *ngIf="!isLoading">Cancel</span>
+      </button>
+    </div>
+  </div>
+</div>

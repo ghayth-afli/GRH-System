@@ -8,7 +8,6 @@ import { MedicalVisit } from '../../models/medical-visit';
 @Component({
   selector: 'app-medical-visit-form-modal',
   standalone: false,
-
   templateUrl: './medical-visit-form-modal.component.html',
   styleUrl: './medical-visit-form-modal.component.css',
 })
@@ -22,76 +21,94 @@ export class MedicalVisitFormModalComponent {
   constructor(@Inject(MAT_DIALOG_DATA) public data: MedicalVisit) {}
 
   ngOnInit(): void {
+    this.initializeForm();
+  }
+
+  private initializeForm(): void {
     if (this.data) {
-      this.medicalVisitForm = new FormGroup({
-        doctorName: new FormControl(this.data.doctorName),
-        visitDate: new FormControl(this.data.visitDate),
-        startTime: new FormControl(this.data.startTime),
-        endTime: new FormControl(this.data.endTime),
-      });
-      this.isUpdate = true;
+      this.setupUpdateForm();
     } else {
-      this.medicalVisitForm = new FormGroup({
-        doctorName: new FormControl(''),
-        visitDate: new FormControl(''),
-        startTime: new FormControl(''),
-        endTime: new FormControl(''),
-      });
+      this.setupCreateForm();
     }
   }
 
-  onSubmit() {
-    if (this.isUpdate) {
-      this.updateMedicalVisit();
-    } else {
-      this.createMedicalVisit();
-    }
+  private setupUpdateForm(): void {
+    this.medicalVisitForm = new FormGroup({
+      doctorName: new FormControl(this.data.doctorName),
+      visitDate: new FormControl(this.data.visitDate),
+      startTime: new FormControl(this.data.startTime),
+      endTime: new FormControl(this.data.endTime),
+    });
+    this.isUpdate = true;
   }
 
-  updateMedicalVisit() {
+  private setupCreateForm(): void {
+    this.medicalVisitForm = new FormGroup({
+      doctorName: new FormControl(''),
+      visitDate: new FormControl(''),
+      startTime: new FormControl(''),
+      endTime: new FormControl(''),
+    });
+  }
+
+  onSubmit(): void {
+    this.isUpdate ? this.updateMedicalVisit() : this.createMedicalVisit();
+  }
+
+  private updateMedicalVisit(): void {
     this.isLoading = true;
     const medicalVisitData = this.medicalVisitForm.value;
     console.log('Medical Visit Data:', medicalVisitData);
-    // Call the service to save the data here
     this.medicalVisitService
       .updateMedicalVisit(this.data.id, medicalVisitData)
       .subscribe({
-        next: (response) => {
-          console.log('Medical visit updated:', response);
-          this.isLoading = false;
-          this.dialogRef.close(medicalVisitData);
-        },
-        error: (error) => {
-          console.error('Error updating medical visit:', error);
-          this.isLoading = false;
-        },
+        next: (response) =>
+          this.handleUpdateSuccess(response, medicalVisitData),
+        error: (error) => this.handleError('updating', error),
       });
   }
 
-  createMedicalVisit() {
+  private createMedicalVisit(): void {
     if (this.medicalVisitForm.valid) {
       this.isLoading = true;
       const medicalVisitData = this.medicalVisitForm.value;
       console.log('Medical Visit Data:', medicalVisitData);
       this.medicalVisitService.createMedicalVisit(medicalVisitData).subscribe({
-        next: (response) => {
-          console.log('Medical visit created:', response);
-          this.isLoading = false;
-          this.dialogRef.close(medicalVisitData);
-        },
-        error: (error) => {
-          console.error('Error creating medical visit:', error);
-          this.isLoading = false;
-        },
+        next: (response) =>
+          this.handleCreateSuccess(response, medicalVisitData),
+        error: (error) => this.handleError('creating', error),
       });
     } else {
       console.error('Form is invalid');
     }
   }
-  onCancel() {
-    this.dialogRef.close();
+
+  private handleUpdateSuccess(response: any, medicalVisitData: any): void {
+    console.log('Medical visit updated:', response);
+    this.isLoading = false;
+    this.dialogRef.close(medicalVisitData);
   }
-  onClose() {
+
+  private handleCreateSuccess(response: any, medicalVisitData: any): void {
+    console.log('Medical visit created:', response);
+    this.isLoading = false;
+    this.dialogRef.close(medicalVisitData);
+  }
+
+  private handleError(action: string, error: any): void {
+    console.error(`Error ${action} medical visit:`, error);
+    this.isLoading = false;
+  }
+
+  onCancel(): void {
+    this.closeDialog();
+  }
+
+  onClose(): void {
+    this.closeDialog();
+  }
+
+  private closeDialog(): void {
     this.dialogRef.close();
   }
 }

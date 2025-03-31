@@ -33,7 +33,10 @@ export class AppointmentService {
     );
   }
 
-  createAppointment(appointment: Appointment): Observable<{ message: string }> {
+  createAppointment(appointment: {
+    medicalVisitId: number;
+    timeSlot: Date;
+  }): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(this.apiUrl, appointment);
   }
 

@@ -11,7 +11,6 @@ import autoTable from 'jspdf-autotable';
 @Component({
   selector: 'app-appointments-page',
   standalone: false,
-
   templateUrl: './appointments-page.component.html',
   styleUrl: './appointments-page.component.css',
 })
@@ -29,51 +28,22 @@ export class AppointmentsPageComponent {
     'employeeEmail',
     'timeSlot',
     'status',
-    'actions',
   ];
-  appointments: Appointment[] = [
-    {
-      id: 1,
-      medicalVisitId: 1,
-      doctorName: 'Dr. Smith',
-      timeSlot: new Date('2023-10-01T09:00:00'),
-      status: AppointmentStatus.PLANIFIE,
-      employeeFullName: 'John Doe',
-      employeeEmail: 'john@gmail.com',
-    },
-  ];
+  appointments: Appointment[] = [];
+
   ngOnInit(): void {
-    this.route.paramMap.subscribe({
-      next: (params) => {
-        this.medicalVisitId = params.get('id');
-        console.log('Medical Visit ID:', this.medicalVisitId);
-      },
-      error: (error) => {
-        console.error('Error fetching route parameters:', error);
-      },
-    });
-    this.appointmentService
-      .getAppointmentsByMedicalVisitId(this.medicalVisitId!)
-      .subscribe({
-        next: (appointments) => {
-          this.appointments = appointments;
-          this.dataSource = new MatTableDataSource(this.appointments);
-          this.dataSource.paginator = this.paginator;
-        },
-        error: (error) => {
-          console.error('Error fetching appointments:', error);
-        },
-      });
-    this.dataSource = new MatTableDataSource(this.appointments);
-    this.dataSource.paginator = this.paginator;
+    this.fetchRouteParams();
+    this.loadAppointments();
+    this.initializeDataSource();
   }
 
-  filter($event: KeyboardEvent) {
-    this.dataSource.filter = ($event.target as HTMLInputElement).value
-      .trim()
-      .toLowerCase();
+  exportCsv(): void {
+    const csvData = this.mapAppointmentsToCsvData();
+    const csvContent = this.generateCsvContent(csvData);
+    this.downloadCsv(csvContent);
   }
-  exportPdf() {
+
+  exportPdf(): void {
     const doc = new jsPDF();
     doc.text('Appointments Report', 14, 16);
     autoTable(doc, {
@@ -87,44 +57,96 @@ export class AppointmentsPageComponent {
           'Employee Email',
         ],
       ],
-      body: this.appointments.map((appointment) => [
-        appointment.id,
-        appointment.doctorName,
-        appointment.timeSlot.toLocaleString(),
-        appointment.status,
-        appointment.employeeFullName,
-        appointment.employeeEmail,
-      ]),
+      body: this.mapAppointmentsToTableData(),
     });
     doc.save('appointments-report.pdf');
   }
-  exportcsv() {
-    const csvData = this.appointments.map((appointment) => {
-      return {
-        ID: appointment.id,
-        DoctorName: appointment.doctorName,
-        TimeSlot: appointment.timeSlot.toLocaleString(),
-        Status: appointment.status,
-        EmployeeFullName: appointment.employeeFullName,
-        EmployeeEmail: appointment.employeeEmail,
-      };
-    });
 
-    const csvContent =
+  filter($event: KeyboardEvent): void {
+    const filterValue = ($event.target as HTMLInputElement).value
+      .trim()
+      .toLowerCase();
+    this.dataSource.filter = filterValue;
+  }
+
+  private fetchRouteParams(): void {
+    this.route.paramMap.subscribe({
+      next: (params) => {
+        this.medicalVisitId = params.get('id');
+        console.log('Medical Visit ID:', this.medicalVisitId);
+      },
+      error: (error) => {
+        console.error('Error fetching route parameters:', error);
+      },
+    });
+  }
+
+  private loadAppointments(): void {
+    if (!this.medicalVisitId) return;
+
+    this.appointmentService
+      .getAppointmentsByMedicalVisitId(this.medicalVisitId)
+      .subscribe({
+        next: (appointments) => {
+          this.appointments = appointments;
+          this.updateDataSource();
+        },
+        error: (error) => {
+          console.error('Error fetching appointments:', error);
+        },
+      });
+  }
+
+  private initializeDataSource(): void {
+    this.dataSource = new MatTableDataSource(this.appointments);
+    this.dataSource.paginator = this.paginator;
+  }
+
+  private updateDataSource(): void {
+    this.dataSource.data = this.appointments;
+  }
+
+  private mapAppointmentsToTableData(): any[] {
+    return this.appointments.map((appointment) => [
+      appointment.id,
+      appointment.doctorName,
+      appointment.timeSlot.toLocaleString(),
+      appointment.status,
+      appointment.employeeFullName,
+      appointment.employeeEmail,
+    ]);
+  }
+
+  private mapAppointmentsToCsvData(): any[] {
+    return this.appointments.map((appointment) => ({
+      ID: appointment.id,
+      DoctorName: appointment.doctorName,
+      TimeSlot: appointment.timeSlot.toLocaleString(),
+      Status: appointment.status,
+      EmployeeFullName: appointment.employeeFullName,
+      EmployeeEmail: appointment.employeeEmail,
+    }));
+  }
+
+  private generateCsvContent(csvData: any[]): string {
+    return (
       'data:text/csv;charset=utf-8,' +
       Object.keys(csvData[0]).join(',') +
       '\n' +
       csvData
         .map((row) => Object.values(row).join(','))
         .join('\n')
-        .replace(/,/g, ';');
+        .replace(/,/g, ';')
+    );
+  }
 
+  private downloadCsv(csvContent: string): void {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
     link.setAttribute('download', 'appointments-report.csv');
-    document.body.appendChild(link); // Required for FF
+    document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link); // Clean up the DOM
+    document.body.removeChild(link);
   }
 }

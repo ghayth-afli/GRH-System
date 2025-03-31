@@ -13,12 +13,14 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MedicalVisitFormModalComponent } from './components/medical-visit-form-modal/medical-visit-form-modal.component';
+import { AppointmentModalComponent } from './components/appointment-modal/appointment-modal.component';
 
 @NgModule({
   declarations: [
     MedicalVisitsPageComponent,
     AppointmentsPageComponent,
     MedicalVisitFormModalComponent,
+    AppointmentModalComponent,
   ],
   imports: [
     CommonModule,
