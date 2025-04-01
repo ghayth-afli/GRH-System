@@ -5,50 +5,46 @@
   <div class="sidebar-content">
     <nav class="menu">
       <div class="menu-item">
-        <a routerLink="/home" routerLinkActive="active">
-          <img
-            src="assets/icons/icons8-home-48.png"
-            alt=""
-            class="sidebar-menu-icon"
-          />
+        @if(authService.hasRole('Employee')) {<a
+          routerLink="/home"
+          routerLinkActive="active"
+        >
+          <i class="icofont-home sidebar-menu-icon"></i>
         </a>
+        }
       </div>
       <div class="menu-item">
         <a routerLink="/dashboard" routerLinkActive="active">
-          <img
-            src="assets/icons/icons8-dashboard-48.png"
-            alt=""
-            class="sidebar-menu-icon"
-          />
+          <i class="icofont-dashboard sidebar-menu-icon"></i>
+        </a>
+      </div>
+      @if(authService.hasRole('HR')||authService.hasRole('Manager')) {
+      <div class="menu-item">
+        <a routerLink="/leave" routerLinkActive="active">
+          <i class="icofont-briefcase sidebar-menu-icon"></i>
+        </a>
+      </div>
+      }
+      <div class="menu-item">
+        <a routerLink="/medical-visits" routerLinkActive="active">
+          <i class="icofont-stethoscope sidebar-menu-icon"></i>
         </a>
       </div>
       <div class="menu-item">
         <a routerLink="/files" routerLinkActive="active">
-          <img
-            src="assets/icons/icons8-file-48.png"
-            alt=""
-            class="sidebar-menu-icon"
-          />
+          <i class="icofont-files-stack sidebar-menu-icon"></i>
         </a>
       </div>
       <div class="menu-item">
         <a routerLink="/settings" routerLinkActive="active">
-          <img
-            src="assets/icons/icons8-setting-48.png"
-            alt=""
-            class="sidebar-menu-icon"
-          />
+          <i class="icofont-settings sidebar-menu-icon"></i>
         </a>
       </div>
     </nav>
   </div>
   <div class="menu-item">
     <a (click)="logout()">
-      <img
-        src="assets/icons/icons8-logout-48.png"
-        alt=""
-        class="sidebar-menu-icon"
-      />
+      <i class="icofont-logout sidebar-menu-icon"></i>
     </a>
   </div>
 </div>

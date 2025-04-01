@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
   styleUrl: './sidebar.component.css',
 })
 export class SidebarComponent {
-  private authService = inject(AuthService);
+  authService = inject(AuthService);
   private router = inject(Router);
 
   logout() {
