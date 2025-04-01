@@ -42,7 +42,12 @@ public class AppointmentServiceImpl implements AppointmentService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         //verify if employee has already an appointment
-        if (appointmentRepository.findAll().stream().anyMatch(app -> app.getEmployeeId().equals(authentication.getName()))) {
+        if (appointmentRepository.findAll().stream().anyMatch(
+                app -> {
+                    return app.getEmployeeId().equals(authentication.getName())&&app.getMedicalVisit().getId().equals(appointment.medicalVisitId());
+                }
+        )
+        ) {
             throw new AppointmentException("You already have an appointment");
         }
 
