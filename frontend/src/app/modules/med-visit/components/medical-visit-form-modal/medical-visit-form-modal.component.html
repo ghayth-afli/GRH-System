@@ -51,16 +51,21 @@
             [disabled]="medicalVisitForm.invalid"
             class="primary"
           >
-            <span *ngIf="isLoading">Loading...</span>
-            <span *ngIf="!isLoading">
-              @if(isUpdate){<span>Update</span>} @else{<span>Add</span>}
-            </span>
+            @if(isLoading){
+            <div class="spinner-container">
+              <mat-spinner [diameter]="15"></mat-spinner>
+            </div>
+            } @else{ @if(isUpdate){<span>Update</span>} @else{<span>Add</span>}
+            }
           </button>
         </div>
         <div class="button-cancel">
           <button type="button" (click)="onCancel()">
-            <span *ngIf="isLoading">Loading...</span>
-            <span *ngIf="!isLoading">Cancel</span>
+            @if(isLoading){
+            <div class="spinner-container">
+              <mat-spinner [diameter]="15"></mat-spinner>
+            </div>
+            } @else{ Cancel }
           </button>
         </div>
       </div>

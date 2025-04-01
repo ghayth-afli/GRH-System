@@ -2,6 +2,7 @@ import { Component, Inject, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MedicalVisit } from '../../models/medical-visit';
 import { AppointmentService } from '../../services/appointment.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-appointment-modal',
@@ -15,6 +16,7 @@ export class AppointmentModalComponent {
   selectedTimeSlot: Date = new Date();
   isLoading = false;
   appointmentService = inject(AppointmentService);
+  private snackBar = inject(MatSnackBar);
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: MedicalVisit) {}
 
@@ -32,6 +34,10 @@ export class AppointmentModalComponent {
   }
 
   onSubmit() {
+    console.log('Selected Time Slot:', this.selectedTimeSlot);
+    const selectedDate = new Date(this.selectedTimeSlot);
+    selectedDate.setHours(selectedDate.getHours() + 1);
+    this.selectedTimeSlot = selectedDate;
     this.isLoading = true;
     const appointmentData = this.createAppointmentData();
     this.submitAppointment(appointmentData);
@@ -49,6 +55,9 @@ export class AppointmentModalComponent {
     const startTime = this.createDateFromTime(this.data.startTime);
     const endTime = this.createDateFromTime(this.data.endTime);
 
+    console.log('Start Time:', startTime);
+    console.log('End Time:', endTime);
+
     if (!startTime || !endTime) {
       console.error('Error: startTime or endTime is invalid', this.data);
       return;
@@ -63,7 +72,7 @@ export class AppointmentModalComponent {
     endTime: Date
   ): void {
     let currentTime = new Date(startTime);
-    while (currentTime <= endTime) {
+    while (currentTime < endTime) {
       const slotDate = new Date(visitDate);
       slotDate.setHours(currentTime.getHours(), currentTime.getMinutes(), 0, 0);
       this.timeSlots.push(slotDate);
@@ -124,13 +133,23 @@ export class AppointmentModalComponent {
   }): void {
     console.log('Appointment Data:', appointmentData);
     this.appointmentService.createAppointment(appointmentData).subscribe({
-      next: (response) => {
+      next: (response: { message: string }) => {
         console.log('Appointment created:', response);
+        this.snackBar.open(response.message, 'X', {
+          duration: 5000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+        });
         this.isLoading = false;
         this.dialogRef.close(appointmentData);
       },
-      error: (error) => {
+      error: (error: { message: string }) => {
         console.error('Error creating appointment:', error);
+        this.snackBar.open(error.message, 'X', {
+          duration: 5000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+        });
         this.isLoading = false;
       },
     });

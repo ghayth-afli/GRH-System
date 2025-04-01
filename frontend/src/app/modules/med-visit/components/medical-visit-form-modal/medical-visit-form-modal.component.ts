@@ -4,6 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { AppointmentService } from '../../services/appointment.service';
 import { MedicalVisitService } from '../../services/medical-visit.service';
 import { MedicalVisit } from '../../models/medical-visit';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-medical-visit-form-modal',
@@ -17,6 +18,7 @@ export class MedicalVisitFormModalComponent {
   isLoading = false;
   medicalVisitService = inject(MedicalVisitService);
   isUpdate = false;
+  private snackBar = inject(MatSnackBar);
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: MedicalVisit) {}
 
@@ -62,9 +64,13 @@ export class MedicalVisitFormModalComponent {
     this.medicalVisitService
       .updateMedicalVisit(this.data.id, medicalVisitData)
       .subscribe({
-        next: (response) =>
-          this.handleUpdateSuccess(response, medicalVisitData),
-        error: (error) => this.handleError('updating', error),
+        next: (response: { message: string }) => {
+          this.handleUpdateSuccess(response, medicalVisitData);
+        },
+
+        error: (error) => {
+          this.handleError('updating', error);
+        },
       });
   }
 
@@ -83,20 +89,41 @@ export class MedicalVisitFormModalComponent {
     }
   }
 
-  private handleUpdateSuccess(response: any, medicalVisitData: any): void {
+  private handleUpdateSuccess(
+    response: { message: string },
+    medicalVisitData: any
+  ): void {
     console.log('Medical visit updated:', response);
+    this.snackBar.open(response.message, 'X', {
+      duration: 5000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+    });
     this.isLoading = false;
     this.dialogRef.close(medicalVisitData);
   }
 
-  private handleCreateSuccess(response: any, medicalVisitData: any): void {
+  private handleCreateSuccess(
+    response: { message: string },
+    medicalVisitData: any
+  ): void {
     console.log('Medical visit created:', response);
+    this.snackBar.open(response.message, 'X', {
+      duration: 5000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+    });
     this.isLoading = false;
     this.dialogRef.close(medicalVisitData);
   }
 
-  private handleError(action: string, error: any): void {
+  private handleError(action: string, error: { message: string }): void {
     console.error(`Error ${action} medical visit:`, error);
+    this.snackBar.open(error.message, 'X', {
+      duration: 5000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+    });
     this.isLoading = false;
   }
 

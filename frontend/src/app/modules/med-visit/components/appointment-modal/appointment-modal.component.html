@@ -25,16 +25,20 @@
         [disabled]="isLoading"
         (click)="onSubmit()"
       >
-        <span *ngIf="isLoading">Loading...</span>
-        <span *ngIf="!isLoading">
-          <span>Add</span>
-        </span>
+        @if(isLoading){
+        <div class="spinner-container">
+          <mat-spinner [diameter]="15"></mat-spinner>
+        </div>
+        } @else{ Take }
       </button>
     </div>
     <div class="button-cancel">
       <button type="button" (click)="onClose()">
-        <span *ngIf="isLoading">Loading...</span>
-        <span *ngIf="!isLoading">Cancel</span>
+        @if(isLoading){
+        <div class="spinner-container">
+          <mat-spinner [diameter]="15"></mat-spinner>
+        </div>
+        } @else{ Cancel }
       </button>
     </div>
   </div>

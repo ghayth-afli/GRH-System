@@ -13,6 +13,7 @@ import { AppointmentService } from '../../services/appointment.service';
 import { AppointmentModalComponent } from '../../components/appointment-modal/appointment-modal.component';
 import { Appointment } from '../../models/appointment';
 import { catchError, map, Observable, of } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-medical-visits-page',
@@ -159,6 +160,8 @@ export class MedicalVisitsPageComponent {
         'endTime',
         'numberOfAppointments',
         'actions',
+        'choosenSlot',
+        'TakeAppointment',
       ];
     } else if (
       this.authService.hasRole('Employee') ||
@@ -186,22 +189,17 @@ export class MedicalVisitsPageComponent {
   }
 
   private loadAppointmentsForEmployeeOrManager(): void {
-    if (
-      this.authService.hasRole('Employee') ||
-      this.authService.hasRole('Manager')
-    ) {
-      const user = localStorage.getItem('user');
-      if (user) {
-        const userId = JSON.parse(user)?.id;
-        this.appointmentService.getAppointmentsByEmployeeId(userId).subscribe({
-          next: (appointments) => {
-            this.updateMedicalVisitsWithAppointments(appointments);
-          },
-          error: (error) => {
-            console.error('Error fetching appointments:', error);
-          },
-        });
-      }
+    const user = localStorage.getItem('user');
+    if (user) {
+      const userId = JSON.parse(user)?.id;
+      this.appointmentService.getAppointmentsByEmployeeId(userId).subscribe({
+        next: (appointments) => {
+          this.updateMedicalVisitsWithAppointments(appointments);
+        },
+        error: (error) => {
+          console.error('Error fetching appointments:', error);
+        },
+      });
     }
   }
 
