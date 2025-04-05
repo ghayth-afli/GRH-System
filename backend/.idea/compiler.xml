@@ -14,6 +14,7 @@
         <module name="med-visit-service" />
         <module name="eureka-server" />
         <module name="mail-service" />
+        <module name="notification-service" />
         <module name="employee-service" />
       </profile>
     </annotationProcessing>

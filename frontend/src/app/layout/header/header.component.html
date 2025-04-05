@@ -23,8 +23,7 @@
       </div>
     </div>
 
-    @if(this.authService.hasRole('Employee')){
-    <div class="header-leave-balances">
+    <div class="header-leave-balances" *ngIf="isEmployee()">
       <div class="leave-balance" *ngIf="leaveBalance$ | async as leaveBalance">
         <div class="balance">Remaining balance :</div>
         <div class="days">
@@ -32,30 +31,67 @@
         </div>
       </div>
     </div>
-    }
 
     <div class="notification-container">
       <div class="notification-icon" (click)="toggleDropdown()">
         <i class="icofont-notification"></i>
-        <span class="notification-badge" *ngIf="unreadNotificationsCount > 0">{{
-          unreadNotificationsCount
-        }}</span>
+        <span
+          class="notification-badge"
+          *ngIf="(notificationService.unreadCount$ | async) ?? 0 > 0"
+        >
+          {{ notificationService.unreadCount$ | async }}
+        </span>
       </div>
       <div class="notification-dropdown" *ngIf="isDropdownOpen">
+        <div class="notification-header">
+          <h3>Notifications</h3>
+          <button
+            class="mark-all-read"
+            (click)="notificationService.markAllAsRead().subscribe()"
+            *ngIf="(notificationService.unreadCount$ | async) ?? 0 > 0"
+          >
+            Mark all as read
+          </button>
+        </div>
+
         <div
           class="notification-item"
-          *ngFor="let notification of notifications"
+          *ngFor="
+            let notification of notificationService.notifications$ | async
+          "
+          [class.unread]="!notification.read"
+          (click)="
+            !notification.read &&
+              notificationService.markAsRead(notification.id).subscribe()
+          "
         >
-          <div class="notification-header">
-            <img
-              [src]="notification.icon"
-              alt="Notification Icon"
-              class="notification-icon-img"
-            />
-            <div class="notification-title">{{ notification.title }}</div>
+          <div class="notification-icon-img">
+            <i
+              class="icofont"
+              [ngClass]="{
+                'icofont-info-circle': notification.type === 'INFO',
+                'icofont-warning-alt': notification.type === 'WARNING',
+                'icofont-check-circled': notification.type === 'SUCCESS'
+              }"
+            ></i>
           </div>
-          <div class="notification-content">{{ notification.content }}</div>
-          <div class="notification-seen" *ngIf="notification.seen">Seen</div>
+          <div class="notification-content">
+            <div class="notification-title">{{ notification.title }}</div>
+            <div class="notification-message">{{ notification.message }}</div>
+            <div class="notification-time">
+              {{ notification.createdAt | date : "shortTime" }}
+            </div>
+          </div>
+          <div class="notification-status">
+            <span *ngIf="!notification.read" class="unread-dot"></span>
+          </div>
+        </div>
+
+        <div
+          class="no-notifications"
+          *ngIf="(notificationService.notifications$ | async)?.length === 0"
+        >
+          No new notifications
         </div>
       </div>
     </div>

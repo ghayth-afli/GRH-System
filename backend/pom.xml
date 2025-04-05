@@ -19,6 +19,7 @@
       <module>api-gateway</module>
       <module>mail-service</module>
     <module>med-visit-service</module>
+      <module>notification-service</module>
   </modules>
 
   <properties>
