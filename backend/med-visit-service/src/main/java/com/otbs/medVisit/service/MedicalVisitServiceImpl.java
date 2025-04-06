@@ -1,9 +1,6 @@
 package com.otbs.medVisit.service;
 
 import com.otbs.feign.client.EmployeeClient;
-import com.otbs.feign.client.NotificationClient;
-import com.otbs.feign.dto.NotificationRequestDTO;
-import com.otbs.feign.dto.NotificationType;
 import com.otbs.medVisit.dto.MedicalVisitRequest;
 import com.otbs.medVisit.dto.MedicalVisitResponse;
 import com.otbs.medVisit.exception.MedicalVisitException;
@@ -25,7 +22,6 @@ public class MedicalVisitServiceImpl implements MedicalVisitService{
 
     private final MedicalVisitRepository medicalVisitRepository;
     private final MedicalVisitMapper medicalVisitMapper;
-    private final NotificationClient notificationClient;
     private final EmployeeClient employeeClient;
     private final MedicalVisitNotificationService notificationService;
 
@@ -51,7 +47,6 @@ public class MedicalVisitServiceImpl implements MedicalVisitService{
                                     medVisit.getId(),
                                     "New Medical Visit Scheduled",
                                     medicalVisitRequest.visitDate().toString(),
-                                   "",
                                     employee.username()
                             );
                 }

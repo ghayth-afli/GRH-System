@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WebSocketPayloadDTO {
-    private String type;  // "NOTIFICATION", "LEAVE_REQUEST_UPDATE", etc.
-    private Object data;  // The actual payload (NotificationResponseDTO, etc.)
+    private String type;
+    private Object data;
 }

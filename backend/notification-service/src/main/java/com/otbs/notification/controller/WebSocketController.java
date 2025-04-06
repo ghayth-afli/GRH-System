@@ -17,6 +17,8 @@ import org.springframework.stereotype.Controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 
+import java.util.Map;
+
 @Controller
 @Slf4j
 @RequiredArgsConstructor
@@ -24,20 +26,20 @@ public class WebSocketController {
 
     private final NotificationService notificationService;
 
-
     @EventListener
     public void handleConnect(SessionConnectEvent event) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
 
-        Authentication authentication = (Authentication) accessor.getSessionAttributes().get("auth");
+        Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
+        if (sessionAttributes == null || !sessionAttributes.containsKey("auth")) {
+            throw new AuthenticationCredentialsNotFoundException("Not authenticated");
+        }
+        Authentication authentication = (Authentication) sessionAttributes.get("auth");
 
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new AuthenticationCredentialsNotFoundException("Not authenticated");
         }
-
-        // Tu peux accéder à l'utilisateur ici
         String username = authentication.getName();
-        // Logique métier ici
         log.info("User connected: {}", username);
     }
 

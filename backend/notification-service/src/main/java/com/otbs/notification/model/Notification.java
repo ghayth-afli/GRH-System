@@ -29,7 +29,7 @@ public class Notification {
     private String sender;
 
     @Column(nullable = true)
-    private String recipient;  // null for broadcast notifications
+    private String recipient;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -42,8 +42,8 @@ public class Notification {
     private boolean read;
 
     @Column(nullable = true)
-    private String sourceId;  // ID of the source item (leave request, medical visit, etc.)
+    private String sourceId;
 
     @Column(nullable = true)
-    private String actionUrl;  // URL for action (if applicable)
+    private String actionUrl;
 }

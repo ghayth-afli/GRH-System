@@ -14,8 +14,8 @@ public class NotificationRequestDTO {
     private String title;
     private String message;
     private String sender;
-    private String recipient;  // null for broadcast
+    private String recipient;
     private NotificationType type;
-    private String sourceId;   // ID of the source item
-    private String actionUrl;  // URL for action (if applicable)
+    private String sourceId;
+    private String actionUrl;
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -25,16 +26,15 @@ public class MedicalVisitNotificationService {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    public void sendMedicalVisitNotification(Long medicalVisitId, String title, String scheduleDate, String location,
-                                             String recipient) {
+    public void sendMedicalVisitNotification(Long medicalVisitId, String title, String scheduleDate, String recipient) {
         try {
             Map<String, Object> message = new HashMap<>();
-            message.put("medicalVisitId", medicalVisitId);
-            message.put("message", "A new medical visit has been scheduled for " + scheduleDate + " at " + location + ". " +
-                    "Title: " + title + ". Please book your appointment.");
+            message.put("medicalVisitId", Optional.ofNullable(medicalVisitId).orElse(0L));
+            message.put("message", "A new medical visit has been scheduled for " + Optional.ofNullable(scheduleDate).orElse("") + " at " +". " +
+                    "Title: " + Optional.ofNullable(title).orElse("") + ". Please book your appointment.");
             message.put("sender", "medical-visit-service");
-            message.put("actionUrl", "/medical-visits/" + medicalVisitId);
-            message.put("recipient", recipient);
+            message.put("actionUrl", "/medical-visits/" + Optional.ofNullable(medicalVisitId).orElse(0L));
+            message.put("recipient", Optional.ofNullable(recipient).orElse(""));
 
             log.info("Sending medical visit notification: {}", message);
             rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());

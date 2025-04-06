@@ -5,7 +5,9 @@ import com.otbs.notification.model.NotificationType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
+
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -42,19 +44,19 @@ public class RabbitMQListener {
     }
 
     private NotificationRequestDTO buildLeaveRequestNotification(Map<String, Object> message) {
-        String requestId = message.get("requestId").toString();
-        String employeeName = message.get("employeeName").toString();
-        String managerUsername = message.get("managerUsername").toString();
-        String leaveType = message.get("leaveType").toString();
-        String fromDate = message.get("fromDate").toString();
-        String toDate = message.get("toDate").toString();
+        String requestId = Optional.ofNullable(message.get("requestId")).map(Object::toString).orElse("");
+        String employeeName = Optional.ofNullable(message.get("employeeName")).map(Object::toString).orElse("");
+        String managerUsername = Optional.ofNullable(message.get("managerUsername")).map(Object::toString).orElse("");
+        String leaveType = Optional.ofNullable(message.get("leaveType")).map(Object::toString).orElse("");
+        String fromDate = Optional.ofNullable(message.get("fromDate")).map(Object::toString).orElse("");
+        String toDate = Optional.ofNullable(message.get("toDate")).map(Object::toString).orElse("");
 
         return NotificationRequestDTO.builder()
                 .title("New Leave Request")
                 .message(String.format("%s has requested %s leave from %s to %s",
                         employeeName, leaveType, fromDate, toDate))
                 .sender("leave-request-service")
-                .recipient(managerUsername)  // Send to manager only
+                .recipient(managerUsername)
                 .type(NotificationType.LEAVE_REQUEST)
                 .sourceId(requestId)
                 .actionUrl("/leave-requests/" + requestId)
@@ -62,13 +64,13 @@ public class RabbitMQListener {
     }
 
     private NotificationRequestDTO buildMedicalVisitNotification(Map<String, Object> message) {
-        String visitId = message.get("medicalVisitId").toString();
+        String visitId = Optional.ofNullable(message.get("medicalVisitId")).map(Object::toString).orElse("");
 
         return NotificationRequestDTO.builder()
                 .title("Medical Visit Available")
-                .message(String.format(message.get("message").toString()))
+                .message(Optional.ofNullable(message.get("message")).map(Object::toString).orElse(""))
                 .sender("medical-visit-service")
-                .recipient(message.get("recipient").toString())  // Broadcast to all users
+                .recipient(Optional.ofNullable(message.get("recipient")).map(Object::toString).orElse(""))
                 .type(NotificationType.MEDICAL_VISIT)
                 .sourceId(visitId)
                 .actionUrl("/medical-visits/" + visitId)
