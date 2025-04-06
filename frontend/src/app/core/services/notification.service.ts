@@ -4,7 +4,7 @@ import { BehaviorSubject, map, Observable, ReplaySubject, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import SockJS from 'sockjs-client';
-import { Stomp } from '@stomp/stompjs';
+import { CompatClient, Stomp } from '@stomp/stompjs';
 import { Notification } from '../models/Notification';
 
 @Injectable({
@@ -12,7 +12,7 @@ import { Notification } from '../models/Notification';
 })
 export class NotificationService {
   private apiUrl: string = `${environment.apiUrl}/notifications`;
-  private stompClient: any;
+  private stompClient: CompatClient | null = null;
   private connected$ = new BehaviorSubject<boolean>(false);
 
   // Store notifications
@@ -39,9 +39,11 @@ export class NotificationService {
 
   // WebSocket Management
   connectWebSocket(): void {
-    const socket = new SockJS(`http://localhost:8086/ws-notification`);
-    this.stompClient = Stomp.over(socket);
-    this.stompClient.reconnect_delay = 5000;
+    // Create a factory function instead of a direct instance
+    this.stompClient = Stomp.over(() => {
+      return new SockJS(`http://localhost:8086/ws-notification`);
+    });
+    this.stompClient.reconnectDelay = 5000;
 
     const headers = {
       Authorization: `Bearer ${this.authService.accessToken}`,
@@ -51,7 +53,6 @@ export class NotificationService {
       headers,
       () => {
         this.connected$.next(true);
-        console.log('Connected to notification websocket');
 
         this.subscribeToNotifications();
         this.sendConnectionMessage();
@@ -69,8 +70,9 @@ export class NotificationService {
 
   disconnect(): void {
     if (this.stompClient && this.stompClient.connected) {
-      this.stompClient.disconnect();
-      this.connected$.next(false);
+      this.stompClient.disconnect(() => {
+        this.connected$.next(false);
+      });
     }
   }
 
@@ -90,25 +92,26 @@ export class NotificationService {
           }))
         )
       )
-      .subscribe(
-        (notifications) => {
+      .subscribe({
+        next: (notifications) => {
+          console.log('Loaded notifications:', notifications);
           this.notificationsSubject.next(notifications);
         },
-        (error) => {
+        error: (error) => {
           console.error('Error loading notifications', error);
-        }
-      );
+        },
+      });
   }
 
   loadUnreadCount(): void {
-    this.http.get<number>(`${this.apiUrl}/unread/count`).subscribe(
-      (count) => {
+    this.http.get<number>(`${this.apiUrl}/unread/count`).subscribe({
+      next: (count) => {
         this.unreadCountSubject.next(count);
       },
-      (error) => {
+      error: (error) => {
         console.error('Error loading unread count', error);
-      }
-    );
+      },
+    });
   }
 
   markAsRead(id: number): Observable<Notification> {
@@ -141,19 +144,27 @@ export class NotificationService {
       })
     );
   }
+
   private subscribeToNotifications(): void {
-    this.stompClient.subscribe(`/user/queue/notifications`, (message: any) => {
-      console.log('Received message:', message.body);
-      this.handleNotification(JSON.parse(message.body));
-    });
+    if (!this.stompClient) return;
+
+    this.stompClient.subscribe(
+      `/user/${this.authService.authenticatedUser?.username}/queue/notifications`,
+      (message: any) => {
+        console.log('Received private notification:', message.body);
+        this.handleNotification(JSON.parse(message.body));
+      }
+    );
 
     this.stompClient.subscribe(`/topic/notifications`, (message: any) => {
-      console.log('Received message:', message.body);
+      console.log('Received public notification:', message.body);
       this.handleNotification(JSON.parse(message.body));
     });
   }
 
   private sendConnectionMessage(): void {
+    if (!this.stompClient) return;
+
     this.stompClient.send(
       '/app/connect',
       {},
@@ -166,13 +177,19 @@ export class NotificationService {
     if (payload.type === 'NOTIFICATION') {
       const notification = payload.data as Notification;
 
-      this.latestNotificationSubject.next(notification);
+      if (
+        notification.recipient === this.authService.authenticatedUser?.username
+      ) {
+        console.log('Received personal notification:', notification);
 
-      const currentNotifications = this.notificationsSubject.value;
-      this.notificationsSubject.next([notification, ...currentNotifications]);
+        this.latestNotificationSubject.next(notification);
 
-      if (!notification.read) {
-        this.unreadCountSubject.next(this.unreadCountSubject.value + 1);
+        const currentNotifications = this.notificationsSubject.value;
+        this.notificationsSubject.next([notification, ...currentNotifications]);
+
+        if (!notification.read) {
+          this.unreadCountSubject.next(this.unreadCountSubject.value + 1);
+        }
       }
     }
   }

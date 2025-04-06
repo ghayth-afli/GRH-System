@@ -3,6 +3,7 @@ export interface Notification {
   title: string;
   message: string;
   sender: string;
+  recipient: string;
   type: string;
   createdAt: Date;
   read: boolean;

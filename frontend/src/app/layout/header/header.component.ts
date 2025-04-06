@@ -1,4 +1,10 @@
-import { Component, HostListener, inject } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  inject,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 import { User } from '../../core/models/auth-responses.interface';
 import { BehaviorSubject, map, Observable } from 'rxjs';
@@ -17,7 +23,7 @@ import { NotificationService } from '../../core/services/notification.service';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit, OnDestroy {
   leaveBalance$: Observable<LeaveBalance>;
   imageSrc: string | null = null;
   isDropdownOpen = false;
@@ -34,14 +40,13 @@ export class HeaderComponent {
   };
 
   notificationService = inject(NotificationService);
-  authService = inject(AuthService);
-  leaveService = inject(LeaveService);
+  private authService = inject(AuthService);
+  private leaveService = inject(LeaveService);
+  private route = inject(ActivatedRoute);
+  private dialog = inject(MatDialog);
+  private userService = inject(UserService);
 
-  constructor(
-    private route: ActivatedRoute,
-    private dialog: MatDialog,
-    private userService: UserService
-  ) {
+  constructor() {
     this.leaveBalance$ = this.route.data.pipe(
       map((data) => data['leaveBalance'])
     );
@@ -53,16 +58,16 @@ export class HeaderComponent {
     this.initializeNotifications();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     document.removeEventListener('click', this.onDocumentClick);
   }
 
   // User-related methods
-  private initializeUser() {
+  private initializeUser(): void {
     this.user = this.authService.authenticatedUser || this.user;
   }
 
-  private loadProfilePicture() {
+  private loadProfilePicture(): void {
     this.userService.getProfilePicture(this.user.username).subscribe({
       next: (response) => {
         this.imageSrc = this.getBase64Image(response);
@@ -83,11 +88,11 @@ export class HeaderComponent {
     }
   }
 
-  isEmployee() {
+  isEmployee(): boolean {
     return this.authService.hasRole('Employee');
   }
 
-  openEditModal() {
+  openEditModal(): void {
     const dialogRef = this.dialog.open(EditPersonalInfoModalFormComponent, {
       width: '500px',
       data: {
@@ -106,7 +111,7 @@ export class HeaderComponent {
     });
   }
 
-  private updateUserInfo(dialogRef: any) {
+  private updateUserInfo(dialogRef: any): void {
     this.user = {
       ...this.user,
       firstName: dialogRef.componentInstance.editForm.value.firstName,
@@ -119,11 +124,11 @@ export class HeaderComponent {
   }
 
   // Notification-related methods
-  private initializeNotifications() {
+  private initializeNotifications(): void {
     this.notificationService.loadNotifications();
-
     this.notificationService.notifications$.subscribe((notifications) => {
       console.log('Notifications:', notifications);
+      this.notificationsSubject.next(notifications);
     });
 
     this.notificationService.unreadCount$.subscribe((count) => {
@@ -132,12 +137,15 @@ export class HeaderComponent {
   }
 
   // Dropdown-related methods
-  toggleDropdown() {
+  toggleDropdown(): void {
     this.isDropdownOpen = !this.isDropdownOpen;
+    this.notificationService.markAllAsRead().subscribe(() => {
+      console.log('All notifications marked as read');
+    });
   }
 
   @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent) {
+  onDocumentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
     const notificationContainer = document.querySelector(
       '.notification-container'

@@ -30,10 +30,9 @@ public class MedicalVisitNotificationService {
         try {
             Map<String, Object> message = new HashMap<>();
             message.put("medicalVisitId", Optional.ofNullable(medicalVisitId).orElse(0L));
-            message.put("message", "A new medical visit has been scheduled for " + Optional.ofNullable(scheduleDate).orElse("") + " at " +". " +
-                    "Title: " + Optional.ofNullable(title).orElse("") + ". Please book your appointment.");
+            message.put("message", "A new medical visit has been scheduled ");
             message.put("sender", "medical-visit-service");
-            message.put("actionUrl", "/medical-visits/" + Optional.ofNullable(medicalVisitId).orElse(0L));
+            message.put("actionUrl", "/medical-visits");
             message.put("recipient", Optional.ofNullable(recipient).orElse(""));
 
             log.info("Sending medical visit notification: {}", message);

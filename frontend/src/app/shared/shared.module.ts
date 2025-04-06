@@ -9,9 +9,14 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TimeAgoPipe } from './pipes/time-ago.pipe';
 
 @NgModule({
-  declarations: [CalendarComponent, EditPersonalInfoModalFormComponent],
+  declarations: [
+    CalendarComponent,
+    EditPersonalInfoModalFormComponent,
+    TimeAgoPipe,
+  ],
   imports: [
     CommonModule,
     FullCalendarModule,
@@ -22,7 +27,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     ReactiveFormsModule,
     MatProgressSpinnerModule,
   ],
-  exports: [CalendarComponent, EditPersonalInfoModalFormComponent],
+  exports: [CalendarComponent, EditPersonalInfoModalFormComponent, TimeAgoPipe],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class SharedModule {}

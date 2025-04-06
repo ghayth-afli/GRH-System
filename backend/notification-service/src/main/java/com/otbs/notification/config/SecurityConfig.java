@@ -37,6 +37,7 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/**").permitAll()
                         .requestMatchers("/ws-notification/**").permitAll()
                         .requestMatchers("/api/v1/notifications/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()

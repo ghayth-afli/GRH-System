@@ -33,7 +33,7 @@ public class NotificationService {
                 .title(Optional.ofNullable(requestDTO.getTitle()).orElse(""))
                 .message(Optional.ofNullable(requestDTO.getMessage()).orElse(""))
                 .sender(Optional.ofNullable(requestDTO.getSender()).orElse(""))
-                .recipient(Optional.ofNullable(requestDTO.getRecipient()).orElse(""))
+                .recipient(requestDTO.getRecipient())
                 .type(Optional.ofNullable(requestDTO.getType()).orElse(NotificationType.SYSTEM_ANNOUNCEMENT))
                 .sourceId(Optional.ofNullable(requestDTO.getSourceId()).orElse(""))
                 .actionUrl(Optional.ofNullable(requestDTO.getActionUrl()).orElse(""))
@@ -42,6 +42,7 @@ public class NotificationService {
                 .build();
 
         Notification savedNotification = notificationRepository.save(notification);
+        log.info("Notification saved: {}", savedNotification);
 
         NotificationResponseDTO responseDTO = mapToResponseDTO(savedNotification);
         log.info("Notification created: {}", responseDTO);
@@ -102,6 +103,7 @@ public class NotificationService {
                 .title(notification.getTitle())
                 .message(notification.getMessage())
                 .sender(notification.getSender())
+                .recipient(notification.getRecipient())
                 .type(notification.getType())
                 .createdAt(notification.getCreatedAt())
                 .read(notification.isRead())
@@ -116,16 +118,18 @@ public class NotificationService {
                 .data(notification)
                 .build();
 
-        if (notification.getRecipient() != null) {
-            messagingTemplate.convertAndSendToUser(
-                    notification.getRecipient(),
-                    "/queue/notifications",
-                    payload
-            );
-            log.info("Sent notification to user: {}", notification.getRecipient());
-        } else {
-            messagingTemplate.convertAndSend("/topic/notifications", payload);
-            log.info("Broadcasted notification to all users");
-        }
+        log.info("Sending WebSocket notification: {}", notification);
+        messagingTemplate.convertAndSend("/topic/notifications", payload);
+//        if (notification.getRecipient() != null && !notification.getRecipient().isEmpty()) {
+//            messagingTemplate.convertAndSendToUser(
+//                    notification.getRecipient(),
+//                    "/queue/notifications",
+//                    payload
+//            );
+//            log.info("Sent notification to user: {}", notification.getRecipient());
+//        } else {
+//            messagingTemplate.convertAndSend("/topic/notifications", payload);
+//            log.info("Broadcasted notification to all users");
+//        }
     }
 }

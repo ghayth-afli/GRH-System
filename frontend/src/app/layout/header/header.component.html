@@ -23,42 +23,49 @@
       </div>
     </div>
 
-    <div class="header-leave-balances" *ngIf="isEmployee()">
-      <div class="leave-balance" *ngIf="leaveBalance$ | async as leaveBalance">
-        <div class="balance">Remaining balance :</div>
+    @if (isEmployee()) {
+    <div class="header-leave-balances">
+      @if (leaveBalance$ | async; as leaveBalance) {
+      <div class="leave-balance">
+        <div class="balance">Remaining balance:</div>
         <div class="days">
           {{ leaveBalance.remainingLeave }}/{{ leaveBalance.totalLeave }}
         </div>
       </div>
+      }
     </div>
+    }
 
     <div class="notification-container">
       <div class="notification-icon" (click)="toggleDropdown()">
         <i class="icofont-notification"></i>
-        <span
-          class="notification-badge"
-          *ngIf="(notificationService.unreadCount$ | async) ?? 0 > 0"
-        >
+        @if ((notificationService.unreadCount$ | async) ?? 0 > 0) {
+        <span class="notification-badge">
           {{ notificationService.unreadCount$ | async }}
         </span>
+        }
       </div>
-      <div class="notification-dropdown" *ngIf="isDropdownOpen">
+      @if (isDropdownOpen) {
+      <div class="notification-dropdown">
         <div class="notification-header">
-          <h3>Notifications</h3>
-          <button
+          <h5>Notifications</h5>
+          <div class="notification-count">
+            {{ (notificationService.unreadCount$ | async) ?? 0 }}
+          </div>
+          @if ((notificationService.unreadCount$ | async) ?? 0 > 0) {
+          <!--<button
             class="mark-all-read"
             (click)="notificationService.markAllAsRead().subscribe()"
-            *ngIf="(notificationService.unreadCount$ | async) ?? 0 > 0"
           >
             Mark all as read
-          </button>
+          </button>-->
+          }
         </div>
 
+        @for (notification of notificationService.notifications$ | async; track
+        notification.id) {
         <div
           class="notification-item"
-          *ngFor="
-            let notification of notificationService.notifications$ | async
-          "
           [class.unread]="!notification.read"
           (click)="
             !notification.read &&
@@ -76,24 +83,25 @@
             ></i>
           </div>
           <div class="notification-content">
-            <div class="notification-title">{{ notification.title }}</div>
-            <div class="notification-message">{{ notification.message }}</div>
-            <div class="notification-time">
-              {{ notification.createdAt | date : "shortTime" }}
+            <div class="notification-meta">
+              <div class="notification-title">{{ notification.title }}</div>
+              <div class="notification-time">
+                {{ notification.createdAt | timeAgo }}
+              </div>
             </div>
+            <div class="notification-message">{{ notification.message }}</div>
           </div>
           <div class="notification-status">
-            <span *ngIf="!notification.read" class="unread-dot"></span>
+            @if (!notification.read) {
+            <span class="unread-dot"></span>
+            }
           </div>
         </div>
-
-        <div
-          class="no-notifications"
-          *ngIf="(notificationService.notifications$ | async)?.length === 0"
-        >
-          No new notifications
-        </div>
+        } @empty {
+        <div class="no-notifications">No new notifications</div>
+        }
       </div>
+      }
     </div>
   </div>
 </div>
