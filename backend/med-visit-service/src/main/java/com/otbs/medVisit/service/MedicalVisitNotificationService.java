@@ -26,10 +26,9 @@ public class MedicalVisitNotificationService {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    public void sendMedicalVisitNotification(Long medicalVisitId, String title, String scheduleDate, String recipient) {
+    public void sendMedicalVisitNotification(String title, String scheduleDate, String recipient) {
         try {
             Map<String, Object> message = new HashMap<>();
-            message.put("medicalVisitId", Optional.ofNullable(medicalVisitId).orElse(0L));
             message.put("message", "A new medical visit has been scheduled ");
             message.put("sender", "medical-visit-service");
             message.put("actionUrl", "/medical-visits");

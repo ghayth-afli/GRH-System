@@ -44,7 +44,6 @@ public class MedicalVisitServiceImpl implements MedicalVisitService{
         employeeClient.getAllEmployees()
                 .forEach(employee -> {
                             notificationService.sendMedicalVisitNotification(
-                                    medVisit.getId(),
                                     "New Medical Visit Scheduled",
                                     medicalVisitRequest.visitDate().toString(),
                                     employee.username()
