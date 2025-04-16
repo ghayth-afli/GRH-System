@@ -22,6 +22,8 @@ public class SecurityConfig {
                         .pathMatchers("/api/v1/employee/**").permitAll()
                         .pathMatchers("/api/v1/medical-visits/**").permitAll()
                         .pathMatchers("/api/v1/appointments/**").permitAll()
+                        .pathMatchers("/api/v1/notifications/**").permitAll()
+                        .pathMatchers("/ws-notifications/**").permitAll()
                         .anyExchange().authenticated()
                 )
                 .addFilterAt(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION)

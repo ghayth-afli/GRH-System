@@ -23,41 +23,94 @@
       </div>
     </div>
 
-    @if(this.authService.hasRole('Employee')){
+    @if (isEmployee()) {
     <div class="header-leave-balances">
-      <div class="leave-balance" *ngIf="leaveBalance$ | async as leaveBalance">
-        <div class="balance">Remaining balance :</div>
+      @if (leaveBalance$ | async; as leaveBalance) {
+      <div class="leave-balance">
+        <div class="balance">Remaining balance:</div>
         <div class="days">
           {{ leaveBalance.remainingLeave }}/{{ leaveBalance.totalLeave }}
         </div>
       </div>
+      }
     </div>
     }
 
     <div class="notification-container">
       <div class="notification-icon" (click)="toggleDropdown()">
         <i class="icofont-notification"></i>
-        <span class="notification-badge" *ngIf="unreadNotificationsCount > 0">{{
-          unreadNotificationsCount
-        }}</span>
+        @if ((notificationService.unreadCount$ | async) ?? 0 > 0) {
+        <span class="notification-badge">
+          {{ notificationService.unreadCount$ | async }}
+        </span>
+        }
       </div>
-      <div class="notification-dropdown" *ngIf="isDropdownOpen">
-        <div
-          class="notification-item"
-          *ngFor="let notification of notifications"
-        >
-          <div class="notification-header">
-            <img
-              [src]="notification.icon"
-              alt="Notification Icon"
-              class="notification-icon-img"
-            />
-            <div class="notification-title">{{ notification.title }}</div>
+
+      @if (isDropdownOpen) {
+      <div class="notification-dropdown">
+        <div class="notification-header">
+          <h5>Notifications</h5>
+          <div class="notification-actions">
+            <span class="notification-count">
+              {{ (notificationService.notifications$ | async)?.length ?? 0 }}
+            </span>
+            @if ((notificationService.unreadCount$ | async) ?? 0 > 0) {
+            <button
+              class="mark-all-read"
+              (click)="notificationService.markAllAsRead().subscribe()"
+            >
+              Mark all as read
+            </button>
+            }
           </div>
-          <div class="notification-content">{{ notification.content }}</div>
-          <div class="notification-seen" *ngIf="notification.seen">Seen</div>
+        </div>
+
+        <div class="notification-list">
+          @for (notification of notificationService.notifications$ | async;
+          track notification.id) {
+          <a [routerLink]="notification.actionUrl" class="notification-link">
+            <div
+              class="notification-item"
+              [class.unread]="!notification.read"
+              (click)="
+                !notification.read &&
+                  notificationService.markAsRead(notification.id).subscribe()
+              "
+            >
+              <div class="notification-icon-img">
+                <i
+                  class="icofont"
+                  [ngClass]="{
+                    'icofont-info-circle': notification.type === 'INFO',
+                    'icofont-warning-alt': notification.type === 'WARNING',
+                    'icofont-check-circled': notification.type === 'SUCCESS'
+                  }"
+                ></i>
+              </div>
+              <div class="notification-content">
+                <div class="notification-meta">
+                  <div class="notification-title">{{ notification.title }}</div>
+                  <div class="notification-time">
+                    {{ notification.createdAt | timeAgo }}
+                  </div>
+                </div>
+                <div class="notification-message">
+                  {{ notification.message }}
+                </div>
+              </div>
+              <div class="notification-status">
+                @if (!notification.read) {
+                <span class="unread-dot"></span>
+                }
+              </div>
+            </div>
+          </a>
+          } @empty {
+          <div class="no-notifications">No new notifications</div>
+          }
         </div>
       </div>
+      }
     </div>
   </div>
 </div>
