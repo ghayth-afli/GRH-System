@@ -100,7 +100,7 @@ export class MedicalVisitFormModalComponent {
       verticalPosition: 'top',
     });
     this.isLoading = false;
-    this.dialogRef.close(medicalVisitData);
+    this.dialogRef.close('submitted');
   }
 
   private handleCreateSuccess(
@@ -114,7 +114,7 @@ export class MedicalVisitFormModalComponent {
       verticalPosition: 'top',
     });
     this.isLoading = false;
-    this.dialogRef.close(medicalVisitData);
+    this.dialogRef.close('submitted');
   }
 
   private handleError(action: string, error: { message: string }): void {

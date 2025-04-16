@@ -1,112 +1,111 @@
-<div class="table-container mat-elevation-z8">
-  <mat-card>
-    <div class="table-header">
-      <mat-form-field appearance="outline">
-        <input
-          matInput
-          (input)="applyFilter($event)"
-          placeholder="Search employees"
-          class="search-input"
-        />
+<div class="component-container">
+  <div class="component-header">
+    <div class="component-title"><h3>Leave Request</h3></div>
+  </div>
+  <div class="component-body">
+    <div class="data-table-container">
+      <mat-form-field style="float: right; margin-right: 5%">
+        <mat-label>Search: </mat-label>
+        <input matInput (input)="applyFilter($event)" type="search" />
       </mat-form-field>
+      <table mat-table [dataSource]="dataSource" matSort>
+        <ng-container matColumnDef="Name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+          <td mat-cell *matCellDef="let element" class="highlight-cell">
+            {{ element.Name }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="department">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Department</th>
+          <td mat-cell *matCellDef="let element">{{ element.Department }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="startDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Start Date</th>
+          <td mat-cell *matCellDef="let element">{{ element.startDate }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="endDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>End Date</th>
+          <td mat-cell *matCellDef="let element">{{ element.endDate }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="leaveType">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Leave Type</th>
+          <td mat-cell *matCellDef="let element">{{ element.leaveType }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+          <td mat-cell *matCellDef="let element">
+            @if(element.status === 'EN_ATTENTE'){
+            <span class="leave-status pending">
+              {{ element.status }}
+            </span>
+            } @else if(element.status === 'APPROUVÉE'){
+            <span class="highlight-status-green"> {{ element.status }} </span>}
+            @else{
+            <span class="highlight-status-red"> {{ element.status }} </span>}
+          </td>
+        </ng-container>
+
+        @if(authService.hasRole('HR') || authService.hasRole('Manager')){
+        <ng-container matColumnDef="attachments">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Attachment</th>
+          <td mat-cell *matCellDef="let element">
+            @if(element.leaveType == 'MALADIE' || element.leaveType ==
+            'MATERNITÉ' || element.leaveType == 'PATERNITÉ' || element.leaveType
+            == 'DÉCÈS'){
+            <button
+              mat-icon-button
+              class="edit-control-mono"
+              (click)="downloadAttachment(element.id)"
+            >
+              <mat-icon><i class="icofont-eye"></i></mat-icon>
+            </button>
+            }
+          </td>
+        </ng-container>
+        } @if(this.authService.hasRole('Manager') && showActionsColumn){
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
+          <td mat-cell *matCellDef="let element">
+            @if(element.status == 'EN_ATTENTE'){
+            <div class="action-buttons">
+              <button
+                mat-icon-button
+                class="edit-control"
+                (click)="approveLeave(element.id)"
+              >
+                <mat-icon><i class="icofont-check"></i></mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                class="delete-control"
+                (click)="rejectLeave(element.id)"
+              >
+                <mat-icon><i class="icofont-ban"></i></mat-icon>
+              </button>
+            </div>
+            }
+          </td>
+        </ng-container>
+        }
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          class="data-table-body-row"
+        ></tr>
+      </table>
+
+      <mat-paginator
+        [pageSize]="10"
+        [pageSizeOptions]="[5, 10, 20, 50]"
+        [showFirstLastButtons]="true"
+      ></mat-paginator>
     </div>
-    <table mat-table [dataSource]="dataSource" matSort class="mat-table">
-      <ng-container matColumnDef="Name">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
-        <td mat-cell *matCellDef="let element">{{ element.Name }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="department">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Department</th>
-        <td mat-cell *matCellDef="let element">{{ element.Department }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="startDate">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Start Date</th>
-        <td mat-cell *matCellDef="let element">{{ element.startDate }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="endDate">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>End Date</th>
-        <td mat-cell *matCellDef="let element">{{ element.endDate }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="leaveType">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Leave Type</th>
-        <td mat-cell *matCellDef="let element">{{ element.leaveType }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
-        <td mat-cell *matCellDef="let element">
-          @if(element.status === 'EN_ATTENTE'){
-          <span class="leave-status" [style.background-color]="'#004f99'">
-            {{ element.status }}
-          </span>
-          } @else if(element.status === 'APPROUVÉE'){
-          <span class="leave-status" [style.background-color]="'#014601'">
-            {{ element.status }} </span
-          >} @else{
-          <span class="leave-status" [style.background-color]="'#b30000'">
-            {{ element.status }} </span
-          >}
-        </td>
-      </ng-container>
-      @if(authService.hasRole('HR') || authService.hasRole('Manager')){
-      <ng-container matColumnDef="attachments">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Attachment</th>
-        <td mat-cell *matCellDef="let element">
-          @if(element.leaveType == 'MALADIE' || element.leaveType == 'MATERNITÉ'
-          || element.leaveType == 'PATERNITÉ' || element.leaveType == 'DÉCÈS'){
-          <a
-            (click)="downloadAttachment(element.id)"
-            target="_blank"
-            class="download-link"
-          >
-            <img
-              src="assets/icons/icons8-view-48.png"
-              alt=""
-              class="download-icon"
-            />
-          </a>
-          }
-        </td>
-      </ng-container>
-      } @if(this.authService.hasRole('Manager') && showActionsColumn){
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
-        <td mat-cell *matCellDef="let element">
-          @if(element.status == 'EN_ATTENTE'){
-          <div class="actions-container">
-            <div class="action">
-              <a (click)="approveLeave(element.id)">
-                <img
-                  src="assets/icons/icons8-approve-48.png"
-                  alt=""
-                  class="icon-actions approve-icon"
-                />
-              </a>
-            </div>
-            <div class="action">
-              <a (click)="rejectLeave(element.id)">
-                <img
-                  src="assets/icons/icons8-reject-48.png"
-                  alt=""
-                  class="icon-actions reject-icon"
-              /></a>
-            </div>
-          </div>
-          }
-        </td>
-      </ng-container>
-      }
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    </table>
-    <mat-paginator
-      [pageSize]="10"
-      [pageSizeOptions]="[5, 10, 20, 50]"
-      showFirstLastButtons
-    ></mat-paginator>
-  </mat-card>
+  </div>
 </div>

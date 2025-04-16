@@ -113,4 +113,8 @@ export class LeaveRequestFormModalComponent {
       console.log('Form is invalid');
     }
   }
+
+  onClose() {
+    this.dialogRef.close();
+  }
 }

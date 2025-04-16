@@ -20,6 +20,7 @@
       <module>mail-service</module>
     <module>med-visit-service</module>
       <module>notification-service</module>
+      <module>training-management-service</module>
   </modules>
 
   <properties>

@@ -1,124 +1,168 @@
-<div class="modal-container">
-  <h2>Leave Request</h2>
-  <div class="modal-content">
-    <form [formGroup]="leaveRequestForm" (ngSubmit)="onSubmit()">
-      <div>
-        <label for="leaveType">Leave Type :</label>
-        <select formControlName="leaveType" id="leaveType">
-          <option *ngFor="let type of requestTypes" [value]="type">
-            {{ type }}
-          </option>
-        </select>
-        <div
-          *ngIf="
-            leaveRequestForm.get('leaveType')?.invalid &&
-            leaveRequestForm.get('leaveType')?.touched
-          "
-        >
-          <small class="error">Leave type is required.</small>
+<div class="form-modal-container">
+  <div class="form-modal-header">
+    <h5>Leave Request</h5>
+    <button class="close-button" (click)="onClose()">
+      <i class="icofont-close-line"></i>
+    </button>
+  </div>
+  <form [formGroup]="leaveRequestForm" (ngSubmit)="onSubmit()">
+    <div class="modal-body">
+      <div class="form-controller-container">
+        <div class="form-controller">
+          <div class="label-container">
+            <label for="leaveType">Leave Type</label>
+          </div>
+          <select formControlName="leaveType" id="leaveType">
+            <option *ngFor="let type of requestTypes" [value]="type">
+              {{ type }}
+            </option>
+          </select>
+          <div
+            *ngIf="
+              leaveRequestForm.get('leaveType')?.invalid &&
+              leaveRequestForm.get('leaveType')?.touched
+            "
+          >
+            <small class="error">Leave type is required.</small>
+          </div>
         </div>
       </div>
 
-      <div>
-        <label for="startDate">Start Date :</label>
-        <input
-          type="date"
-          formControlName="startDate"
-          id="startDate"
-          [min]="minDate"
-        />
-        <div
-          *ngIf="
-            leaveRequestForm.get('startDate')?.invalid &&
-            leaveRequestForm.get('startDate')?.touched
-          "
-        >
-          <small class="error"
-            >Start date is required and must be today or in the future.</small
+      <div class="form-controller-container">
+        <div class="form-controller">
+          <div class="label-container">
+            <label for="startDate">Start Date</label>
+          </div>
+          <input
+            type="date"
+            formControlName="startDate"
+            id="startDate"
+            [min]="minDate"
+          />
+          <div
+            *ngIf="
+              leaveRequestForm.get('startDate')?.invalid &&
+              leaveRequestForm.get('startDate')?.touched
+            "
           >
+            <small class="error"
+              >Start date is required and must be today or in the future.</small
+            >
+          </div>
         </div>
-      </div>
-
-      <div>
-        <label for="endDate">End Date :</label>
-        <input
-          type="date"
-          formControlName="endDate"
-          id="endDate"
-          [min]="leaveRequestForm.get('startDate')?.value"
-        />
-        <div
-          *ngIf="
-            leaveRequestForm.get('endDate')?.invalid &&
-            leaveRequestForm.get('endDate')?.touched
-          "
-        >
-          <small class="error"
-            >End date is required and must be after the start date.</small
+        <div class="form-controller">
+          <div class="label-container">
+            <label for="endDate">End Date</label>
+          </div>
+          <input
+            type="date"
+            formControlName="endDate"
+            id="endDate"
+            [min]="leaveRequestForm.get('startDate')?.value"
+          />
+          <div
+            *ngIf="
+              leaveRequestForm.get('endDate')?.invalid &&
+              leaveRequestForm.get('endDate')?.touched
+            "
           >
+            <small class="error"
+              >End date is required and must be after the start date.</small
+            >
+          </div>
         </div>
       </div>
 
       <!-- Conditionally render these fields if the leave type requires them -->
-      <div *ngIf="leaveRequestForm.get('startTime')">
-        <label for="startTime">Start Time :</label>
-        <input type="time" formControlName="startTime" id="startTime" />
-        <div
-          *ngIf="
-            leaveRequestForm.get('startTime')?.invalid &&
-            leaveRequestForm.get('startTime')?.touched
-          "
-        >
-          <small class="error"
-            >Start time is required for certain leave types.</small
+      <div
+        class="form-controller-container"
+        *ngIf="leaveRequestForm.get('startTime')"
+      >
+        <div class="form-controller">
+          <div class="label-container">
+            <label for="startTime">Start Time</label>
+          </div>
+          <input type="time" formControlName="startTime" id="startTime" />
+          <div
+            *ngIf="
+              leaveRequestForm.get('startTime')?.invalid &&
+              leaveRequestForm.get('startTime')?.touched
+            "
           >
+            <small class="error"
+              >Start time is required for certain leave types.</small
+            >
+          </div>
         </div>
-      </div>
-      <div *ngIf="leaveRequestForm.get('endTime')">
-        <label for="endTime">End Time :</label>
-        <input type="time" formControlName="endTime" id="endTime" />
-        <div
-          *ngIf="
-            leaveRequestForm.get('endTime')?.invalid &&
-            leaveRequestForm.get('endTime')?.touched
-          "
-        >
-          <small class="error"
-            >End time is required for certain leave types.</small
+        <div class="form-controller" *ngIf="leaveRequestForm.get('endTime')">
+          <div class="label-container">
+            <label for="endTime">End Time</label>
+          </div>
+          <input type="time" formControlName="endTime" id="endTime" />
+          <div
+            *ngIf="
+              leaveRequestForm.get('endTime')?.invalid &&
+              leaveRequestForm.get('endTime')?.touched
+            "
           >
-        </div>
-      </div>
-      <div *ngIf="leaveRequestForm.get('attachment')">
-        <label for="attachment">Attachment :</label>
-        <input
-          type="file"
-          id="attachment"
-          (change)="onAttachmentSelected($event)"
-          accept=".pdf,.doc,.docx"
-        />
-        <div
-          *ngIf="
-            leaveRequestForm.get('attachment')?.invalid &&
-            leaveRequestForm.get('attachment')?.touched
-          "
-        >
-          <small class="error"
-            >Attachment is required for certain leave types.</small
-          >
+            <small class="error"
+              >End time is required for certain leave types.</small
+            >
+          </div>
         </div>
       </div>
 
-      <button
-        type="submit"
-        [disabled]="leaveRequestForm.invalid"
-        class="submit-button-modal"
+      <div
+        class="form-controller-container"
+        *ngIf="leaveRequestForm.get('attachment')"
       >
-        @if(isLoading){
-        <div class="spinner-container">
-          <mat-spinner [diameter]="15"></mat-spinner>
+        <div class="form-controller">
+          <div class="label-container">
+            <label for="attachment">Attachment</label>
+          </div>
+          <input
+            type="file"
+            id="attachment"
+            (change)="onAttachmentSelected($event)"
+            accept=".pdf,.doc,.docx"
+          />
+          <div
+            *ngIf="
+              leaveRequestForm.get('attachment')?.invalid &&
+              leaveRequestForm.get('attachment')?.touched
+            "
+          >
+            <small class="error"
+              >Attachment is required for certain leave types.</small
+            >
+          </div>
         </div>
-        } @else{ Send Request }
-      </button>
-    </form>
-  </div>
+      </div>
+
+      <div class="form-buttons">
+        <div class="button-submit">
+          <button
+            type="submit"
+            [disabled]="leaveRequestForm.invalid"
+            class="primary"
+          >
+            @if(isLoading){
+            <div class="spinner-container">
+              <mat-spinner [diameter]="15"></mat-spinner>
+            </div>
+            } @else{ Send Request }
+          </button>
+        </div>
+        <div class="button-cancel">
+          <button type="button" (click)="onClose()">
+            @if(isLoading){
+            <div class="spinner-container">
+              <mat-spinner [diameter]="15"></mat-spinner>
+            </div>
+            } @else{ Cancel }
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
 </div>

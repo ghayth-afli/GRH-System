@@ -14,6 +14,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MedicalVisitFormModalComponent } from './components/medical-visit-form-modal/medical-visit-form-modal.component';
 import { AppointmentModalComponent } from './components/appointment-modal/appointment-modal.component';
+import { ToastrModule } from 'ngx-toastr';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -34,6 +36,11 @@ import { AppointmentModalComponent } from './components/appointment-modal/appoin
     FormsModule,
     ReactiveFormsModule,
     MatProgressSpinnerModule,
+    ToastrModule.forRoot({
+      positionClass: 'toast-top-right',
+      timeOut: 3000,
+      //preventDuplicates: true,
+    }),
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
