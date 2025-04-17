@@ -12,13 +12,17 @@ import org.springframework.stereotype.Component;
 public class InvitationMapper {
 
     private final EmployeeClient employeeClient;
+    private final TrainingMapper trainingMapper;
 
     public InvitationResponseDTO toResponseDTO(Invitation invitation) {
         EmployeeResponse employee = employeeClient.getEmployeeByDn(invitation.getEmployeeId());
         return new InvitationResponseDTO(
                 invitation.getId(),
                 employee.firstName() + " " + employee.lastName(),
-                invitation.getStatus()
+                invitation.getStatus(),
+                trainingMapper.toResponseDTO(invitation.getTraining())
         );
     }
+
+
 }

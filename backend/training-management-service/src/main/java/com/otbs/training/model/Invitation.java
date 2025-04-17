@@ -1,6 +1,7 @@
 package com.otbs.training.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -28,6 +29,7 @@ public class Invitation {
 
     @ManyToOne
     @JoinColumn(name = "training_id", nullable = false)
+    @JsonIgnore
     private Training training;
 
     @CreationTimestamp
