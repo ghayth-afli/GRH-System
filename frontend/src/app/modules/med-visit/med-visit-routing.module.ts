@@ -8,7 +8,6 @@ const routes: Routes = [
     path: '',
     component: MedicalVisitsPageComponent,
   },
-  //appointmentId/appointment
   {
     path: ':id/appointments',
     component: AppointmentsPageComponent,

@@ -42,7 +42,7 @@ public class TrainingController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('HR') or hasAuthority('Manager')")
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('Manager') or hasAuthority('Employee')")
     public ResponseEntity<List<TrainingResponseDTO>> getAllTrainings() {
         return ResponseEntity.ok(trainingService.getAllTrainings());
     }

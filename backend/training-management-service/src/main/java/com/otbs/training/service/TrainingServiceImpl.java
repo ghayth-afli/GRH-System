@@ -6,6 +6,7 @@ import com.otbs.training.dto.TrainingRequestDTO;
 import com.otbs.training.dto.TrainingResponseDTO;
 import com.otbs.training.exception.TrainingException;
 import com.otbs.training.mapper.TrainingMapper;
+import com.otbs.training.model.EStatus;
 import com.otbs.training.model.Invitation;
 import com.otbs.training.model.Training;
 import com.otbs.training.repository.TrainingRepository;
@@ -48,8 +49,9 @@ public class TrainingServiceImpl implements TrainingService {
                 .map(emp -> {
                     Invitation invitation = new Invitation();
                     invitation.setEmployeeId(emp.id());
+                    invitation.setStatus(EStatus.PENDING);
                     invitation.setTraining(savedTraining);
-                    trainingNotificationService.sendTrainingNotification(savedTraining.getId(), emp.id());
+                    trainingNotificationService.sendTrainingNotification(savedTraining.getId(), emp.username());
                     return invitation;
                 })
                 .collect(Collectors.toList());
@@ -108,6 +110,13 @@ public class TrainingServiceImpl implements TrainingService {
                     .toList();
         } else if ("Manager".equals(user.role())) {
             return trainingRepository.findByCreatedBy(userId).stream()
+                    .map(trainingMapper::toResponseDTO)
+                    .toList();
+        }else if ("Employee".equals(user.role())) {
+            return trainingRepository.findByInvitations_EmployeeId(userId).stream()
+                    .peek(training -> training.setInvitations(training.getInvitations().stream()
+                            .filter(invitation -> invitation.getEmployeeId().equals(userId))
+                            .collect(Collectors.toList())))
                     .map(trainingMapper::toResponseDTO)
                     .toList();
         }

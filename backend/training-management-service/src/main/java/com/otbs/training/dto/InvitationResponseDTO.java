@@ -7,7 +7,6 @@ public record InvitationResponseDTO (
     Long id,
     String employeeName,
     EStatus status,
-    @JsonIgnore
-    TrainingResponseDTO training
+    String employeeId
 ){
 }

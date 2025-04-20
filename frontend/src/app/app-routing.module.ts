@@ -46,6 +46,15 @@ const routes: Routes = [
         canActivate: [RoleGuard],
         data: { roles: ['Manager', 'HR', 'Employee'] },
       },
+      {
+        path: 'trainings',
+        loadChildren: () =>
+          import(
+            './modules/training-management/training-management.module'
+          ).then((m) => m.TrainingManagementModule),
+        canActivate: [RoleGuard],
+        data: { roles: ['Manager', 'HR', 'Employee'] },
+      },
       { path: '', redirectTo: 'home', pathMatch: 'full' },
     ],
   },
