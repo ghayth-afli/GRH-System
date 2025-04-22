@@ -1,0 +1,215 @@
+<div class="component-container">
+  <div class="component-header">
+    <div class="component-title"><h3>Trainings</h3></div>
+
+    <div class="component-header-actions">
+      @if(authService.hasRole('HR')){
+      <div class="action-button pdf-export">
+        <button class="action-btn" (click)="exportToPDF()">
+          <i class="icofont-file-pdf me-2 fs-6"></i>
+          Export PDF
+        </button>
+      </div>
+      <div class="action-button excel-export">
+        <button class="action-btn" (click)="exportcsv()">
+          <i class="icofont-file-excel me-2 fs-6"></i>
+          Export Excel
+        </button>
+      </div>
+      } @if(authService.hasRole('Manager')){
+      <div class="action-button item-add">
+        <button class="action-btn" (click)="addTraining()">
+          <i class="icofont-plus-circle me-2 fs-6"></i>
+          Add Training
+        </button>
+      </div>
+      }
+    </div>
+  </div>
+  <div class="component-body">
+    <div class="data-table-container">
+      <mat-form-field style="float: right; margin-right: 5%">
+        <mat-label>Search: </mat-label>
+        <input matInput (keyup)="filter($event)" type="search" />
+      </mat-form-field>
+      <table mat-table [dataSource]="dataSource">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>id</th>
+          <td class="highlight-id" mat-cell *matCellDef="let element">
+            #{{ element.id }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef>title</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.title }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>description</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.description }}
+          </td>
+        </ng-container>
+        @if(authService.hasRole('HR')){
+        <ng-container matColumnDef="department">
+          <th mat-header-cell *matHeaderCellDef>department</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.department }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>created At</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.createdAt }}
+          </td>
+        </ng-container>
+        }
+        <ng-container matColumnDef="startDate">
+          <th mat-header-cell *matHeaderCellDef>from</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.startDate }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="endDate">
+          <th mat-header-cell *matHeaderCellDef>to</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.endDate }}
+          </td>
+        </ng-container>
+        @if(!authService.hasRole('Employee')){
+        <ng-container matColumnDef="invitations">
+          <th mat-header-cell *matHeaderCellDef>invitations</th>
+          <td mat-cell *matCellDef="let element">
+            <a routerLink="{{ element.id }}/invitations">
+              <button mat-icon-button class="badge-button" color="primary">
+                <mat-icon><i class="icofont-ui-user-group"></i></mat-icon>
+                <span class="badge-count">
+                  {{ element.invitations.length }}
+                </span>
+              </button>
+            </a>
+          </td>
+        </ng-container>
+        } @else{
+        <ng-container matColumnDef="invitations">
+          <th mat-header-cell *matHeaderCellDef>invitation</th>
+          <td mat-cell *matCellDef="let element">
+            <span>
+              {{ element.invitations[0].status }}
+            </span>
+          </td>
+        </ng-container>
+        }
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>status</th>
+          <td mat-cell *matCellDef="let element">
+            <span
+              [ngClass]="{
+                'highlight-status-green':
+                  currentDate >= element.startDate &&
+                  currentDate <= element.endDate,
+                'highlight-status-red': currentDate > element.endDate
+              }"
+            >
+              {{
+                currentDate >= element.startDate &&
+                currentDate <= element.endDate
+                  ? "Started"
+                  : currentDate > element.endDate
+                  ? "Ended"
+                  : "Not Started"
+              }}
+            </span>
+          </td>
+        </ng-container>
+        @if(!authService.hasRole('HR')){
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let element">
+            @if(authService.hasRole('Manager')){
+            <button
+              mat-icon-button
+              class="edit-control"
+              color="primary"
+              (click)="editTraining(element)"
+            >
+              <mat-icon><i class="icofont-edit"></i></mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              color="warn"
+              (click)="deleteTraining(element)"
+              class="delete-control"
+            >
+              <mat-icon><i class="icofont-ui-delete"></i></mat-icon>
+            </button>
+            } @if(authService.hasRole('Employee') &&
+            element.invitations[0].status == 'PENDING'){
+            <button
+              mat-icon-button
+              class="edit-control-mono ban"
+              (click)="rejectTraining(element)"
+            >
+              <mat-icon><i class="icofont-ban"></i></mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              class="edit-control-mono"
+              (click)="confirmTraining(element)"
+            >
+              <mat-icon><i class="icofont-check"></i></mat-icon>
+            </button>
+            }
+          </td>
+        </ng-container>
+        }
+        <!-- <ng-container matColumnDef="choosenSlot">
+          <th mat-header-cell *matHeaderCellDef>Choosen Slot</th>
+          <td mat-cell *matCellDef="let element">
+            {{
+              element.choosenSlot
+                ? (element.choosenSlot | date : "HH:mm")
+                : "--:--"
+            }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="TakeAppointment">
+          <th mat-header-cell *matHeaderCellDef>Take Appointment</th>
+          <td mat-cell *matCellDef="let element">
+            <button
+              mat-icon-button
+              class="edit-control-mono ban"
+              (click)="cancelAppointment(element)"
+            >
+              <mat-icon><i class="icofont-ban"></i></mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              class="edit-control-mono"
+              (click)="makeAppointment(element)"
+            >
+              <mat-icon><i class="icofont-check"></i></mat-icon>
+            </button>
+          </td>
+        </ng-container> -->
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          class="data-table-body-row"
+        ></tr>
+      </table>
+
+      <mat-paginator
+        [pageSizeOptions]="pageSizeOptions"
+        [showFirstLastButtons]="true"
+        [pageSize]="pageSize"
+      >
+      </mat-paginator>
+    </div>
+  </div>
+</div>

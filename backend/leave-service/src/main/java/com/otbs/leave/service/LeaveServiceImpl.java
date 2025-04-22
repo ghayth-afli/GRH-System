@@ -38,6 +38,7 @@ public class LeaveServiceImpl implements LeaveService {
 
     private final LeaveBalanceRepository leaveBalanceRepository;
     private final LeaveRepository leaveRepository;
+    private final LeaveNotificationService leaveNotificationService;
     private final LeaveAttributesMapper leaveAttributesMapper;
     private final MailClient mailClient;
     private final EmployeeClient employeeClient;
@@ -71,7 +72,7 @@ public class LeaveServiceImpl implements LeaveService {
         leaveRepository.saveAndFlush(leave);
 
 
-        //TODO: Send Notification to Manager
+
 
         //send mail to user
         MailResponse c = mailClient.sendMail(new MailRequest(user.email(), "Leave Application", "Your leave application has been submitted successfully"));
@@ -81,6 +82,13 @@ public class LeaveServiceImpl implements LeaveService {
         EmployeeResponse manager = employeeClient.getManagerByDepartment(user.department());
         MailResponse c1 = mailClient.sendMail(new MailRequest(manager.email(), "Leave Application", "You have a new leave application to approve"));
         log.info("Mail sent to manager: {}", c1.message());
+
+        //TODO: Send Notification to Manager
+        leaveNotificationService.sendMedicalVisitNotification(
+                "New Leave Request Received",
+                leave.getStartDate().toString(),
+                manager.username()
+        );
     }
 
     @Override

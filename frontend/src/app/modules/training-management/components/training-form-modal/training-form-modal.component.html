@@ -1,0 +1,75 @@
+<div class="form-modal-container">
+  <div class="form-modal-header">
+    <h5>Training Add</h5>
+    <button class="close-button" (click)="onClose()">
+      <i class="icofont-close-line"></i>
+    </button>
+  </div>
+  <form [formGroup]="trainingForm" (ngSubmit)="onSubmit()">
+    <div class="modal-body">
+      <div class="form-controller-container">
+        <div class="form-controller">
+          <div class="label-container">
+            <label for="title">Title</label>
+          </div>
+          <input id="title" formControlName="title" required />
+        </div>
+        <div class="form-controller">
+          <div class="label-container">
+            <label for="description">Description</label>
+          </div>
+          <textarea
+            id="description"
+            formControlName="description"
+            required
+          ></textarea>
+        </div>
+      </div>
+      <div class="form-controller-container">
+        <div class="form-controller">
+          <div class="label-container">
+            <label for="startDate">Start Date</label>
+          </div>
+          <input
+            id="startDate"
+            type="date"
+            formControlName="startDate"
+            required
+          />
+        </div>
+        <div class="form-controller">
+          <div class="label-container">
+            <label for="endDate">End Date</label>
+          </div>
+          <input id="endDate" type="date" formControlName="endDate" required />
+        </div>
+      </div>
+
+      <div class="form-buttons">
+        <div class="button-submit">
+          <button
+            type="submit"
+            [disabled]="trainingForm.invalid"
+            class="primary"
+          >
+            @if(isLoading){
+            <div class="spinner-container">
+              <mat-spinner [diameter]="15"></mat-spinner>
+            </div>
+            } @else{ @if(isUpdate){<span>Update</span>} @else{<span>Add</span>}
+            }
+          </button>
+        </div>
+        <div class="button-cancel">
+          <button type="button" (click)="onCancel()">
+            @if(isLoading){
+            <div class="spinner-container">
+              <mat-spinner [diameter]="15"></mat-spinner>
+            </div>
+            } @else{ Cancel }
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

@@ -13,7 +13,7 @@ import { AppointmentService } from '../../services/appointment.service';
 import { AppointmentModalComponent } from '../../components/appointment-modal/appointment-modal.component';
 import { Appointment } from '../../models/appointment';
 import { catchError, map, Observable, of } from 'rxjs';
-import { MatSnackBar } from '@angular/material/snack-bar';
+// Removed unused MatSnackBar import
 
 @Component({
   selector: 'app-medical-visits-page',
@@ -40,11 +40,24 @@ export class MedicalVisitsPageComponent {
     this.loadAppointmentsForEmployeeOrManager();
   }
   makeAppointment(element: MedicalVisit): void {
-    this.dialog.open(AppointmentModalComponent, {
-      width: '35%',
-      height: 'auto',
-      data: element,
-    });
+    this.dialog
+      .open(AppointmentModalComponent, {
+        width: '35%',
+        height: 'auto',
+        data: element,
+      })
+      .afterClosed()
+      .subscribe({
+        next: (result) => {
+          console.log('Dialog result:', result);
+          if (result === 'submitted') {
+            this.loadMedicalVisits();
+          }
+        },
+        error: (error) => {
+          console.error('Error in dialog:', error);
+        },
+      });
   }
 
   cancelAppointment(element: MedicalVisit): void {

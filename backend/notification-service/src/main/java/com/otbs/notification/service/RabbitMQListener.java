@@ -2,6 +2,7 @@ package com.otbs.notification.service;
 
 import com.otbs.notification.dto.NotificationRequestDTO;
 import com.otbs.notification.model.NotificationType;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
@@ -11,13 +12,10 @@ import java.util.Optional;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class RabbitMQListener {
 
     private final NotificationService notificationService;
-
-    public RabbitMQListener(NotificationService notificationService) {
-        this.notificationService = notificationService;
-    }
 
     @RabbitListener(queues = "${notification.rabbitmq.leave-request-queue}")
     public void processLeaveRequestNotification(Map<String, Object> message) {
@@ -42,24 +40,44 @@ public class RabbitMQListener {
             log.error("Error processing medical visit notification: {}", e.getMessage(), e);
         }
     }
+    @RabbitListener(queues = "${notification.rabbitmq.training-queue}")
+    public void processTrainingNotification(Map<String, Object> message) {
+        log.info("Received training message: {}", message);
+
+        try {
+            NotificationRequestDTO notificationRequest = buildTrainingNotification(message);
+            notificationService.createNotification(notificationRequest);
+        } catch (Exception e) {
+            log.error("Error processing training notification: {}", e.getMessage(), e);
+        }
+    }
+
+    private NotificationRequestDTO buildTrainingNotification(Map<String, Object> message) {
+        String trainingId = Optional.ofNullable(message.get("trainingId")).map(Object::toString).orElse("");
+
+        return NotificationRequestDTO.builder()
+                .title("New Training Scheduled")
+                .message(Optional.ofNullable(message.get("message")).map(Object::toString).orElse(""))
+                .sender("training-management-service")
+                .recipient(Optional.ofNullable(message.get("recipient")).map(Object::toString).orElse(""))
+                .type(NotificationType.TRAINING)
+                .sourceId(trainingId)
+                .actionUrl("/trainings")
+                .build();
+    }
+
 
     private NotificationRequestDTO buildLeaveRequestNotification(Map<String, Object> message) {
         String requestId = Optional.ofNullable(message.get("requestId")).map(Object::toString).orElse("");
-        String employeeName = Optional.ofNullable(message.get("employeeName")).map(Object::toString).orElse("");
-        String managerUsername = Optional.ofNullable(message.get("managerUsername")).map(Object::toString).orElse("");
-        String leaveType = Optional.ofNullable(message.get("leaveType")).map(Object::toString).orElse("");
-        String fromDate = Optional.ofNullable(message.get("fromDate")).map(Object::toString).orElse("");
-        String toDate = Optional.ofNullable(message.get("toDate")).map(Object::toString).orElse("");
 
         return NotificationRequestDTO.builder()
                 .title("New Leave Request")
-                .message(String.format("%s has requested %s leave from %s to %s",
-                        employeeName, leaveType, fromDate, toDate))
+                .message(Optional.ofNullable(message.get("message")).map(Object::toString).orElse(""))
                 .sender("leave-request-service")
-                .recipient(managerUsername)
+                .recipient(Optional.ofNullable(message.get("recipient")).map(Object::toString).orElse(""))
                 .type(NotificationType.LEAVE_REQUEST)
                 .sourceId(requestId)
-                .actionUrl("/leave-requests/" + requestId)
+                .actionUrl("/leave")
                 .build();
     }
 
@@ -73,7 +91,7 @@ public class RabbitMQListener {
                 .recipient(Optional.ofNullable(message.get("recipient")).map(Object::toString).orElse(""))
                 .type(NotificationType.MEDICAL_VISIT)
                 .sourceId(visitId)
-                .actionUrl("/medical-visits/" + visitId)
+                .actionUrl("/medical-visits")
                 .build();
     }
 }

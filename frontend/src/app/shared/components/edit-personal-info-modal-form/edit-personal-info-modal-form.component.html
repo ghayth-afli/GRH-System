@@ -1,35 +1,67 @@
-<div class="modal-container">
-  <h2>Edit Personal Information</h2>
+<div class="form-modal-container">
+  <div class="form-modal-header">
+    <h5>Edit Personal Information</h5>
+    <button class="close-button" (click)="closeModal()">
+      <i class="icofont-close-line"></i>
+    </button>
+  </div>
   <form (ngSubmit)="onSubmit()" [formGroup]="editForm">
-    <div class="profile-picture-container">
-      <img
-        [src]="user.profilePicture"
-        alt="Profile Picture"
-        class="profile-picture"
-        (click)="triggerFileInput()"
-      />
-      <input
-        id="profilePicture"
-        type="file"
-        (change)="onFileChange($event)"
-        hidden
-      />
-    </div>
-    <label for="firstName">First Name</label>
-    <input id="firstName" formControlName="firstName" type="text" />
+    <div class="modal-body">
+      <div class="profile-picture-container">
+        <img
+          [src]="user.profilePicture"
+          alt="Profile Picture"
+          class="profile-picture"
+          (click)="triggerFileInput()"
+        />
+        <input
+          id="profilePicture"
+          type="file"
+          (change)="onFileChange($event)"
+          hidden
+        />
+      </div>
 
-    <label for="lastName">Last Name</label>
-    <input id="lastName" formControlName="lastName" type="text" />
+      <div class="form-controller-container">
+        <div class="form-controller">
+          <div class="label-container">
+            <label for="firstName">First Name</label>
+          </div>
+          <input id="firstName" formControlName="firstName" type="text" />
+        </div>
+        <div class="form-controller">
+          <div class="label-container">
+            <label for="lastName">Last Name</label>
+          </div>
+          <input id="lastName" formControlName="lastName" type="text" />
+        </div>
+      </div>
 
-    <label for="email">Email</label>
-    <input id="email" formControlName="email" type="email" />
+      <div class="form-controller-container">
+        <div class="form-controller">
+          <div class="label-container">
+            <label for="email">Email</label>
+          </div>
+          <input id="email" formControlName="email" type="email" />
+        </div>
+        <div class="form-controller">
+          <div class="label-container">
+            <label for="jobTitle">Job Title</label>
+          </div>
+          <input id="jobTitle" formControlName="jobTitle" type="text" />
+        </div>
+      </div>
 
-    <label for="jobTitle">Job Title</label>
-    <input id="jobTitle" formControlName="jobTitle" type="text" />
-
-    <div class="modal-actions">
-      <button type="button" (click)="closeModal()">Cancel</button>
-      <button type="submit" [disabled]="editForm.invalid">Save</button>
+      <div class="form-buttons">
+        <div class="button-submit">
+          <button type="submit" [disabled]="editForm.invalid" class="primary">
+            Save
+          </button>
+        </div>
+        <div class="button-cancel">
+          <button type="button" (click)="closeModal()">Cancel</button>
+        </div>
+      </div>
     </div>
   </form>
 </div>

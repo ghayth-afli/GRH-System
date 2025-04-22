@@ -10,7 +10,7 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^19.0.0",
+    "@angular/animations": "^19.2.6",
     "@angular/cdk": "^19.2.2",
     "@angular/common": "^19.0.0",
     "@angular/compiler": "^19.0.0",
@@ -28,6 +28,7 @@
     "icofont": "^1.0.0",
     "jspdf": "^3.0.1",
     "jspdf-autotable": "^5.0.2",
+    "ngx-toastr": "^19.0.0",
     "rxjs": "~7.8.0",
     "sockjs-client": "^1.6.1",
     "tslib": "^2.3.0",

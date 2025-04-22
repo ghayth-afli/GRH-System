@@ -721,78 +721,6 @@ app-calendar-side-bar {
   font-weight: 500;
 }
 
-/* Data Table */
-.table-container {
-  background-color: var(--white);
-  padding: 2rem;
-  border-radius: 0.4444rem;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.search-input {
-  padding: 0.5rem;
-  border: 1px solid var(--silver);
-  border-radius: 0.2rem;
-  font-size: 1rem;
-  color: var(--blue-zodiac);
-  margin-bottom: 1rem;
-}
-
-.actions-container {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.icon-actions {
-  width: 70%;
-  border-radius: 0.2rem;
-}
-
-.leave-status {
-  padding: 0.3rem;
-
-  color: var(--white);
-  border-radius: 0.3rem;
-  font-size: 0.9rem;
-}
-
-.reject-icon {
-  background-color: var(--red);
-  cursor: pointer;
-}
-
-.reject-icon:active {
-  background-color: var(--red-2);
-}
-
-.approve-icon:active {
-  background-color: var (--green-2);
-}
-
-.approve-icon {
-  background-color: var(--green);
-  cursor: pointer;
-}
-
-.download-icon {
-  cursor: pointer;
-  width: 20%;
-  padding: 0.1rem;
-}
-
-.approve-icon:active {
-  background-color: var(--endeavour);
-}
-
-.reject-icon:active {
-  background-color: var(--blue-zodiac);
-}
-
-.download-icon:active {
-  background-color: var(--endeavour);
-}
-
 /* Leave Request Modal Styles */
 .modal-container {
   width: 100%;
@@ -991,7 +919,7 @@ app-calendar-side-bar {
 .highlight-status-green {
   background-color: #155724 !important;
   color: #fff !important;
-  font-size: small;
+  font-size: smaller;
   font-weight: 600;
   padding: 0.2rem 0.4rem;
   border-radius: 0.2rem;
@@ -1000,7 +928,7 @@ app-calendar-side-bar {
 .highlight-status-red {
   background-color: #721c24 !important;
   color: #fff !important;
-  font-size: small;
+  font-size: smaller;
   font-weight: 600;
   padding: 0.2rem 0.4rem;
   border-radius: 0.2rem;
@@ -1009,7 +937,7 @@ app-calendar-side-bar {
 .highlight-status-yellow {
   background-color: #856404 !important;
   color: #fff !important;
-  font-size: small;
+  font-size: smaller;
   font-weight: 600;
   padding: 0.2rem 0.4rem;
   border-radius: 0.2rem;
