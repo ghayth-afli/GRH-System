@@ -43,6 +43,7 @@ public class TrainingServiceImpl implements TrainingService {
 
         List<EmployeeResponse> departmentEmployees = employeeClient.getAllEmployees().stream()
                 .filter(emp -> emp.department().equals(manager.department()))
+                .filter(emp -> !emp.equals(manager))
                 .toList();
 
         List<Invitation> invitations = departmentEmployees.stream()

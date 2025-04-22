@@ -1,9 +1,10 @@
-import { Component, Inject, inject } from '@angular/core';
+import { Component, Inject, inject, OnDestroy } from '@angular/core';
 import { TrainingService } from '../../services/training.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Training } from '../../models/training';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-training-form-modal',
@@ -19,11 +20,16 @@ export class TrainingFormModalComponent {
   isLoading = false;
   isUpdate = false;
   private snackBar = inject(MatSnackBar);
+  private subscriptions: Subscription = new Subscription();
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: Training) {}
 
   ngOnInit(): void {
     this.initializeForm();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   private initializeForm(): void {
@@ -61,10 +67,13 @@ export class TrainingFormModalComponent {
     this.isLoading = true;
     const trainingData = this.trainingForm.value;
     console.log('training Data:', trainingData);
-    this.trainingService.updateTraining(this.data.id, trainingData).subscribe({
-      next: (response) => this.handleUpdateSuccess(response, trainingData),
-      error: (error) => this.handleError('updating', error),
-    });
+    const updateSub = this.trainingService
+      .updateTraining(this.data.id, trainingData)
+      .subscribe({
+        next: (response) => this.handleUpdateSuccess(response, trainingData),
+        error: (error) => this.handleError('updating', error),
+      });
+    this.subscriptions.add(updateSub);
   }
 
   private createTraining(): void {
@@ -72,10 +81,13 @@ export class TrainingFormModalComponent {
       this.isLoading = true;
       const trainingData = this.trainingForm.value;
       console.log('training Data:', trainingData);
-      this.trainingService.createTraining(trainingData).subscribe({
-        next: (response) => this.handleCreateSuccess(response, trainingData),
-        error: (error) => this.handleError('creating', error),
-      });
+      const createSub = this.trainingService
+        .createTraining(trainingData)
+        .subscribe({
+          next: (response) => this.handleCreateSuccess(response, trainingData),
+          error: (error) => this.handleError('creating', error),
+        });
+      this.subscriptions.add(createSub);
     } else {
       console.error('Form is invalid');
     }
