@@ -1,9 +1,8 @@
 package com.otbs.auth.service;
 
-import com.otbs.auth.exception.UserNotFoundException;
+import com.otbs.auth.exception.UserException;
 import com.otbs.auth.repositories.PasswordResetTokenRepository;
-import com.otbs.auth.exception.InvalidTokenException;
-import com.otbs.auth.exception.TokenExpiredException;
+import com.otbs.auth.exception.TokenException;
 import com.otbs.auth.model.PasswordResetToken;
 import com.otbs.feign.client.EmployeeClient;
 import com.otbs.feign.client.MailClient;
@@ -44,7 +43,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     public void createPasswordResetTokenForUser(String email) {
         EmployeeResponse user = employeeClient.getEmployeeByEmail(email);
         if (user == null) {
-            throw new UserNotFoundException("User not found");
+            throw new UserException("User not found");
         }
 
         String token = UUID.randomUUID().toString();
@@ -63,15 +62,15 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     @Override
     public void resetPassword(String token, String newPassword) {
         PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(token)
-                .orElseThrow(() -> new InvalidTokenException("Invalid token"));
+                .orElseThrow(() -> new TokenException("Invalid token"));
 
         if (resetToken.getExpiryDate().isBefore(Instant.now())) {
-            throw new TokenExpiredException("Token expired");
+            throw new TokenException("Token expired");
         }
 
         EmployeeResponse user = employeeClient.getEmployeeByEmail(resetToken.getEmail());
         if (user == null) {
-            throw new UserNotFoundException("User not found");
+            throw new UserException("User not found");
         }
 
         ModificationItem item = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("unicodePwd",
