@@ -103,9 +103,9 @@ public class LeaveServiceImpl implements LeaveService {
                 .orElseThrow(() -> new LeaveException("Leave not found"));
 
         leaveRepository.delete(leave);
-
+        EmployeeResponse emp = fetchEmployee(leave.getUserDn());
         leaveNotificationService.sendMailNotification(
-                getCurrentUserDn(),
+                emp.email(),
                 "Leave Application Cancelled",
                 "Your leave application has been successfully cancelled"
         );
@@ -119,16 +119,16 @@ public class LeaveServiceImpl implements LeaveService {
         leave.setStatus(EStatus.APPROUVÉE);
         leaveRepository.save(leave);
         updateLeaveBalance(leave);
-
-        sendAsyncApprovalNotifications(leave);
+        EmployeeResponse emp = fetchEmployee(leave.getUserDn());
+        sendAsyncApprovalNotifications(emp,leave);
     }
 
     @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void sendAsyncApprovalNotifications(Leave leave) {
+    public void sendAsyncApprovalNotifications(EmployeeResponse user,Leave leave) {
         CompletableFuture<Void> mailNotification = CompletableFuture.runAsync(() ->
                 leaveNotificationService.sendMailNotification(
-                        leave.getUserDn(),
+                        user.email(),
                         "Leave Application Approved",
                         "Your leave application has been approved"
                 ));
@@ -159,16 +159,16 @@ public class LeaveServiceImpl implements LeaveService {
 
         leave.setStatus(EStatus.REFUSÉE);
         leaveRepository.save(leave);
-
-        sendAsyncRejectionNotifications(leave);
+        EmployeeResponse emp = fetchEmployee(leave.getUserDn());
+        sendAsyncRejectionNotifications(emp,leave);
     }
 
     @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void sendAsyncRejectionNotifications(Leave leave) {
+    public void sendAsyncRejectionNotifications(EmployeeResponse user,Leave leave) {
         CompletableFuture<Void> mailNotification = CompletableFuture.runAsync(() ->
                 leaveNotificationService.sendMailNotification(
-                        leave.getUserDn(),
+                        user.email(),
                         "Leave Application Rejected",
                         "Your leave application has been rejected"
                 ));

@@ -69,9 +69,9 @@ public class RabbitMQListener {
     private MailRequestDTO buildMailRequest(Map<String, Object> message) {
         log.info("Received mail message: {}", message);
         return MailRequestDTO.builder()
-                .to(getValue(message, "to"))
+                .to(getValue(message, "recipient"))
                 .subject(getValue(message, "subject"))
-                .body(getValue(message, "body"))
+                .body(getValue(message, "message"))
                 .build();
     }
 
