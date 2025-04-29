@@ -33,13 +33,6 @@ public class LeaveBalance {
     @Column(nullable = false)
     private LocalDate lastUpdatedDate;
 
-    public LeaveBalance(String userDn, Integer totalLeave, Integer usedLeave, Integer remainingLeave, LocalDate lastUpdatedDate) {
-        this.userDn = userDn;
-        this.totalLeave = totalLeave;
-        this.usedLeave = usedLeave;
-        this.remainingLeave = remainingLeave;
-        this.lastUpdatedDate = lastUpdatedDate;
-    }
 
     public void addMonthlyLeave() {
         if (lastUpdatedDate != null && lastUpdatedDate.plusMonths(1).isBefore(LocalDate.now())) {

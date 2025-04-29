@@ -1,5 +1,6 @@
 package com.otbs.notification.service;
 
+import com.otbs.notification.dto.MailRequestDTO;
 import com.otbs.notification.dto.NotificationRequestDTO;
 import com.otbs.notification.model.NotificationType;
 import lombok.RequiredArgsConstructor;
@@ -19,79 +20,62 @@ public class RabbitMQListener {
 
     @RabbitListener(queues = "${notification.rabbitmq.leave-request-queue}")
     public void processLeaveRequestNotification(Map<String, Object> message) {
-        log.info("Received leave request message: {}", message);
-
-        try {
-            NotificationRequestDTO notificationRequest = buildLeaveRequestNotification(message);
-            notificationService.createNotification(notificationRequest);
-        } catch (Exception e) {
-            log.error("Error processing leave request notification: {}", e.getMessage(), e);
-        }
+        processNotification(message, "leave-request-service", NotificationType.LEAVE_REQUEST);
     }
 
     @RabbitListener(queues = "${notification.rabbitmq.medical-visit-queue}")
     public void processMedicalVisitNotification(Map<String, Object> message) {
-        log.info("Received medical visit message: {}", message);
-
-        try {
-            NotificationRequestDTO notificationRequest = buildMedicalVisitNotification(message);
-            notificationService.createNotification(notificationRequest);
-        } catch (Exception e) {
-            log.error("Error processing medical visit notification: {}", e.getMessage(), e);
-        }
+        processNotification(message, "medical-visit-service", NotificationType.MEDICAL_VISIT);
     }
+
     @RabbitListener(queues = "${notification.rabbitmq.training-queue}")
     public void processTrainingNotification(Map<String, Object> message) {
-        log.info("Received training message: {}", message);
+        processNotification(message, "training-management-service", NotificationType.TRAINING_SESSION);
+    }
 
+    @RabbitListener(queues = "${notification.rabbitmq.mail-queue}")
+    public void processMailNotification(Map<String, Object> message) {
         try {
-            NotificationRequestDTO notificationRequest = buildTrainingNotification(message);
-            notificationService.createNotification(notificationRequest);
+            MailRequestDTO mailRequest = buildMailRequest(message);
+            log.info("Sending mail: {}", mailRequest);
+            notificationService.sendMail(mailRequest);
         } catch (Exception e) {
-            log.error("Error processing training notification: {}", e.getMessage(), e);
+            log.error("Error processing mail notification: {}", e.getMessage(), e);
         }
     }
 
-    private NotificationRequestDTO buildTrainingNotification(Map<String, Object> message) {
-        String trainingId = Optional.ofNullable(message.get("trainingId")).map(Object::toString).orElse("");
+    private void processNotification(Map<String, Object> message, String sender, NotificationType type) {
+        log.info("Received {} message: {}", type, message);
+        try {
+            NotificationRequestDTO notificationRequest = buildNotification(message, sender, type);
+            notificationService.createNotification(notificationRequest);
+        } catch (Exception e) {
+            log.error("Error processing {} notification: {}", type, e.getMessage(), e);
+        }
+    }
 
+    private NotificationRequestDTO buildNotification(Map<String, Object> message, String sender, NotificationType type) {
         return NotificationRequestDTO.builder()
-                .title("New Training Scheduled")
-                .message(Optional.ofNullable(message.get("message")).map(Object::toString).orElse(""))
-                .sender("training-management-service")
-                .recipient(Optional.ofNullable(message.get("recipient")).map(Object::toString).orElse(""))
-                .type(NotificationType.TRAINING)
-                .sourceId(trainingId)
-                .actionUrl("/trainings")
+                .title(getValue(message, "subject"))
+                .message(getValue(message, "message"))
+                .sender(sender)
+                .recipient(getValue(message, "recipient"))
+                .type(type)
+                .sourceId(getValue(message, "sourceId"))
+                .actionUrl(getValue(message, "actionUrl"))
                 .build();
     }
 
-
-    private NotificationRequestDTO buildLeaveRequestNotification(Map<String, Object> message) {
-        String requestId = Optional.ofNullable(message.get("requestId")).map(Object::toString).orElse("");
-
-        return NotificationRequestDTO.builder()
-                .title("New Leave Request")
-                .message(Optional.ofNullable(message.get("message")).map(Object::toString).orElse(""))
-                .sender("leave-request-service")
-                .recipient(Optional.ofNullable(message.get("recipient")).map(Object::toString).orElse(""))
-                .type(NotificationType.LEAVE_REQUEST)
-                .sourceId(requestId)
-                .actionUrl("/leave")
+    private MailRequestDTO buildMailRequest(Map<String, Object> message) {
+        log.info("Received mail message: {}", message);
+        return MailRequestDTO.builder()
+                .to(getValue(message, "to"))
+                .subject(getValue(message, "subject"))
+                .body(getValue(message, "body"))
                 .build();
     }
 
-    private NotificationRequestDTO buildMedicalVisitNotification(Map<String, Object> message) {
-        String visitId = Optional.ofNullable(message.get("medicalVisitId")).map(Object::toString).orElse("");
-
-        return NotificationRequestDTO.builder()
-                .title("Medical Visit Available")
-                .message(Optional.ofNullable(message.get("message")).map(Object::toString).orElse(""))
-                .sender("medical-visit-service")
-                .recipient(Optional.ofNullable(message.get("recipient")).map(Object::toString).orElse(""))
-                .type(NotificationType.MEDICAL_VISIT)
-                .sourceId(visitId)
-                .actionUrl("/medical-visits")
-                .build();
+    private String getValue(Map<String, Object> message, String key) {
+        return Optional.ofNullable(message.get(key)).map(Object::toString).orElse("");
     }
 }

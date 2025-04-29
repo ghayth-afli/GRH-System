@@ -1,9 +1,8 @@
 package com.otbs.leave.controller;
 
-import com.otbs.feign.dto.EmployeeResponse;
-import com.otbs.leave.dto.LeaveRequest;
-import com.otbs.leave.dto.LeaveResponse;
-import com.otbs.leave.dto.MessageResponse;
+import com.otbs.leave.dto.LeaveRequestDTO;
+import com.otbs.leave.dto.LeaveResponseDTO;
+import com.otbs.leave.dto.MessageResponseDTO;
 import com.otbs.leave.model.ELeaveType;
 import com.otbs.leave.model.Leave;
 import com.otbs.leave.model.LeaveBalance;
@@ -37,48 +36,48 @@ public class LeaveController {
 
     @PostMapping("/apply")
     @PreAuthorize("hasAuthority('Employee')")
-    public ResponseEntity<MessageResponse> applyLeave(@RequestParam("leaveType") ELeaveType leaveType,
-                                                      @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-                                                      @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-                                                      @RequestParam(value = "startHOURLY", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime startHOURLY,
-                                                      @RequestParam(value = "endHOURLY", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime endHOURLY,
-                                                      @RequestParam(value = "attachment", required = false) MultipartFile attachment) {
-        LeaveRequest leaveRequest = new LeaveRequest(leaveType, startDate, endDate, startHOURLY, endHOURLY);
+    public ResponseEntity<MessageResponseDTO> applyLeave(@RequestParam("leaveType") ELeaveType leaveType,
+                                                         @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                                         @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+                                                         @RequestParam(value = "startHOURLY", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime startHOURLY,
+                                                         @RequestParam(value = "endHOURLY", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime endHOURLY,
+                                                         @RequestParam(value = "attachment", required = false) MultipartFile attachment) {
+        LeaveRequestDTO leaveRequestDTO = new LeaveRequestDTO(leaveType, startDate, endDate, startHOURLY, endHOURLY);
 
-        leaveService.applyLeave(leaveRequest, attachment);
-        return ResponseEntity.ok(new MessageResponse("Leave applied successfully"));
+        leaveService.applyLeave(leaveRequestDTO, attachment);
+        return ResponseEntity.ok(new MessageResponseDTO("Leave applied successfully"));
     }
 
     @DeleteMapping("/cancel/{leaveId}")
     @PreAuthorize("hasAuthority('Employee')")
-    public ResponseEntity<MessageResponse> cancelLeave(@PathVariable("leaveId") Long leaveId) {
+    public ResponseEntity<MessageResponseDTO> cancelLeave(@PathVariable("leaveId") Long leaveId) {
         leaveService.cancelLeave(leaveId);
-        return ResponseEntity.ok(new MessageResponse("Leave cancelled successfully"));
+        return ResponseEntity.ok(new MessageResponseDTO("Leave cancelled successfully"));
     }
 
     @PutMapping("/approve/{leaveId}")
     @PreAuthorize("hasAuthority('Manager')")
-    public ResponseEntity<MessageResponse> approveLeave(@PathVariable("leaveId") Long leaveId) {
+    public ResponseEntity<MessageResponseDTO> approveLeave(@PathVariable("leaveId") Long leaveId) {
         leaveService.approveLeave(leaveId);
-        return ResponseEntity.ok(new MessageResponse("Leave approved successfully"));
+        return ResponseEntity.ok(new MessageResponseDTO("Leave approved successfully"));
     }
 
     @PutMapping("/reject/{leaveId}")
     @PreAuthorize("hasAuthority('Manager')")
-    public ResponseEntity<MessageResponse> rejectLeave(@PathVariable("leaveId") Long leaveId) {
+    public ResponseEntity<MessageResponseDTO> rejectLeave(@PathVariable("leaveId") Long leaveId) {
         leaveService.rejectLeave(leaveId);
-        return ResponseEntity.ok(new MessageResponse("Leave rejected successfully"));
+        return ResponseEntity.ok(new MessageResponseDTO("Leave rejected successfully"));
     }
 
     @PutMapping("/update/{leaveId}")
     @PreAuthorize("hasAuthority('Employee')")
-    public ResponseEntity<MessageResponse> updateLeave(@PathVariable("leaveId") Long leaveId, @RequestBody LeaveRequest leaveRequest) {
-        leaveService.updateLeave(leaveId, leaveRequest);
-        return ResponseEntity.ok(new MessageResponse("Leave updated successfully"));
+    public ResponseEntity<MessageResponseDTO> updateLeave(@PathVariable("leaveId") Long leaveId, @RequestBody LeaveRequestDTO leaveRequestDTO) {
+        leaveService.updateLeave(leaveId, leaveRequestDTO);
+        return ResponseEntity.ok(new MessageResponseDTO("Leave updated successfully"));
     }
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('Manager') or hasAuthority('HR')")
-    public ResponseEntity<List<LeaveResponse>> getAllLeaves() {
+    public ResponseEntity<List<LeaveResponseDTO>> getAllLeaves() {
         return ResponseEntity.ok(leaveService.getAllLeaves());
     }
 

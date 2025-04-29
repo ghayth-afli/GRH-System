@@ -27,22 +27,22 @@ public class NotificationController {
 
     @GetMapping
     public ResponseEntity<List<NotificationResponseDTO>> getUserNotifications() {
-        String username = getCurrentUsername();
-        List<NotificationResponseDTO> notifications = notificationService.getUserNotifications(username);
+        String id = getCurrentUserId();
+        List<NotificationResponseDTO> notifications = notificationService.getUserNotifications(id);
         return ResponseEntity.ok(notifications);
     }
 
     @GetMapping("/unread")
     public ResponseEntity<List<NotificationResponseDTO>> getUnreadNotifications() {
-        String username = getCurrentUsername();
-        List<NotificationResponseDTO> notifications = notificationService.getUnreadNotifications(username);
+        String id = getCurrentUserId();
+        List<NotificationResponseDTO> notifications = notificationService.getUnreadNotifications(id);
         return ResponseEntity.ok(notifications);
     }
 
     @GetMapping("/unread/count")
     public ResponseEntity<Long> getUnreadCount() {
-        String username = getCurrentUsername();
-        long count = notificationService.getUnreadCount(username);
+        String id = getCurrentUserId();
+        long count = notificationService.getUnreadCount(id);
         return ResponseEntity.ok(count);
     }
 
@@ -54,12 +54,12 @@ public class NotificationController {
 
     @PutMapping("/read-all")
     public ResponseEntity<Void> markAllAsRead() {
-        String username = getCurrentUsername();
-        notificationService.markAllAsRead(username);
+        String id = getCurrentUserId();
+        notificationService.markAllAsRead(id);
         return ResponseEntity.noContent().build();
     }
 
-    private String getCurrentUsername() {
+    private String getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication.getName();
     }

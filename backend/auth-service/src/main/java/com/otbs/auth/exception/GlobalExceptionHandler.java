@@ -21,8 +21,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UserException.class)
-    public ResponseEntity<MessageResponseDTO> handleUserNotFound(TokenException e) {
-        return buildResponse(HttpStatus.NOT_FOUND, e.getMessage());
+    public ResponseEntity<MessageResponseDTO> handleUserException(UserException e) {
+        return buildResponse(HttpStatus.UNAUTHORIZED, e.getMessage());
     }
 
     @ExceptionHandler(FeignException.class)

@@ -11,15 +11,15 @@ public class UserAttributesMapper implements Function<LdapUser, Employee> {
 
     @Override
     public Employee apply(LdapUser ldapUser) {
-        Employee employee = new Employee();
-        employee.setId(ldapUser.getDn().toString());
-        employee.setUsername(ldapUser.getUsername());
-        employee.setFirstName(ldapUser.getFirstName());
-        employee.setLastName(ldapUser.getLastName());
-        employee.setEmail(ldapUser.getEmail());
-        employee.setDepartment(extractDepartment(ldapUser.getDn().toString()));
-        employee.setRole(extractRole(ldapUser.getGroups().toString()));
-        return employee;
+        return Employee.builder()
+                .id(ldapUser.getDn().toString())
+                .username(ldapUser.getUsername())
+                .firstName(ldapUser.getFirstName())
+                .lastName(ldapUser.getLastName())
+                .email(ldapUser.getEmail())
+                .department(extractDepartment(ldapUser.getDn().toString()))
+                .role(extractRole(ldapUser.getGroups().toString()))
+                .build();
     }
 
     private String extractDepartment(String dn) {

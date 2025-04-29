@@ -1,8 +1,8 @@
 package com.otbs.employee.controller;
 
-import com.otbs.employee.dto.EmployeeInfoRequest;
-import com.otbs.employee.dto.MessageResponse;
-import com.otbs.employee.dto.ProfilePicture;
+import com.otbs.employee.dto.EmployeeInfoRequestDTO;
+import com.otbs.employee.dto.MessageResponseDTO;
+import com.otbs.employee.dto.ProfilePictureDTO;
 import com.otbs.employee.model.Employee;
 import com.otbs.employee.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/employee")
+@RequestMapping("/api/v1/employee")
 @RequiredArgsConstructor
 @Slf4j
 public class EmployeeController {
@@ -52,21 +52,21 @@ public class EmployeeController {
 
     @PutMapping("/update")
     @PreAuthorize("hasAuthority('Manager') or hasAuthority('HR') or hasAuthority('Employee')")
-    public ResponseEntity<MessageResponse> updateEmployeeInfo(
+    public ResponseEntity<MessageResponseDTO> updateEmployeeInfo(
             @RequestParam("firstName") String firstName,
             @RequestParam("lastName") String lastName,
             @RequestParam("email") String email,
             @RequestParam(value = "picture", required = false) MultipartFile picture,
             @RequestParam("jobTitle") String department
     ) {
-        EmployeeInfoRequest employeeInfoRequest = new EmployeeInfoRequest(firstName, lastName, email, department);
-        employeeService.updateEmployeeInfo(employeeInfoRequest, picture);
+        EmployeeInfoRequestDTO employeeInfoRequestDTO = new EmployeeInfoRequestDTO(firstName, lastName, email, department);
+        employeeService.updateEmployeeInfo(employeeInfoRequestDTO, picture);
 
-        return ResponseEntity.ok(new MessageResponse("Employee updated successfully"));
+        return ResponseEntity.ok(new MessageResponseDTO("Employee updated successfully"));
     }
 
     @GetMapping("/profilePicture")
-    public ResponseEntity<ProfilePicture> getProfilePicture(@RequestParam("username") String username) {
+    public ResponseEntity<ProfilePictureDTO> getProfilePicture(@RequestParam("username") String username) {
         return ResponseEntity.ok(employeeService.getProfilePicture(username));
     }
 }

@@ -1,6 +1,6 @@
 package com.otbs.leave.service;
 
-
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -24,20 +23,38 @@ public class LeaveNotificationService {
     @Value("${notification.rabbitmq.leave-request-routing-key}")
     private String medicalVisitRoutingKey;
 
+    @Value("${notification.rabbitmq.mail-routing-key}")
+    private String mailRoutingKey;
 
-    public void sendMedicalVisitNotification(String title, String scheduleDate, String recipient) {
+    @PostConstruct
+    public void init() {
+        rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
+    }
+
+    public void sendLeaveNotification(String to, String subject, String body, Long sourceId) {
+        sendNotification(to, subject, body, medicalVisitRoutingKey, "/leave", sourceId);
+    }
+
+    public void sendMailNotification(String to, String subject, String body) {
+        sendNotification(to, subject, body, mailRoutingKey, null, null);
+    }
+
+    private void sendNotification(String to, String subject, String body, String routingKey, String actionUrl, Long sourceId) {
         try {
             Map<String, Object> message = new HashMap<>();
-            message.put("message", "A new leave request has been scheduled ");
-            message.put("sender", "leave-request-service");
-            message.put("actionUrl", "/leave");
-            message.put("recipient", Optional.ofNullable(recipient).orElse(""));
+            message.put("recipient", to);
+            message.put("subject", subject);
+            message.put("message", body);
+            if (actionUrl != null) {
+                message.put("actionUrl", actionUrl);
+            }
+            if (sourceId != null) {
+                message.put("sourceId", sourceId);
+            }
 
-            log.info("Sending leave request notification: {}", message);
-            rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
-            rabbitTemplate.convertAndSend(notificationExchange, medicalVisitRoutingKey, message);
+            rabbitTemplate.convertAndSend(notificationExchange, routingKey, message);
         } catch (Exception e) {
-            log.error("Error sending leave request notification: {}", e.getMessage(), e);
+            log.error("Error sending notification: {}", e.getMessage(), e);
         }
     }
 }

@@ -28,29 +28,29 @@ public class AuthServiceImpl implements AuthService{
     private final EmployeeClient employeeClient;
 
     public JwtResponseDTO authenticateUser(AuthRequestDTO authRequestDTO) {
-        EmployeeResponse user = employeeClient.getEmployeeByUsername(authRequestDTO.username());
+        try {
+            EmployeeResponse user = employeeClient.getEmployeeByUsername(authRequestDTO.username());
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(authRequestDTO.username(), authRequestDTO.password()));
 
-        if (user == null) {
-            throw new UserException("Employee not found");
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            List<String> roles = userDetails.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toList());
+
+            String accessToken = jwtUtils.generateAccessToken(authRequestDTO.username(), roles);
+
+            return new JwtResponseDTO(
+                    accessToken,
+                    jwtUtils.generateRefreshToken(authRequestDTO.username(), roles),
+                    jwtUtils.getAccessExpirationMs(),
+                    jwtUtils.getRefreshExpirationMs(),
+                    user
+            );
         }
-
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authRequestDTO.username(), authRequestDTO.password()));
-
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
-
-        String accessToken = jwtUtils.generateAccessToken(authRequestDTO.username(), roles);
-
-        return new JwtResponseDTO(
-                accessToken,
-                jwtUtils.generateRefreshToken(authRequestDTO.username(), roles),
-                jwtUtils.getAccessExpirationMs(),
-                jwtUtils.getRefreshExpirationMs(),
-                user
-        );
+        catch (RuntimeException e) {
+            throw new UserException("Unauthorized: Bad credentials");
+        }
     }
 
     public JwtResponseDTO refreshToken(RefreshRequestDTO refreshRequestDTO) {
@@ -59,19 +59,21 @@ public class AuthServiceImpl implements AuthService{
         }
 
         String username = jwtUtils.getUserNameFromJwtToken(refreshRequestDTO.refreshToken());
-        EmployeeResponse user = employeeClient.getEmployeeByUsername(username);
 
-        if (user == null) {
+        try {
+            EmployeeResponse user = employeeClient.getEmployeeByUsername(username);
+            List<String> roles = List.of(user.role());
+            return new JwtResponseDTO(
+                    jwtUtils.generateAccessToken(username, roles),
+                    jwtUtils.generateRefreshToken(username, roles),
+                    jwtUtils.getAccessExpirationMs(),
+                    jwtUtils.getRefreshExpirationMs(),
+                    user
+            );
+        }
+        catch (RuntimeException e) {
             throw new UserException("Unauthorized: Employee not found");
         }
-        List<String> roles = List.of(user.role());
 
-        return new JwtResponseDTO(
-                jwtUtils.generateAccessToken(username, roles),
-                jwtUtils.generateRefreshToken(username, roles),
-                jwtUtils.getAccessExpirationMs(),
-                jwtUtils.getRefreshExpirationMs(),
-                user
-        );
     }
 }

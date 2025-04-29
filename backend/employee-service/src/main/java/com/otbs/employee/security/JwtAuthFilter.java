@@ -1,13 +1,13 @@
 package com.otbs.employee.security;
 
 import com.otbs.employee.model.Employee;
-import com.otbs.employee.repository.EmployeeInfoRepository;
 import com.otbs.employee.service.EmployeeService;
 import com.otbs.employee.util.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -30,9 +30,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final EmployeeService employeeService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         try {
             String jwt = parseJwt(request);
