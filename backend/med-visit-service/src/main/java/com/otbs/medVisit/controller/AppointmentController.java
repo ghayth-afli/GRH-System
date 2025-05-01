@@ -1,9 +1,9 @@
 package com.otbs.medVisit.controller;
 
 
-import com.otbs.medVisit.dto.AppointmentRequest;
-import com.otbs.medVisit.dto.AppointmentResponse;
-import com.otbs.medVisit.dto.MessageResponse;
+import com.otbs.medVisit.dto.AppointmentRequestDTO;
+import com.otbs.medVisit.dto.AppointmentResponseDTO;
+import com.otbs.medVisit.dto.MessageResponseDTO;
 import com.otbs.medVisit.service.AppointmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,46 +24,46 @@ public class AppointmentController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager')")
-    public ResponseEntity<List<AppointmentResponse>> getAppointments() {
+    public ResponseEntity<List<AppointmentResponseDTO>> getAppointments() {
         return ResponseEntity.ok(appointmentService.getAllAppointments());
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager')")
-    public ResponseEntity<AppointmentResponse> getAppointment(@PathVariable("id") Long id) {
+    public ResponseEntity<AppointmentResponseDTO> getAppointment(@PathVariable("id") Long id) {
         return ResponseEntity.ok(appointmentService.getAppointmentById(id));
     }
 
     @GetMapping("/employee/{employeeId}")
     @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager')")
-    public ResponseEntity<List<AppointmentResponse>> getAppointmentsByEmployeeId(@PathVariable("employeeId") String employeeId) {
+    public ResponseEntity<List<AppointmentResponseDTO>> getAppointmentsByEmployeeId(@PathVariable("employeeId") String employeeId) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByPatientId(employeeId));
     }
 
     @GetMapping("/medVisit/{medVisitId}")
     @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager')")
-    public ResponseEntity<List<AppointmentResponse>> getAppointmentsByMedVisitId(@PathVariable("medVisitId") String medVisitId) {
+    public ResponseEntity<List<AppointmentResponseDTO>> getAppointmentsByMedVisitId(@PathVariable("medVisitId") String medVisitId) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByMedVisitId(medVisitId));
     }
 
     @PostMapping
     @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager')")
-    public ResponseEntity<MessageResponse> createAppointment(@Valid @RequestBody AppointmentRequest appointmentRequest) {
-        appointmentService.createAppointment(appointmentRequest);
-        return ResponseEntity.ok(new MessageResponse("Appointment created successfully"));
+    public ResponseEntity<MessageResponseDTO> createAppointment(@Valid @RequestBody AppointmentRequestDTO appointmentRequestDTO) {
+        appointmentService.createAppointment(appointmentRequestDTO);
+        return ResponseEntity.ok(new MessageResponseDTO("Appointment created successfully"));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager')")
-    public ResponseEntity<MessageResponse> updateAppointment(@PathVariable("id") Long id, @Valid @RequestBody AppointmentRequest appointmentRequest) {
-        appointmentService.updateAppointment(appointmentRequest, id);
-        return ResponseEntity.ok(new MessageResponse("Appointment updated successfully"));
+    public ResponseEntity<MessageResponseDTO> updateAppointment(@PathVariable("id") Long id, @Valid @RequestBody AppointmentRequestDTO appointmentRequestDTO) {
+        appointmentService.updateAppointment(appointmentRequestDTO, id);
+        return ResponseEntity.ok(new MessageResponseDTO("Appointment updated successfully"));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager')")
-    public ResponseEntity<MessageResponse> deleteAppointment(@PathVariable("id") Long id) {
+    public ResponseEntity<MessageResponseDTO> deleteAppointment(@PathVariable("id") Long id) {
         appointmentService.deleteAppointment(id);
-        return ResponseEntity.ok(new MessageResponse("Appointment deleted successfully"));
+        return ResponseEntity.ok(new MessageResponseDTO("Appointment deleted successfully"));
     }
 }

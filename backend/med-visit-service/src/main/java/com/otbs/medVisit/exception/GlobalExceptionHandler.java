@@ -1,6 +1,6 @@
 package com.otbs.medVisit.exception;
 
-import com.otbs.medVisit.dto.MessageResponse;
+import com.otbs.medVisit.dto.MessageResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -14,26 +14,24 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-
-
     @ExceptionHandler(AppointmentException.class)
-    public ResponseEntity<MessageResponse> handleAppointmentNotFoundException(AppointmentException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
+    public ResponseEntity<MessageResponseDTO> handleAppointmentNotFoundException(AppointmentException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponseDTO(e.getMessage()));
     }
 
     @ExceptionHandler(TimeSlotNotAvailableException.class)
-    public ResponseEntity<MessageResponse> handleTimeSlotNotAvailableException(TimeSlotNotAvailableException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(e.getMessage()));
+    public ResponseEntity<MessageResponseDTO> handleTimeSlotNotAvailableException(TimeSlotNotAvailableException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponseDTO(e.getMessage()));
     }
 
     @ExceptionHandler(MedicalVisitException.class)
-    public ResponseEntity<MessageResponse> handleMedicalVisitNotFoundException(MedicalVisitException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
+    public ResponseEntity<MessageResponseDTO> handleMedicalVisitNotFoundException(MedicalVisitException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponseDTO(e.getMessage()));
     }
 
     @ExceptionHandler(InvalidMedicalVisitRequestException.class)
-    public ResponseEntity<MessageResponse> handleInvalidMedicalVisitRequestException(InvalidMedicalVisitRequestException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(e.getMessage()));
+    public ResponseEntity<MessageResponseDTO> handleInvalidMedicalVisitRequestException(InvalidMedicalVisitRequestException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponseDTO(e.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

@@ -3,7 +3,7 @@ package com.otbs.medVisit.dto;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public record MedicalVisitResponse (
+public record MedicalVisitResponseDTO(
     Long id,
     String doctorName,
     LocalDate visitDate,

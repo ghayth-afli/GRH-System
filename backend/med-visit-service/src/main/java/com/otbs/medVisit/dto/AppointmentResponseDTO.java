@@ -4,7 +4,7 @@ import com.otbs.medVisit.model.EAppointmentStatus;
 
 import java.time.LocalDateTime;
 
-public record AppointmentResponse (
+public record AppointmentResponseDTO(
     Long id,
     Long medicalVisitId,
     String doctorName,

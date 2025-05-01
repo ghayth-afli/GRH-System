@@ -1,6 +1,7 @@
 package com.otbs.training.service;
 
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -21,19 +22,41 @@ public class TrainingNotificationService {
     private String notificationExchange;
 
     @Value("${notification.rabbitmq.training-routing-key}")
-    private String medicalVisitRoutingKey;
+    private String trainingRoutingKey;
+
+    @Value("${notification.rabbitmq.mail-routing-key}")
+    private String mailRoutingKey;
 
 
-    public void sendTrainingNotification(Long trainingId, String recipient) {
-        Map<String, Object> message = new HashMap<>();
-        message.put("trainingId", trainingId);
-        message.put("recipient", recipient);
+    @PostConstruct
+    public void init() {
+        rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
+    }
+
+    public void sendTrainingNotification(String to, String subject, String body, Long sourceId) {
+        sendNotification(to, subject, body, trainingRoutingKey, "/trainings", sourceId);
+    }
+
+    public void sendMailNotification(String to, String subject, String body) {
+        sendNotification(to, subject, body, mailRoutingKey, null, null);
+    }
+
+    private void sendNotification(String to, String subject, String body, String routingKey, String actionUrl, Long sourceId) {
         try {
-            rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
-            rabbitTemplate.convertAndSend(notificationExchange, medicalVisitRoutingKey, message);
-            log.info("Training notification sent successfully for trainingId: {}", trainingId);
+            Map<String, Object> message = new HashMap<>();
+            message.put("recipient", to);
+            message.put("subject", subject);
+            message.put("message", body);
+            if (actionUrl != null) {
+                message.put("actionUrl", actionUrl);
+            }
+            if (sourceId != null) {
+                message.put("sourceId", sourceId);
+            }
+
+            rabbitTemplate.convertAndSend(notificationExchange, routingKey, message);
         } catch (Exception e) {
-            log.error("Failed to send training notification for trainingId: {}. Error: {}", trainingId, e.getMessage());
+            log.error("Error sending notification: {}", e.getMessage(), e);
         }
     }
 }

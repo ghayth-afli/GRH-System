@@ -1,6 +1,6 @@
 package com.otbs.training.controller;
 
-import com.otbs.leave.dto.MessageResponse;
+import com.otbs.training.dto.MessageResponseDTO;
 import com.otbs.training.dto.TrainingRequestDTO;
 import com.otbs.training.dto.TrainingResponseDTO;
 import com.otbs.training.service.TrainingService;
@@ -22,23 +22,23 @@ public class TrainingController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('Manager')")
-    public ResponseEntity<MessageResponse> createTraining(@Valid @RequestBody TrainingRequestDTO trainingRequestDTO) {
+    public ResponseEntity<MessageResponseDTO> createTraining(@Valid @RequestBody TrainingRequestDTO trainingRequestDTO) {
         trainingService.createTraining(trainingRequestDTO);
-        return ResponseEntity.ok(new MessageResponse("Training created successfully"));
+        return ResponseEntity.ok(new MessageResponseDTO("Training created successfully"));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('Manager')")
-    public ResponseEntity<MessageResponse> updateTraining(@Valid @RequestBody TrainingRequestDTO trainingRequestDTO,@PathVariable("id") Long id) {
+    public ResponseEntity<MessageResponseDTO> updateTraining(@Valid @RequestBody TrainingRequestDTO trainingRequestDTO,@PathVariable("id") Long id) {
         trainingService.updateTraining(trainingRequestDTO, id);
-        return ResponseEntity.ok(new MessageResponse("Training updated successfully"));
+        return ResponseEntity.ok(new MessageResponseDTO("Training updated successfully"));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('Manager')")
-    public ResponseEntity<MessageResponse> deleteTraining(@PathVariable("id") Long id) {
+    public ResponseEntity<MessageResponseDTO> deleteTraining(@PathVariable("id") Long id) {
         trainingService.deleteTraining(id);
-        return ResponseEntity.ok(new MessageResponse("Training deleted successfully"));
+        return ResponseEntity.ok(new MessageResponseDTO("Training deleted successfully"));
     }
 
     @GetMapping

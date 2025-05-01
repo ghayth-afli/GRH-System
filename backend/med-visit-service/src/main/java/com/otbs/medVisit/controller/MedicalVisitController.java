@@ -1,9 +1,9 @@
 package com.otbs.medVisit.controller;
 
 
-import com.otbs.medVisit.dto.MedicalVisitRequest;
-import com.otbs.medVisit.dto.MedicalVisitResponse;
-import com.otbs.medVisit.dto.MessageResponse;
+import com.otbs.medVisit.dto.MedicalVisitRequestDTO;
+import com.otbs.medVisit.dto.MedicalVisitResponseDTO;
+import com.otbs.medVisit.dto.MessageResponseDTO;
 import com.otbs.medVisit.service.MedicalVisitService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,34 +24,34 @@ public class MedicalVisitController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager')")
-    public ResponseEntity<List<MedicalVisitResponse>> getMedicalVisits() {
+    public ResponseEntity<List<MedicalVisitResponseDTO>> getMedicalVisits() {
         return ResponseEntity.ok(medicalVisitService.getMedicalVisits());
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('HR')")
-    public ResponseEntity<MedicalVisitResponse> getMedicalVisit(@PathVariable("id") Long id) {
+    public ResponseEntity<MedicalVisitResponseDTO> getMedicalVisit(@PathVariable("id") Long id) {
         return ResponseEntity.ok(medicalVisitService.getMedicalVisit(id));
     }
 
     @PostMapping
     @PreAuthorize("hasAuthority('HR')")
-    public ResponseEntity<MessageResponse> createMedicalVisit(@Valid @RequestBody MedicalVisitRequest medicalVisitRequest) {
-        medicalVisitService.createMedicalVisit(medicalVisitRequest);
-        return ResponseEntity.ok(new MessageResponse("Medical visit created successfully"));
+    public ResponseEntity<MessageResponseDTO> createMedicalVisit(@Valid @RequestBody MedicalVisitRequestDTO medicalVisitRequestDTO) {
+        medicalVisitService.createMedicalVisit(medicalVisitRequestDTO);
+        return ResponseEntity.ok(new MessageResponseDTO("Medical visit created successfully"));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('HR')")
-    public ResponseEntity<MessageResponse> updateMedicalVisit(@PathVariable("id") Long id, @Valid @RequestBody MedicalVisitRequest medicalVisitRequest) {
-        medicalVisitService.updateMedicalVisit(medicalVisitRequest, id);
-        return ResponseEntity.ok(new MessageResponse("Medical visit updated successfully"));
+    public ResponseEntity<MessageResponseDTO> updateMedicalVisit(@PathVariable("id") Long id, @Valid @RequestBody MedicalVisitRequestDTO medicalVisitRequestDTO) {
+        medicalVisitService.updateMedicalVisit(medicalVisitRequestDTO, id);
+        return ResponseEntity.ok(new MessageResponseDTO("Medical visit updated successfully"));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('HR')")
-    public ResponseEntity<MessageResponse> deleteMedicalVisit(@PathVariable("id") Long id) {
+    public ResponseEntity<MessageResponseDTO> deleteMedicalVisit(@PathVariable("id") Long id) {
         medicalVisitService.deleteMedicalVisit(id);
-        return ResponseEntity.ok(new MessageResponse("Medical visit deleted successfully"));
+        return ResponseEntity.ok(new MessageResponseDTO("Medical visit deleted successfully"));
     }
 }

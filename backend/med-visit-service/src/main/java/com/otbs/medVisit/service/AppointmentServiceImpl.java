@@ -2,9 +2,9 @@ package com.otbs.medVisit.service;
 
 import com.otbs.feign.client.EmployeeClient;
 import com.otbs.feign.dto.EmployeeResponse;
-import com.otbs.medVisit.dto.AppointmentRequest;
-import com.otbs.medVisit.dto.AppointmentResponse;
-import com.otbs.medVisit.dto.MedicalVisitResponse;
+import com.otbs.medVisit.dto.AppointmentRequestDTO;
+import com.otbs.medVisit.dto.AppointmentResponseDTO;
+import com.otbs.medVisit.dto.MedicalVisitResponseDTO;
 import com.otbs.medVisit.exception.AppointmentException;
 import com.otbs.medVisit.exception.MedicalVisitException;
 import com.otbs.medVisit.exception.TimeSlotNotAvailableException;
@@ -15,6 +15,7 @@ import com.otbs.medVisit.repository.AppointmentRepository;
 import com.otbs.medVisit.repository.MedicalVisitRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -22,189 +23,206 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.chrono.ChronoLocalDateTime;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional
 public class AppointmentServiceImpl implements AppointmentService {
+
+    private static final String HR_ROLE = "HR";
 
     private final AppointmentRepository appointmentRepository;
     private final MedicalVisitService medicalVisitService;
+    private final MedicalVisitNotificationService medicalVisitNotificationService;
     private final MedicalVisitRepository medicalVisitRepository;
     private final AppointmentMapper appointmentMapper;
     private final EmployeeClient employeeClient;
 
     @Override
-    public void createAppointment(AppointmentRequest appointment) {
+    @Transactional
+    public void createAppointment(AppointmentRequestDTO appointment) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String employeeId = authentication.getName();
 
-        //verify if employee has already an appointment
-        if (appointmentRepository.findAll().stream().anyMatch(
-                app -> {
-                    return app.getEmployeeId().equals(authentication.getName())&&app.getMedicalVisit().getId().equals(appointment.medicalVisitId());
-                }
-        )
-        ) {
-            throw new AppointmentException("You already have an appointment");
+        // Check for existing appointment
+        if (appointmentRepository.existsByEmployeeIdAndMedicalVisitId(employeeId, appointment.medicalVisitId())) {
+            throw new AppointmentException("You already have an appointment for this medical visit");
         }
 
-        //verify if the medical visit not old or not exist
-        if (medicalVisitService.getMedicalVisit(appointment.medicalVisitId()).visitDate().isBefore(LocalDate.now())) {
+        // Validate medical visit
+        MedicalVisitResponseDTO medicalVisit = medicalVisitService.getMedicalVisit(appointment.medicalVisitId());
+        if (medicalVisit.visitDate().isBefore(LocalDate.now())) {
             throw new MedicalVisitException("Medical visit is not available");
         }
 
-        if (isInvalidTimeSlot(appointment)) {
-            throw new TimeSlotNotAvailableException("Time slot should be between MedicalVisit start and end time for every 30 minutes");
-        }
+        // Validate time slot
+        validateTimeSlot(appointment, medicalVisit);
 
-        if (isTimeSlotTaken(appointment)) {
+        // Check time slot availability
+        if (appointmentRepository.existsByTimeSlotAndMedicalVisitId(appointment.timeSlot(), appointment.medicalVisitId())) {
             throw new TimeSlotNotAvailableException("Time slot not available");
         }
 
-
-        medicalVisitRepository.findById(appointment.medicalVisitId()).ifPresentOrElse(medicalVisit -> {
+        // Create and save appointment
+        medicalVisitRepository.findById(appointment.medicalVisitId()).ifPresentOrElse(visit -> {
             Appointment newAppointment = Appointment.builder()
-                    .employeeId(authentication.getName())
-                    .medicalVisit(medicalVisit)
+                    .employeeId(employeeId)
+                    .medicalVisit(visit)
                     .timeSlot(appointment.timeSlot())
                     .status(EAppointmentStatus.PLANIFIE)
                     .build();
             appointmentRepository.save(newAppointment);
+
+            // Asynchronously send notification
+            sendNotificationAsync(employeeId, "Appointment created",
+                    "Your appointment has been created for " + appointment.timeSlot());
         }, () -> {
             throw new AppointmentException("Medical visit not found");
         });
     }
 
     @Override
-    public void updateAppointment(AppointmentRequest appointmentRequest, Long appointmentId) {
-
-        if (!appointmentRepository.existsByMedicalVisitId(appointmentRequest.medicalVisitId())) {
-            throw new AppointmentException("No appointment found for this medical visit");
-        }
-
+    @Transactional
+    public void updateAppointment(AppointmentRequestDTO appointmentRequestDTO, Long appointmentId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        validateAppointmentAccess(appointmentId, authentication);
 
-        if (authentication.getAuthorities().stream().noneMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("HR")) && !isAppointmentMine(appointmentId)) {
-            throw new AppointmentException("You are not allowed to update this appointment");
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new AppointmentException("Appointment not found"));
+
+        // Validate time slot
+        MedicalVisitResponseDTO medicalVisit = medicalVisitService.getMedicalVisit(appointmentRequestDTO.medicalVisitId());
+        validateTimeSlot(appointmentRequestDTO, medicalVisit);
+
+        // Check time slot availability (exclude current appointment)
+        if (appointmentRepository.existsByTimeSlotAndMedicalVisitIdAndIdNot(
+                appointmentRequestDTO.timeSlot(), appointmentRequestDTO.medicalVisitId(), appointmentId)) {
+            throw new TimeSlotNotAvailableException("Time slot not available");
         }
 
+        // Update and save
+        appointment.setTimeSlot(appointmentRequestDTO.timeSlot());
+        appointmentRepository.save(appointment);
 
-        appointmentRepository.findById(appointmentId).ifPresentOrElse(appointment -> {
-            if (isInvalidTimeSlot(appointmentRequest, appointment)) {
-                throw new TimeSlotNotAvailableException("Time slot should be between MedicalVisit start and end time for every 30 minutes");
-            }
-            if (isTimeSlotTaken(appointmentRequest)) {
-                throw new TimeSlotNotAvailableException("Time slot not available");
-            }
-            appointment.setTimeSlot(appointmentRequest.timeSlot());
-            appointmentRepository.save(appointment);
-        }, () -> {
-            throw new AppointmentException("Appointment not found");
-        });
+        // Asynchronously send notification
+        sendNotificationAsync(appointment.getEmployeeId(), "Appointment updated",
+                "Your appointment has been updated to " + appointmentRequestDTO.timeSlot());
     }
 
     @Override
+    @Transactional
     public void deleteAppointment(Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.getAuthorities().stream().noneMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("HR")) && !isAppointmentMine(id)) {
-            throw new AppointmentException("You are not allowed to delete this appointment");
+        validateAppointmentAccess(id, authentication);
+
+        if (!appointmentRepository.existsById(id)) {
+            throw new AppointmentException("Appointment not found");
         }
         appointmentRepository.deleteById(id);
     }
 
     @Override
-    public AppointmentResponse getAppointmentById(Long id) {
+    public AppointmentResponseDTO getAppointmentById(Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.getAuthorities().stream().noneMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("HR")) && !isAppointmentMine(id)) {
-            throw new AppointmentException("You are not allowed to view this appointment");
-        }
+        validateAppointmentAccess(id, authentication);
+
         return appointmentRepository.findById(id)
-                .map(appointment ->
-                {
-                    String employeeFullName = employeeClient.getEmployeeByDn(appointment.getEmployeeId()).firstName()+" "+employeeClient.getEmployeeByDn(appointment.getEmployeeId()).lastName();
-                    String employeeEmail = employeeClient.getEmployeeByDn(appointment.getEmployeeId()).email();
-                    return appointmentMapper.toDto(appointment, employeeFullName, employeeEmail);
-                }
-                )
+                .map(appointment -> mapToResponse(appointment, fetchEmployeeAsync(appointment.getEmployeeId())))
                 .orElseThrow(() -> new AppointmentException("Appointment not found"));
     }
 
     @Override
-    public List<AppointmentResponse> getAllAppointments() {
-
+    public List<AppointmentResponseDTO> getAllAppointments() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.getAuthorities().stream().noneMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("HR"))) {
-            return appointmentRepository.findByEmployeeId(authentication.getName()).stream()
-                    .map(appointment -> {
-                        String employeeFullName = employeeClient.getEmployeeByDn(appointment.getEmployeeId()).firstName()+" "+employeeClient.getEmployeeByDn(appointment.getEmployeeId()).lastName();
-                        String employeeEmail = employeeClient.getEmployeeByDn(appointment.getEmployeeId()).email();
-                        return appointmentMapper.toDto(appointment, employeeFullName, employeeEmail);
-                    })
-                    .toList();
-        }
+        List<Appointment> appointments = authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(HR_ROLE))
+                ? appointmentRepository.findAll()
+                : appointmentRepository.findByEmployeeId(authentication.getName());
 
-        return appointmentRepository.findAll().stream()
-                .map(appointment -> {
-                    EmployeeResponse employee = employeeClient.getEmployeeByDn(appointment.getEmployeeId());
-                    String employeeFullName = employee.firstName()+" "+employee.lastName();
-                    String employeeEmail = employee.email();
-                    return appointmentMapper.toDto(appointment, employeeFullName, employeeEmail);
-                })
-                .toList();
+        return mapToResponses(appointments);
     }
 
     @Override
-    public List<AppointmentResponse> getAppointmentsByPatientId(String patientId) {
+    public List<AppointmentResponseDTO> getAppointmentsByPatientId(String patientId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.getAuthorities().stream().noneMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("HR")) && !authentication.getName().equals(patientId)) {
+        if (authentication.getAuthorities().stream().noneMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(HR_ROLE))
+                && !authentication.getName().equals(patientId)) {
             throw new AppointmentException("You are not allowed to view those appointments");
         }
-        return appointmentRepository.findByEmployeeId(patientId).stream()
-                .map(appointment -> {
-                    String employeeFullName = employeeClient.getEmployeeByDn(appointment.getEmployeeId()).firstName()+" "+employeeClient.getEmployeeByDn(appointment.getEmployeeId()).lastName();
-                    String employeeEmail = employeeClient.getEmployeeByDn(appointment.getEmployeeId()).email();
-                    return appointmentMapper.toDto(appointment, employeeFullName, employeeEmail);
-                })
-                .toList();
+
+        return mapToResponses(appointmentRepository.findByEmployeeId(patientId));
     }
 
     @Override
-    public List<AppointmentResponse> getAppointmentsByMedVisitId(String medVisitId) {
-        return appointmentRepository.findByMedicalVisitId(Long.parseLong(medVisitId)).stream()
-                .map(appointment -> {
-                    String employeeFullName = employeeClient.getEmployeeByDn(appointment.getEmployeeId()).firstName()+" "+employeeClient.getEmployeeByDn(appointment.getEmployeeId()).lastName();
-                    String employeeEmail = employeeClient.getEmployeeByDn(appointment.getEmployeeId()).email();
-                    return appointmentMapper.toDto(appointment, employeeFullName, employeeEmail);
+    public List<AppointmentResponseDTO> getAppointmentsByMedVisitId(String medVisitId) {
+        return mapToResponses(appointmentRepository.findByMedicalVisitId(Long.parseLong(medVisitId)));
+    }
+
+    private void validateTimeSlot(AppointmentRequestDTO appointmentRequestDTO, MedicalVisitResponseDTO medicalVisit) {
+        LocalDateTime timeSlot = appointmentRequestDTO.timeSlot();
+        LocalDateTime start = LocalDateTime.of(medicalVisit.visitDate(), medicalVisit.startTime());
+        LocalDateTime end = LocalDateTime.of(medicalVisit.visitDate(), medicalVisit.endTime());
+
+        if (timeSlot.isBefore(start) || timeSlot.isAfter(end) || timeSlot.getMinute() % 30 != 0) {
+            throw new TimeSlotNotAvailableException("Time slot should be between MedicalVisit start and end time for every 30 minutes");
+        }
+    }
+
+    private void validateAppointmentAccess(Long appointmentId, Authentication authentication) {
+        if (authentication.getAuthorities().stream().noneMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(HR_ROLE))) {
+            appointmentRepository.findById(appointmentId)
+                    .filter(appointment -> appointment.getEmployeeId().equals(authentication.getName()))
+                    .orElseThrow(() -> new AppointmentException("You are not allowed to access this appointment"));
+        }
+    }
+
+    @Async
+    protected CompletableFuture<EmployeeResponse> fetchEmployeeAsync(String employeeId) {
+        return CompletableFuture.supplyAsync(() -> employeeClient.getEmployeeByDn(employeeId));
+    }
+
+    @Async
+    protected void sendNotificationAsync(String employeeId, String subject, String message) {
+        CompletableFuture.runAsync(() -> medicalVisitNotificationService.sendMailNotification(employeeId, subject, message))
+                .exceptionally(throwable -> {
+                    log.error("Failed to send notification for employee {}: {}", employeeId, throwable.getMessage());
+                    return null;
+                });
+    }
+
+    private AppointmentResponseDTO mapToResponse(Appointment appointment, CompletableFuture<EmployeeResponse> employeeFuture) {
+        try {
+            EmployeeResponse employee = employeeFuture.get();
+            String employeeFullName = employee.firstName() + " " + employee.lastName();
+            return appointmentMapper.toDto(appointment, employeeFullName, employee.email());
+        } catch (Exception e) {
+            log.error("Failed to fetch employee details for {}: {}", appointment.getEmployeeId(), e.getMessage());
+            throw new AppointmentException("Unable to retrieve employee details");
+        }
+    }
+
+    private List<AppointmentResponseDTO> mapToResponses(List<Appointment> appointments) {
+        // Fetch employee details in parallel
+        List<CompletableFuture<AppointmentResponseDTO>> futures = appointments.stream()
+                .map(appointment -> fetchEmployeeAsync(appointment.getEmployeeId())
+                        .thenApply(employee -> {
+                            String employeeFullName = employee.firstName() + " " + employee.lastName();
+                            return appointmentMapper.toDto(appointment, employeeFullName, employee.email());
+                        }))
+                .toList();
+
+        // Collect results
+        return futures.stream()
+                .map(future -> {
+                    try {
+                        return future.get();
+                    } catch (Exception e) {
+                        log.error("Error mapping appointment: {}", e.getMessage());
+                        throw new AppointmentException("Failed to map appointment");
+                    }
                 })
                 .toList();
-    }
-
-    private boolean isInvalidTimeSlot(AppointmentRequest appointmentRequest, Appointment appointment) {
-        return appointmentRequest.timeSlot().isBefore(LocalDateTime.of(appointment.getMedicalVisit().getVisitDate(), appointment.getMedicalVisit().getStartTime())) ||
-                appointmentRequest.timeSlot().isAfter(LocalDateTime.of(appointment.getMedicalVisit().getVisitDate(), appointment.getMedicalVisit().getEndTime())) ||
-                appointmentRequest.timeSlot().getMinute() % 30 != 0;
-    }
-
-    private boolean isInvalidTimeSlot(AppointmentRequest appointmentRequest) {
-        MedicalVisitResponse medicalVisit = medicalVisitService.getMedicalVisit(appointmentRequest.medicalVisitId());
-        return appointmentRequest.timeSlot().isBefore(LocalDateTime.of(medicalVisit.visitDate(), medicalVisit.startTime())) ||
-                appointmentRequest.timeSlot().isAfter(LocalDateTime.of(medicalVisit.visitDate(), medicalVisit.endTime())) ||
-                appointmentRequest.timeSlot().getMinute() % 30 != 0;
-    }
-
-    private boolean isTimeSlotTaken(AppointmentRequest appointmentRequest) {
-        return appointmentRepository.findAll().stream()
-                .anyMatch(appointment -> appointment.getTimeSlot().equals(appointmentRequest.timeSlot()));
-    }
-
-    //verify if appointment is mine
-    private boolean isAppointmentMine(Long appointmentId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return appointmentRepository.findById(appointmentId)
-                .map(appointment -> appointment.getEmployeeId().equals(authentication.getName()))
-                .orElse(false);
     }
 }

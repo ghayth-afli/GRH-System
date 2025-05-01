@@ -129,12 +129,9 @@ export class NotificationService {
       )
       .subscribe({
         next: (notifications) => {
-          console.log('Loaded notifications:', notifications);
           this.notificationsSubject.next(notifications);
         },
-        error: (error) => {
-          console.error('Error loading notifications', error);
-        },
+        error: (error) => {},
       });
   }
 
@@ -186,13 +183,11 @@ export class NotificationService {
     this.stompClient.subscribe(
       `/user/${this.authService.authenticatedUser?.username}/queue/notifications`,
       (message: any) => {
-        console.log('Received private notification:', message.body);
         this.handleNotification(JSON.parse(message.body));
       }
     );
 
     this.stompClient.subscribe(`/topic/notifications`, (message: any) => {
-      console.log('Received public notification:', message.body);
       this.handleNotification(JSON.parse(message.body));
     });
   }
@@ -212,11 +207,7 @@ export class NotificationService {
     if (payload.type === 'NOTIFICATION') {
       const notification = payload.data as Notification;
 
-      if (
-        notification.recipient === this.authService.authenticatedUser?.username
-      ) {
-        console.log('Received personal notification:', notification);
-
+      if (notification.recipient === this.authService.authenticatedUser?.id) {
         // Play notification sound for new notifications
         this.playNotificationSound();
 

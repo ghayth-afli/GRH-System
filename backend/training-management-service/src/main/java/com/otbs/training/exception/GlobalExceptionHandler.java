@@ -1,6 +1,7 @@
 package com.otbs.training.exception;
 
 import com.otbs.leave.dto.MessageResponse;
+import com.otbs.training.dto.MessageResponseDTO;
 import feign.FeignException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -17,17 +18,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TrainingException.class)
     public ResponseEntity<?> handleTrainingException(TrainingException e) {
-        return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+        return ResponseEntity.badRequest().body(new MessageResponseDTO(e.getMessage()));
     }
 
     @ExceptionHandler(InvitationException.class)
     public ResponseEntity<?> handleInvitationException(InvitationException e) {
-        return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+        return ResponseEntity.badRequest().body(new MessageResponseDTO(e.getMessage()));
     }
 
     @ExceptionHandler(FeignException.class)
     public ResponseEntity<?> handleFeignException(FeignException e) {
-        return ResponseEntity.status(e.status()).body(new MessageResponse(e.getMessage()));
+        return ResponseEntity.status(e.status()).body(new MessageResponseDTO(e.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

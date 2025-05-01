@@ -1,19 +1,20 @@
 package com.otbs.training.util;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.security.Key;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 @Getter
 @Slf4j
 public class JwtUtils {
@@ -27,69 +28,61 @@ public class JwtUtils {
     @Value("${jwt.refresh-expiration-ms}")
     private long refreshExpirationMs;
 
-    public String generateAccessToken(String username,List<String> roles) {
-        return buildToken(username, accessExpirationMs, "access", roles);
-    }
-
-    public String generateRefreshToken(String username, List<String> roles) {
-        return buildToken(username, refreshExpirationMs, "refresh", roles);
-    }
-
-    private String buildToken(String username, long expiration, String tokenType, List<String> roles) {
-        return Jwts.builder()
-                .setSubject(username)
-                .claim("token_type", tokenType)
-                .claim("roles", roles) // Add roles to JWT
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(new Date().getTime() + expiration))
-                .signWith((SecretKey) getSigningKey())
-                .compact();
-    }
-
-
-    public boolean validateRefreshToken(String token) {
-        try {
-            Claims claims = Jwts.parser()
-                    .verifyWith((SecretKey) getSigningKey())
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
-
-            return "refresh".equals(claims.get("token_type"));
-        } catch (Exception e) {
-            log.error("Invalid JWT token: {}", e.getMessage());
-            return false;
-        }
-    }
-
-    private Key getSigningKey() {
+    private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String getUserNameFromJwtToken(String token) {
-        return Jwts.parser()
-                .verifyWith((SecretKey) getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
+        try {
+            return Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getSubject();
+        } catch (JwtException | IllegalArgumentException e) {
+            log.error("Cannot extract username from token: {}", e.getMessage());
+            throw new JwtException("Invalid JWT token");
+        }
     }
 
     public List<String> getRolesFromJwtToken(String token) {
-        Claims claims = Jwts.parser()
-                .verifyWith((SecretKey) getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-
-        return claims.get("roles", List.class);
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+            Object roles = claims.get("roles");
+            if (roles instanceof List<?> rawList) {
+                List<String> result = new ArrayList<>();
+                for (Object item : rawList) {
+                    if (item instanceof String) {
+                        result.add((String) item);
+                    } else {
+                        log.warn("Non-string role found in JWT: {}", item);
+                    }
+                }
+                return result;
+            }
+            log.error("Roles claim is not a list: {}", roles);
+            throw new JwtException("Invalid roles claim in JWT token");
+        } catch (JwtException | IllegalArgumentException e) {
+            log.error("Cannot extract roles from token: {}", e.getMessage());
+            throw new JwtException("Invalid JWT token");
+        }
     }
 
     public boolean validateJwtToken(String authToken) {
         try {
-            Jwts.parser().verifyWith((SecretKey) getSigningKey()).build().parse(authToken);
+            Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(authToken);
             return true;
+        } catch (SecurityException e) {
+            log.error("Invalid JWT signature: {}", e.getMessage());
         } catch (MalformedJwtException e) {
             log.error("Invalid JWT token: {}", e.getMessage());
         } catch (ExpiredJwtException e) {

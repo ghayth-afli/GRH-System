@@ -15,8 +15,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -32,7 +30,6 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final JavaMailSender mailSender;
-    private final TemplateEngine templateEngine;
 
     @Transactional
     public NotificationResponseDTO createNotification(NotificationRequestDTO requestDTO) {
@@ -58,20 +55,12 @@ public class NotificationService {
     public void sendMail(MailRequestDTO mailRequest) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            log.info("Sending email to: {}", mailRequest.getTo());
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
             helper.setTo(mailRequest.getTo());
             helper.setSubject(mailRequest.getSubject());
-
-            Context context = new Context();
-            context.setVariable("subject", mailRequest.getSubject());
-            context.setVariable("text", mailRequest.getBody());
-
-            String htmlContent = templateEngine.process("email-template", context);
-
-            helper.setText(htmlContent, true);
-
+            helper.setText(mailRequest.getBody(), true);
             mailSender.send(message);
+            log.info("Email sent to: {}", mailRequest.getTo());
         }
         catch (Exception e) {
             log.error("Failed to send email: {}", e.getMessage(), e);

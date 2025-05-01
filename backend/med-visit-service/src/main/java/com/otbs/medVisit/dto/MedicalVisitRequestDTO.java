@@ -5,7 +5,7 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public record MedicalVisitRequest(
+public record MedicalVisitRequestDTO(
         @NotBlank(message = "Doctor name is required")
         @Size(min = 2, max = 100, message = "Doctor name must be between 2 and 100 characters")
         String doctorName,
@@ -20,7 +20,7 @@ public record MedicalVisitRequest(
         @NotNull(message = "End time is required")
         LocalTime endTime
 ) {
-    public MedicalVisitRequest {
+    public MedicalVisitRequestDTO {
         if (startTime != null && endTime != null && endTime.isBefore(startTime)) {
             throw new InvalidMedicalVisitRequestException("End time must be after start time");
         }

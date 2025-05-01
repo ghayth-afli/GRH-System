@@ -1,7 +1,7 @@
 package com.otbs.training.controller;
 
-import com.otbs.leave.dto.MessageResponse;
 import com.otbs.training.dto.InvitationResponseDTO;
+import com.otbs.training.dto.MessageResponseDTO;
 import com.otbs.training.service.InvitationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,16 +21,9 @@ public class InvitationController {
 
     @PutMapping("/confirm/{id}")
     @PreAuthorize("hasAuthority('Employee')")
-    public ResponseEntity<MessageResponse> confirmInvitation(@PathVariable("id") Long id) {
+    public ResponseEntity<MessageResponseDTO> confirmInvitation(@PathVariable("id") Long id) {
         invitationService.confirmInvitation(id);
-        return ResponseEntity.ok(new MessageResponse("Invitation confirmed successfully"));
-    }
-
-    @PutMapping("/reject/{id}")
-    @PreAuthorize("hasAuthority('Employee')")
-    public ResponseEntity<MessageResponse> rejectInvitation(@PathVariable("id") Long id) {
-        invitationService.rejectInvitation(id);
-        return ResponseEntity.ok(new MessageResponse("Invitation rejected successfully"));
+        return ResponseEntity.ok(new MessageResponseDTO("Invitation confirmed successfully"));
     }
 
     @GetMapping

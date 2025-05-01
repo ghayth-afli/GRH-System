@@ -266,13 +266,13 @@ public class LeaveServiceImpl implements LeaveService {
 
     private void validateLeaveRequest(LeaveRequestDTO leaveRequestDTO) {
         if (leaveRequestDTO == null) {
-            throw new IllegalArgumentException("Leave request cannot be null");
+            throw new LeaveException("Leave request cannot be null");
         }
         if (leaveRequestDTO.startDate() == null || leaveRequestDTO.endDate() == null) {
-            throw new IllegalArgumentException("Leave dates cannot be null");
+            throw new LeaveException("Leave dates cannot be null");
         }
         if (leaveRequestDTO.startDate().isAfter(leaveRequestDTO.endDate())) {
-            throw new IllegalArgumentException("Start date must be before end date");
+            throw new LeaveException("Start date must be before end date");
         }
     }
 

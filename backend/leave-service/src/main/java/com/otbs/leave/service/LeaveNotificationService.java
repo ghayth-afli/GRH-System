@@ -21,7 +21,7 @@ public class LeaveNotificationService {
     private String notificationExchange;
 
     @Value("${notification.rabbitmq.leave-request-routing-key}")
-    private String medicalVisitRoutingKey;
+    private String leaveRoutingKey;
 
     @Value("${notification.rabbitmq.mail-routing-key}")
     private String mailRoutingKey;
@@ -32,7 +32,7 @@ public class LeaveNotificationService {
     }
 
     public void sendLeaveNotification(String to, String subject, String body, Long sourceId) {
-        sendNotification(to, subject, body, medicalVisitRoutingKey, "/leave", sourceId);
+        sendNotification(to, subject, body, leaveRoutingKey, "/leave", sourceId);
     }
 
     public void sendMailNotification(String to, String subject, String body) {

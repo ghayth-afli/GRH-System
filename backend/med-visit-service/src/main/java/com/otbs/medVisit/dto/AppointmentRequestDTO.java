@@ -3,7 +3,7 @@ package com.otbs.medVisit.dto;
 import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 
-public record AppointmentRequest(
+public record AppointmentRequestDTO(
         @NotNull(message = "Medical visit ID is required")
         @Positive(message = "Medical visit ID must be a positive number")
         Long medicalVisitId,
