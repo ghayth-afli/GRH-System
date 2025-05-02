@@ -7,7 +7,7 @@ import { AuthService } from '../../../../core/services/auth.service';
   standalone: false,
 
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css', '../../shared/auth-shared.css'],
+  styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
   username: string = '';

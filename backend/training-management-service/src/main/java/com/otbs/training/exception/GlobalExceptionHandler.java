@@ -1,6 +1,5 @@
 package com.otbs.training.exception;
 
-import com.otbs.leave.dto.MessageResponse;
 import com.otbs.training.dto.MessageResponseDTO;
 import feign.FeignException;
 import jakarta.validation.ConstraintViolationException;

@@ -7,6 +7,14 @@ import com.otbs.leave.model.ELeaveType;
 import com.otbs.leave.model.Leave;
 import com.otbs.leave.model.LeaveBalance;
 import com.otbs.leave.service.LeaveService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -30,78 +38,217 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 @RestController
+@Tag(name = "Leave Management", description = "APIs for managing employee leave requests, approvals, and balances")
+@SecurityRequirement(name = "bearerAuth")
 public class LeaveController {
 
     private final LeaveService leaveService;
 
-    @PostMapping("/apply")
+    @Operation(
+            summary = "Apply for a leave",
+            description = "Submits a leave request with optional attachment. Requires Employee role. Start and end times are required for AUTHORIZATION leave."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Leave applied successfully",
+            content = @Content(schema = @Schema(implementation = MessageResponseDTO.class))
+    )
+    @ApiResponse(responseCode = "400", description = "Invalid input data (e.g., start date after end date)")
+    @ApiResponse(responseCode = "403", description = "Unauthorized access")
+    @PostMapping(value = "/apply", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAuthority('Employee')")
-    public ResponseEntity<MessageResponseDTO> applyLeave(@RequestParam("leaveType") ELeaveType leaveType,
-                                                         @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-                                                         @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-                                                         @RequestParam(value = "startHOURLY", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime startHOURLY,
-                                                         @RequestParam(value = "endHOURLY", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime endHOURLY,
-                                                         @RequestParam(value = "attachment", required = false) MultipartFile attachment) {
+    public ResponseEntity<MessageResponseDTO> applyLeave(
+            @Parameter(description = "Type of leave", example = "ANNUAL", required = true)
+            @RequestParam("leaveType") ELeaveType leaveType,
+            @Parameter(description = "Start date of the leave", example = "2025-06-01", required = true)
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @Parameter(description = "End date of the leave", example = "2025-06-05", required = true)
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @Parameter(description = "Start time for hourly leave (required for AUTHORIZATION)", example = "09:00:00")
+            @RequestParam(value = "startHOURLY", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime startHOURLY,
+            @Parameter(description = "End time for hourly leave (required for AUTHORIZATION)", example = "17:00:00")
+            @RequestParam(value = "endHOURLY", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime endHOURLY,
+            @Parameter(description = "Optional attachment (e.g., medical certificate)", required = false)
+            @RequestParam(value = "attachment", required = false) MultipartFile attachment
+    ) {
         LeaveRequestDTO leaveRequestDTO = new LeaveRequestDTO(leaveType, startDate, endDate, startHOURLY, endHOURLY);
-
         leaveService.applyLeave(leaveRequestDTO, attachment);
         return ResponseEntity.ok(new MessageResponseDTO("Leave applied successfully"));
     }
 
+    @Operation(
+            summary = "Cancel a leave request",
+            description = "Cancels a leave request by ID. Requires Employee role."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Leave cancelled successfully",
+            content = @Content(schema = @Schema(implementation = MessageResponseDTO.class))
+    )
+    @ApiResponse(responseCode = "404", description = "Leave not found")
+    @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @DeleteMapping("/cancel/{leaveId}")
     @PreAuthorize("hasAuthority('Employee')")
-    public ResponseEntity<MessageResponseDTO> cancelLeave(@PathVariable("leaveId") Long leaveId) {
+    public ResponseEntity<MessageResponseDTO> cancelLeave(
+            @Parameter(description = "ID of the leave request", example = "1")
+            @PathVariable("leaveId") Long leaveId
+    ) {
         leaveService.cancelLeave(leaveId);
         return ResponseEntity.ok(new MessageResponseDTO("Leave cancelled successfully"));
     }
 
+    @Operation(
+            summary = "Approve a leave request",
+            description = "Approves a leave request by ID. Requires Manager role."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Leave approved successfully",
+            content = @Content(schema = @Schema(implementation = MessageResponseDTO.class))
+    )
+    @ApiResponse(responseCode = "404", description = "Leave not found")
+    @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @PutMapping("/approve/{leaveId}")
     @PreAuthorize("hasAuthority('Manager')")
-    public ResponseEntity<MessageResponseDTO> approveLeave(@PathVariable("leaveId") Long leaveId) {
+    public ResponseEntity<MessageResponseDTO> approveLeave(
+            @Parameter(description = "ID of the leave request", example = "1")
+            @PathVariable("leaveId") Long leaveId
+    ) {
         leaveService.approveLeave(leaveId);
         return ResponseEntity.ok(new MessageResponseDTO("Leave approved successfully"));
     }
 
+    @Operation(
+            summary = "Reject a leave request",
+            description = "Rejects a leave request by ID. Requires Manager role."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Leave rejected successfully",
+            content = @Content(schema = @Schema(implementation = MessageResponseDTO.class))
+    )
+    @ApiResponse(responseCode = "404", description = "Leave not found")
+    @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @PutMapping("/reject/{leaveId}")
     @PreAuthorize("hasAuthority('Manager')")
-    public ResponseEntity<MessageResponseDTO> rejectLeave(@PathVariable("leaveId") Long leaveId) {
+    public ResponseEntity<MessageResponseDTO> rejectLeave(
+            @Parameter(description = "ID of the leave request", example = "1")
+            @PathVariable("leaveId") Long leaveId
+    ) {
         leaveService.rejectLeave(leaveId);
         return ResponseEntity.ok(new MessageResponseDTO("Leave rejected successfully"));
     }
 
+    @Operation(
+            summary = "Update a leave request",
+            description = "Updates an existing leave request by ID. Requires Employee role."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Leave updated successfully",
+            content = @Content(schema = @Schema(implementation = MessageResponseDTO.class))
+    )
+    @ApiResponse(responseCode = "400", description = "Invalid input data")
+    @ApiResponse(responseCode = "404", description = "Leave not found")
+    @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @PutMapping("/update/{leaveId}")
     @PreAuthorize("hasAuthority('Employee')")
-    public ResponseEntity<MessageResponseDTO> updateLeave(@PathVariable("leaveId") Long leaveId, @RequestBody LeaveRequestDTO leaveRequestDTO) {
+    public ResponseEntity<MessageResponseDTO> updateLeave(
+            @Parameter(description = "ID of the leave request", example = "1")
+            @PathVariable("leaveId") Long leaveId,
+            @Valid @RequestBody LeaveRequestDTO leaveRequestDTO
+    ) {
         leaveService.updateLeave(leaveId, leaveRequestDTO);
         return ResponseEntity.ok(new MessageResponseDTO("Leave updated successfully"));
     }
+
+    @Operation(
+            summary = "Get all leave requests",
+            description = "Retrieves all leave requests. Requires Manager or HR role."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "List of leave requests",
+            content = @Content(schema = @Schema(implementation = LeaveResponseDTO.class))
+    )
+    @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('Manager') or hasAuthority('HR')")
     public ResponseEntity<List<LeaveResponseDTO>> getAllLeaves() {
         return ResponseEntity.ok(leaveService.getAllLeaves());
     }
 
+    @Operation(
+            summary = "Get received leave requests for manager",
+            description = "Retrieves paginated leave requests assigned to the manager. Requires Manager role."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Paginated list of leave requests",
+            content = @Content(schema = @Schema(implementation = Page.class))
+    )
+    @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @GetMapping("/received")
     @PreAuthorize("hasAuthority('Manager')")
-    public ResponseEntity<Page<Leave>> getAllReceivedLeaves(@PageableDefault(size = 10, sort = "startDate") Pageable pageable) {
+    public ResponseEntity<Page<Leave>> getAllReceivedLeaves(
+            @Parameter(description = "Pagination and sorting parameters (e.g., page=0, size=10, sort=startDate,asc)")
+            @PageableDefault(size = 10, sort = "startDate") Pageable pageable
+    ) {
         return ResponseEntity.ok(leaveService.getAllLeavesForManager(pageable));
     }
 
+    @Operation(
+            summary = "Get leave balance",
+            description = "Retrieves the leave balance for the authenticated employee. Requires Employee role."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Employee's leave balance",
+            content = @Content(schema = @Schema(implementation = LeaveBalance.class))
+    )
+    @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @GetMapping("/balance")
     @PreAuthorize("hasAuthority('Employee')")
     public ResponseEntity<LeaveBalance> getLeaveBalance() {
         return ResponseEntity.ok(leaveService.getLeaveBalance((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal()));
     }
 
+    @Operation(
+            summary = "Get leave history",
+            description = "Retrieves the leave history for the authenticated employee. Requires Employee role."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "List of past leave requests",
+            content = @Content(schema = @Schema(implementation = Leave.class))
+    )
+    @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @GetMapping("/history")
     @PreAuthorize("hasAuthority('Employee')")
-    public ResponseEntity<List<Leave>> getLeaveHistory(@PageableDefault(size = 10, sort = "startDate") Pageable pageable) {
+    public ResponseEntity<List<Leave>> getLeaveHistory(
+            @Parameter(description = "Pagination and sorting parameters (e.g., page=0, size=10, sort=startDate,asc)")
+            @PageableDefault(size = 10, sort = "startDate") Pageable pageable
+    ) {
         return ResponseEntity.ok(leaveService.getLeaveHistory((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal()));
     }
 
+    @Operation(
+            summary = "Download leave attachment",
+            description = "Downloads the attachment for a leave request by ID. Requires Manager or HR role."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Attachment downloaded successfully",
+            content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    )
+    @ApiResponse(responseCode = "404", description = "Attachment or leave not found")
+    @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @GetMapping("/{leaveId}/receivedAttachment")
     @PreAuthorize("hasAuthority('Manager') or hasAuthority('HR')")
-    public ResponseEntity<byte[]> getReceivedAttachment(@PathVariable("leaveId") Long leaveId) {
+    public ResponseEntity<byte[]> getReceivedAttachment(
+            @Parameter(description = "ID of the leave request", example = "1")
+            @PathVariable("leaveId") Long leaveId
+    ) {
         byte[] attachment = leaveService.downloadAttachment(leaveId);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);

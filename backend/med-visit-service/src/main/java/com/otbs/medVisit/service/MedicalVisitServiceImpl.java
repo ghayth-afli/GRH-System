@@ -10,6 +10,8 @@ import com.otbs.medVisit.repository.MedicalVisitRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,7 @@ public class MedicalVisitServiceImpl implements MedicalVisitService {
     private final MedicalVisitMapper medicalVisitMapper;
     private final EmployeeClient employeeClient;
     private final MedicalVisitNotificationService notificationService;
+
 
     @Override
     @Transactional
@@ -118,7 +121,6 @@ public class MedicalVisitServiceImpl implements MedicalVisitService {
                             medicalVisitRequestDTO.startTime(),
                             medicalVisitRequestDTO.endTime());
 
-                    // Send both notifications asynchronously
                     CompletableFuture.allOf(
                             CompletableFuture.runAsync(() -> notificationService.sendMedicalVisitNotification(
                                     employee.id(), "New Medical Visit", message, medicalVisitId)),
