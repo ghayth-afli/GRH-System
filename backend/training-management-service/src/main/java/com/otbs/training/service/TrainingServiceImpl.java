@@ -11,27 +11,36 @@ import com.otbs.training.model.Invitation;
 import com.otbs.training.model.Training;
 import com.otbs.training.repository.TrainingRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TrainingServiceImpl implements TrainingService {
+
+    private static final String HR_ROLE = "HR";
+    private static final String MANAGER_ROLE = "Manager";
+    private static final String EMPLOYEE_ROLE = "Employee";
 
     private final TrainingRepository trainingRepository;
     private final TrainingMapper trainingMapper;
     private final EmployeeClient employeeClient;
     private final TrainingNotificationService trainingNotificationService;
+    private final TransactionTemplate transactionTemplate;
 
     @Override
     @Transactional
     public void createTraining(TrainingRequestDTO request) {
         String managerId = getCurrentUserId();
-        EmployeeResponse manager = employeeClient.getEmployeeByDn(managerId);
+        EmployeeResponse manager = fetchEmployee(managerId);
 
         validateDateRange(request);
 
@@ -41,24 +50,7 @@ public class TrainingServiceImpl implements TrainingService {
 
         Training savedTraining = trainingRepository.save(training);
 
-        List<EmployeeResponse> departmentEmployees = employeeClient.getAllEmployees().stream()
-                .filter(emp -> emp.department().equals(manager.department()))
-                .filter(emp -> !emp.equals(manager))
-                .toList();
-
-        List<Invitation> invitations = departmentEmployees.stream()
-                .map(emp -> {
-                    Invitation invitation = new Invitation();
-                    invitation.setEmployeeId(emp.id());
-                    invitation.setStatus(EStatus.PENDING);
-                    invitation.setTraining(savedTraining);
-                    trainingNotificationService.sendTrainingNotification(savedTraining.getId(), emp.username());
-                    return invitation;
-                })
-                .collect(Collectors.toList());
-
-        savedTraining.setInvitations(invitations);
-        trainingRepository.save(savedTraining);
+        fetchDepartmentEmployeesAndNotifyAsync(manager, savedTraining, request);
     }
 
     @Override
@@ -88,13 +80,19 @@ public class TrainingServiceImpl implements TrainingService {
     @Override
     public TrainingResponseDTO getTrainingById(Long trainingId) {
         String userId = getCurrentUserId();
-        EmployeeResponse user = employeeClient.getEmployeeByDn(userId);
+        EmployeeResponse user = fetchEmployee(userId);
 
-        if ("HR".equals(user.role())) {
-            return trainingMapper.toResponseDTO(trainingRepository.findById(trainingId)
-                    .orElseThrow(() -> new TrainingException("Training not found")));
-        } else if ("Manager".equals(user.role())) {
+        if (HR_ROLE.equals(user.role())) {
+            return trainingRepository.findById(trainingId)
+                    .map(trainingMapper::toResponseDTO)
+                    .orElseThrow(() -> new TrainingException("Training not found"));
+        } else if (MANAGER_ROLE.equals(user.role())) {
             return trainingMapper.toResponseDTO(findTrainingForManager(userId, trainingId));
+        } else if (EMPLOYEE_ROLE.equals(user.role())) {
+            return trainingRepository.findByIdAndInvitations_EmployeeId(trainingId, userId).stream()
+                    .map(trainingMapper::toResponseDTO)
+                    .findFirst()
+                    .orElseThrow(() -> new TrainingException("Training not found or not authorized"));
         }
 
         throw new TrainingException("Not authorized to view this training");
@@ -103,28 +101,27 @@ public class TrainingServiceImpl implements TrainingService {
     @Override
     public List<TrainingResponseDTO> getAllTrainings() {
         String userId = getCurrentUserId();
-        EmployeeResponse user = employeeClient.getEmployeeByDn(userId);
+        EmployeeResponse user = fetchEmployee(userId);
 
-        if ("HR".equals(user.role())) {
+        if (HR_ROLE.equals(user.role())) {
             return trainingRepository.findAll().stream()
                     .map(trainingMapper::toResponseDTO)
                     .toList();
-        } else if ("Manager".equals(user.role())) {
+        } else if (MANAGER_ROLE.equals(user.role())) {
             return trainingRepository.findByCreatedBy(userId).stream()
                     .map(trainingMapper::toResponseDTO)
                     .toList();
-        }else if ("Employee".equals(user.role())) {
+        } else if (EMPLOYEE_ROLE.equals(user.role())) {
             return trainingRepository.findByInvitations_EmployeeId(userId).stream()
                     .peek(training -> training.setInvitations(training.getInvitations().stream()
                             .filter(invitation -> invitation.getEmployeeId().equals(userId))
-                            .collect(Collectors.toList())))
+                            .toList()))
                     .map(trainingMapper::toResponseDTO)
                     .toList();
         }
 
         throw new TrainingException("Not authorized to view trainings");
     }
-
 
     private String getCurrentUserId() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
@@ -136,8 +133,67 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
     private void validateDateRange(TrainingRequestDTO request) {
+        if (request.startDate() == null || request.endDate() == null) {
+            throw new TrainingException("Start and end dates cannot be null");
+        }
         if (request.startDate().isAfter(request.endDate())) {
             throw new TrainingException("Start date must be before end date");
         }
+    }
+
+    private EmployeeResponse fetchEmployee(String employeeId) {
+        try {
+            return employeeClient.getEmployeeByDn(employeeId);
+        } catch (RuntimeException e) {
+            log.error("Error fetching employee details for ID {}: {}", employeeId, e.getMessage());
+            throw new TrainingException("Error fetching employee details");
+        }
+    }
+
+    @Async
+    protected void fetchDepartmentEmployeesAndNotifyAsync(EmployeeResponse manager, Training savedTraining, TrainingRequestDTO request) {
+        CompletableFuture.supplyAsync(employeeClient::getAllEmployees)
+                .thenApply(employees -> employees.stream()
+                        .filter(emp -> emp.department().equals(manager.department()))
+                        .filter(emp -> !emp.id().equals(manager.id()))
+                        .toList())
+                .thenAccept(departmentEmployees -> {
+                    List<Invitation> invitations = departmentEmployees.stream()
+                            .map(emp -> {
+                                Invitation invitation = new Invitation();
+                                invitation.setEmployeeId(emp.id());
+                                invitation.setStatus(EStatus.PENDING);
+                                invitation.setTraining(savedTraining);
+
+                                String message = String.format("You have been invited to a training: %s", request.title());
+                                CompletableFuture.allOf(
+                                        CompletableFuture.runAsync(() -> trainingNotificationService.sendTrainingNotification(
+                                                emp.id(), "Training Invitation", message, savedTraining.getId())),
+                                        CompletableFuture.runAsync(() -> trainingNotificationService.sendMailNotification(
+                                                emp.email(), "Training Invitation", message))
+                                ).exceptionally(throwable -> {
+                                    log.error("Failed to send notification to employee {}: {}", emp.id(), throwable.getMessage());
+                                    return null;
+                                });
+
+                                return invitation;
+                            })
+                            .toList();
+
+                    // Save invitations with TransactionTemplate
+                    try {
+                        transactionTemplate.execute(_ -> {
+                            savedTraining.setInvitations(invitations);
+                            trainingRepository.save(savedTraining);
+                            return null;
+                        });
+                    } catch (Exception e) {
+                        log.error("Failed to save invitations for training {}: {}", savedTraining.getId(), e.getMessage());
+                    }
+                })
+                .exceptionally(throwable -> {
+                    log.error("Failed to fetch employees for training {}: {}", savedTraining.getId(), throwable.getMessage());
+                    return null;
+                });
     }
 }

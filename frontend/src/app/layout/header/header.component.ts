@@ -127,21 +127,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private initializeNotifications(): void {
     this.notificationService.loadNotifications();
     this.notificationService.notifications$.subscribe((notifications) => {
-      console.log('Notifications:', notifications);
       this.notificationsSubject.next(notifications);
     });
 
-    this.notificationService.unreadCount$.subscribe((count) => {
-      console.log('Unread notifications count:', count);
-    });
+    this.notificationService.unreadCount$.subscribe((count) => {});
   }
 
   // Dropdown-related methods
   toggleDropdown(): void {
     this.isDropdownOpen = !this.isDropdownOpen;
-    this.notificationService.markAllAsRead().subscribe(() => {
-      console.log('All notifications marked as read');
-    });
+    this.notificationService.markAllAsRead().subscribe(() => {});
   }
 
   @HostListener('document:click', ['$event'])

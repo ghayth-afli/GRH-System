@@ -1,13 +1,17 @@
 package com.otbs.notification.service;
 
+import com.otbs.notification.dto.MailRequestDTO;
 import com.otbs.notification.dto.NotificationRequestDTO;
 import com.otbs.notification.dto.NotificationResponseDTO;
 import com.otbs.notification.dto.WebSocketPayloadDTO;
+import com.otbs.notification.exception.NotificationException;
 import com.otbs.notification.model.Notification;
-import com.otbs.notification.model.NotificationType;
 import com.otbs.notification.repository.NotificationRepository;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,30 +29,42 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final SimpMessagingTemplate messagingTemplate;
+    private final JavaMailSender mailSender;
 
     @Transactional
     public NotificationResponseDTO createNotification(NotificationRequestDTO requestDTO) {
         Notification notification = Notification.builder()
-                .title(Optional.ofNullable(requestDTO.getTitle()).orElse(""))
-                .message(Optional.ofNullable(requestDTO.getMessage()).orElse(""))
-                .sender(Optional.ofNullable(requestDTO.getSender()).orElse(""))
+                .title(requestDTO.getTitle())
+                .message(requestDTO.getMessage())
+                .sender(requestDTO.getSender())
                 .recipient(requestDTO.getRecipient())
-                .type(Optional.ofNullable(requestDTO.getType()).orElse(NotificationType.SYSTEM_ANNOUNCEMENT))
-                .sourceId(Optional.ofNullable(requestDTO.getSourceId()).orElse(""))
-                .actionUrl(Optional.ofNullable(requestDTO.getActionUrl()).orElse(""))
+                .type(requestDTO.getType())
+                .sourceId(requestDTO.getSourceId())
+                .actionUrl(requestDTO.getActionUrl())
                 .createdAt(LocalDateTime.now())
                 .read(false)
                 .build();
 
         Notification savedNotification = notificationRepository.save(notification);
-        log.info("Notification saved: {}", savedNotification);
-
         NotificationResponseDTO responseDTO = mapToResponseDTO(savedNotification);
-        log.info("Notification created: {}", responseDTO);
         sendWebSocketNotification(responseDTO);
-        log.info("WebSocket notification sent: {}", responseDTO);
 
         return responseDTO;
+    }
+
+    public void sendMail(MailRequestDTO mailRequest) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(mailRequest.getTo());
+            helper.setSubject(mailRequest.getSubject());
+            helper.setText(mailRequest.getBody(), true);
+            mailSender.send(message);
+            log.info("Email sent to: {}", mailRequest.getTo());
+        }
+        catch (Exception e) {
+            log.error("Failed to send email: {}", e.getMessage(), e);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -59,7 +74,7 @@ public class NotificationService {
 
         List<Notification> allNotifications = Stream.concat(userNotifications.stream(), broadcastNotifications.stream())
                 .sorted(Comparator.comparing(Notification::getCreatedAt).reversed())
-                .collect(Collectors.toList());
+                .toList();
 
         return allNotifications.stream()
                 .map(this::mapToResponseDTO)
@@ -82,7 +97,7 @@ public class NotificationService {
     @Transactional
     public NotificationResponseDTO markAsRead(Long id) {
         Notification notification = notificationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Notification not found with id: " + id));
+                .orElseThrow(() -> new NotificationException("Notification not found with id: " + id));
 
         notification.setRead(true);
         Notification updatedNotification = notificationRepository.save(notification);
@@ -120,16 +135,5 @@ public class NotificationService {
 
         log.info("Sending WebSocket notification: {}", notification);
         messagingTemplate.convertAndSend("/topic/notifications", payload);
-//        if (notification.getRecipient() != null && !notification.getRecipient().isEmpty()) {
-//            messagingTemplate.convertAndSendToUser(
-//                    notification.getRecipient(),
-//                    "/queue/notifications",
-//                    payload
-//            );
-//            log.info("Sent notification to user: {}", notification.getRecipient());
-//        } else {
-//            messagingTemplate.convertAndSend("/topic/notifications", payload);
-//            log.info("Broadcasted notification to all users");
-//        }
     }
 }

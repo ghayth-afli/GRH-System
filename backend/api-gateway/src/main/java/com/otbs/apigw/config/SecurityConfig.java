@@ -26,6 +26,7 @@ public class SecurityConfig {
                         .pathMatchers("/api/v1/appointments/**").permitAll()
                         .pathMatchers("/api/v1/notifications/**").permitAll()
                         .pathMatchers("/ws-notifications/**").permitAll()
+                        .pathMatchers("/swagger-ui.html", "/swagger-ui/**", "/webjars/**", "/v3/api-docs").permitAll()
                         .anyExchange().authenticated()
                 )
                 .addFilterAt(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION)

@@ -1,16 +1,14 @@
 package com.otbs.employee.service;
 
-import com.otbs.employee.dto.EmployeeInfoRequest;
-import com.otbs.employee.dto.ProfilePicture;
-import com.otbs.employee.exception.EmployeeNotFoundException;
+import com.otbs.employee.dto.EmployeeInfoRequestDTO;
+import com.otbs.employee.dto.ProfilePictureDTO;
+import com.otbs.employee.exception.EmployeeException;
 import com.otbs.employee.exception.FileUploadException;
 import com.otbs.employee.mapper.UserAttributesMapper;
 import com.otbs.employee.model.Employee;
 import com.otbs.employee.repository.EmployeeInfoRepository;
 import com.otbs.employee.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,23 +22,22 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
 
-    private static final Logger log = LoggerFactory.getLogger(EmployeeServiceImpl.class);
     private final EmployeeRepository employeeRepository;
-    private final UserAttributesMapper userAttributesMapper;
     private final EmployeeInfoRepository employeeInfoRepository;
+    private final UserAttributesMapper userAttributesMapper;
 
     @Override
     public Employee getEmployeeByDn(Name dn) {
         return employeeRepository.findById(dn)
                 .map(userAttributesMapper)
-                .orElseThrow(() -> new EmployeeNotFoundException("Employee not found"));
+                .orElseThrow(() -> new EmployeeException("Employee not found"));
     }
 
     @Override
     public Employee getEmployeeByEmail(String email) {
         return employeeRepository.findByEmail(email)
                 .map(userAttributesMapper)
-                .orElseThrow(() -> new EmployeeNotFoundException("Employee not found"));
+                .orElseThrow(() -> new EmployeeException("Employee not found"));
     }
 
     @Override
@@ -56,9 +53,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Employee getEmployeeByUsername(String username) {
         Employee employee = employeeRepository.findByUsername(username)
                 .map(userAttributesMapper)
-                .orElseThrow(() -> new EmployeeNotFoundException("Employee not found"));
+                .orElseThrow(() -> new EmployeeException("Employee not found"));
 
-        employeeInfoRepository.findById(employee.getId().toString())
+        employeeInfoRepository.findById(employee.getId())
                 .ifPresentOrElse(
                         info -> {
                         employee.setFirstName(info.getFirstName());
@@ -92,12 +89,12 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .filter(employee -> employee.getDepartment().equals(department))
                 .filter(employee -> employee.getRole().equals("Manager"))
                 .findFirst()
-                .orElseThrow(() -> new EmployeeNotFoundException("Manager not found"));
+                .orElseThrow(() -> new EmployeeException("Manager not found"));
 
     }
 
     @Override
-    public void updateEmployeeInfo(EmployeeInfoRequest employeeInfoRequest, MultipartFile picture) {
+    public void updateEmployeeInfo(EmployeeInfoRequestDTO employeeInfoRequestDTO, MultipartFile picture) {
 
         Employee employee = (Employee) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -110,23 +107,17 @@ public class EmployeeServiceImpl implements EmployeeService {
             }
         }
 
-        employee.setJobTitle(employeeInfoRequest.jobTitle());
-        employee.setEmail(employeeInfoRequest.email());
-        employee.setLastName(employeeInfoRequest.lastName());
-        employee.setFirstName(employeeInfoRequest.firstName());
+        employee.setJobTitle(employeeInfoRequestDTO.jobTitle());
+        employee.setEmail(employeeInfoRequestDTO.email());
+        employee.setLastName(employeeInfoRequestDTO.lastName());
+        employee.setFirstName(employeeInfoRequestDTO.firstName());
         employeeInfoRepository.save(employee);
     }
 
     @Override
-    public ProfilePicture getProfilePicture(String username) {
+    public ProfilePictureDTO getProfilePicture(String username) {
         Optional<Employee> employee = employeeInfoRepository.findByUsername(username);
-        log.info("Employee: {}",username);
-        if (employee.isPresent()) {
-            return employee.get().getPicture() != null
-                    ? new ProfilePicture(employee.get().getPictureType(), employee.get().getPicture())
-                    : null;
-        }
-        return null;
+        return employee.filter(value -> value.getPicture() != null).map(value -> new ProfilePictureDTO(value.getPictureType(), value.getPicture())).orElse(null);
     }
 
 }

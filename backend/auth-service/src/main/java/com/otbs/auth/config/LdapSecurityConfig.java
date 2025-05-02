@@ -14,11 +14,13 @@ public class LdapSecurityConfig {
 
     @Value("${spring.ldap.urls}")
     private String ldapUrl;
+    @Value("${spring.ldap.domain}")
+    private String domain;
 
     @Bean
     public AuthenticationManager authenticationManager() {
         ActiveDirectoryLdapAuthenticationProvider adProvider =
-                new ActiveDirectoryLdapAuthenticationProvider("otbs.local", ldapUrl);
+                new ActiveDirectoryLdapAuthenticationProvider(domain, ldapUrl);
         adProvider.setConvertSubErrorCodesToExceptions(true);
         adProvider.setUseAuthenticationRequestCredentials(true);
         return new ProviderManager(Collections.singletonList(adProvider));

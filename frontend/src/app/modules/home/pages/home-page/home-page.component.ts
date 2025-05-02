@@ -33,14 +33,6 @@ export class HomePageComponent {
     this.leaveHistory$ = this.route.data.pipe(
       map((data) => data['leaveHistory'])
     );
-    this.holidays.getPublicHolidays().subscribe({
-      next: (data) => {
-        console.log('Holidays', data);
-      },
-      error: (error) => {
-        console.error('There was an error!', error);
-      },
-    });
   }
 
   ngOnInit(): void {

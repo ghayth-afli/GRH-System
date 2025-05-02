@@ -11,5 +11,4 @@ import java.util.List;
 @Repository
 public interface LeaveRepository extends JpaRepository<Leave, Long> {
     List<Leave> findAllByUserDn(String userDn);
-    Page<Leave> findAllByUserDn(String userDn, Pageable pageable);
 }

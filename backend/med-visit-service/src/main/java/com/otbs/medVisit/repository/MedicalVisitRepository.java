@@ -9,5 +9,7 @@ import java.util.Optional;
 public interface MedicalVisitRepository extends JpaRepository<MedicalVisit, Long> {
 
     Optional<MedicalVisit> findByDoctorNameAndVisitDate(String doctorName, LocalDate visitDate);
+    boolean existsByDoctorNameAndVisitDateAndIdNot(String doctorName, LocalDate visitDate, Long id);
+    boolean existsByDoctorNameAndVisitDate(String doctorName, LocalDate visitDate);
 
 }

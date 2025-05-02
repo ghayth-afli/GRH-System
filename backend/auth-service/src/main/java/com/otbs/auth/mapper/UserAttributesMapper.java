@@ -13,7 +13,7 @@ public class UserAttributesMapper implements AttributesMapper<User> {
         User user = new User();
         user.setUsername(getAttribute(attributes, "sAMAccountName"));
         user.setEmail(getAttribute(attributes, "mail"));
-        user.setAuthorities(getFirstGroup(attributes, "memberOf"));
+        user.setAuthorities(getFirstGroup(attributes));
         user.setDn(getAttribute(attributes, "distinguishedName"));
         return user;
     }
@@ -22,7 +22,7 @@ public class UserAttributesMapper implements AttributesMapper<User> {
         return attributes.get(attributeName).get().toString();
     }
 
-    private String getFirstGroup(Attributes attributes, String attributeName) throws NamingException {
-        return attributes.get(attributeName).get().toString().split(",")[0].split("=")[1];
+    private String getFirstGroup(Attributes attributes) throws NamingException {
+        return attributes.get("memberOf").get().toString().split(",")[0].split("=")[1];
     }
 }

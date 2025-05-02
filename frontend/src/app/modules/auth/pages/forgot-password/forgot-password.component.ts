@@ -7,10 +7,7 @@ import { ForgotPasswordResponse } from '../../../../core/models/auth-responses.i
   selector: 'app-forgot-password',
   standalone: false,
   templateUrl: './forgot-password.component.html',
-  styleUrls: [
-    './forgot-password.component.css',
-    '../../shared/auth-shared.css',
-  ],
+  styleUrls: ['./forgot-password.component.css'],
 })
 export class ForgotPasswordComponent {
   email: string = '';

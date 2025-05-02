@@ -32,6 +32,13 @@ public class RabbitMQConfig {
     @Value("${notification.rabbitmq.training-routing-key}")
     private String trainingRoutingKey;
 
+    @Value("${notification.rabbitmq.mail-queue}")
+    private String mailQueue;
+
+    @Value("${notification.rabbitmq.mail-routing-key}")
+    private String mailRoutingKey;
+
+
     @Bean
     public DirectExchange notificationExchange() {
         return new DirectExchange(notificationExchange);
@@ -50,6 +57,11 @@ public class RabbitMQConfig {
     @Bean
     public Queue trainingQueue() {
         return new Queue(trainingQueue, true);
+    }
+
+    @Bean
+    public Queue mailQueue() {
+        return new Queue(mailQueue, true);
     }
 
     @Bean
@@ -74,6 +86,14 @@ public class RabbitMQConfig {
                 .bind(medicalVisitQueue())
                 .to(notificationExchange())
                 .with(medicalVisitRoutingKey);
+    }
+
+    @Bean
+    public Binding mailBinding() {
+        return BindingBuilder
+                .bind(mailQueue())
+                .to(notificationExchange())
+                .with(mailRoutingKey);
     }
 
     @Bean

@@ -6,6 +6,5 @@ import java.util.List;
 
 public interface InvitationService {
     void confirmInvitation(Long invitationId);
-    void rejectInvitation(Long invitationId);
     List<InvitationResponseDTO> getAllInvitations();
 }
