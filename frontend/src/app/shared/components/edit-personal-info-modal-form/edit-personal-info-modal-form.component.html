@@ -52,6 +52,21 @@
         </div>
       </div>
 
+      <div class="form-controller-container">
+        <div class="form-controller">
+          <div class="label-container">
+            <label for="phoneNumber1">phoneNumber1</label>
+          </div>
+          <input id="phoneNumber1" formControlName="phoneNumber1" type="text" />
+        </div>
+        <div class="form-controller">
+          <div class="label-container">
+            <label for="phoneNumber2">phoneNumber2 (optional)</label>
+          </div>
+          <input id="phoneNumber2" formControlName="phoneNumber2" type="text" />
+        </div>
+      </div>
+
       <div class="form-buttons">
         <div class="button-submit">
           <button type="submit" [disabled]="editForm.invalid" class="primary">

@@ -1,4 +1,10 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import {
+  Component,
+  inject,
+  ViewChild,
+  OnDestroy,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { LeaveService } from '../../services/leave.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { MatTableDataSource } from '@angular/material/table';
@@ -6,6 +12,9 @@ import { Leave } from '../../models/leave';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Subscription } from 'rxjs';
+import { SseService } from '../../../../core/services/sse.service';
+import { NotificationData } from '../../../../core/models/NotificationData';
 
 interface ApiResponse {
   message: string;
@@ -17,10 +26,12 @@ interface ApiResponse {
   templateUrl: './leave-requests-data-table.component.html',
   styleUrls: ['./leave-requests-data-table.component.css'],
 })
-export class LeaveRequestsDataTableComponent {
+export class LeaveRequestsDataTableComponent implements OnDestroy {
   dataSource = new MatTableDataSource<Leave>();
   private leaveService = inject(LeaveService);
   private snackBar = inject(MatSnackBar);
+  private sseService = inject(SseService<NotificationData<Leave>>);
+  private cdr = inject(ChangeDetectorRef);
   authService = inject(AuthService);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -32,14 +43,23 @@ export class LeaveRequestsDataTableComponent {
     'leaveType',
     'status',
   ];
-
   showActionsColumn: boolean = false;
+  private newLeaveSubscription: Subscription | null = null;
 
   ngOnInit(): void {
     this.initializeColumns();
     this.refreshLeaveRequests();
+    this.subscribeToEventNotifications();
   }
 
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    if (this.newLeaveSubscription) {
+      this.newLeaveSubscription.unsubscribe();
+    }
+    // Close the SSE connection
+    this.sseService.disconnect();
+  }
   initializeColumns(): void {
     if (this.authService.hasRole('HR') || this.authService.hasRole('Manager')) {
       this.displayedColumns.push('attachments');
@@ -53,28 +73,48 @@ export class LeaveRequestsDataTableComponent {
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
         this.checkForActionsColumn(data);
+        this.cdr.detectChanges();
       },
       error: (error) => this.showError(error.message),
     });
   }
 
+  subscribeToEventNotifications(): void {
+    this.subscribeToNewLeaveRequestEvent();
+  }
+
+  //updatedLeaveRequestEvent
+  private subscribeToNewLeaveRequestEvent(): void {
+    this.newLeaveSubscription = this.sseService
+      .connect('CREATED_LEAVE')
+      .subscribe({
+        next: (Event: NotificationData<Leave>) => {
+          this.dataSource.data = [
+            Event.payload['leave'],
+            ...this.dataSource.data,
+          ];
+          this.checkForActionsColumn(this.dataSource.data);
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.showError('Failed to receive leave request updates');
+        },
+      });
+  }
+
   checkForActionsColumn(data: Leave[]): void {
-    data.some((leave) => {
-      if (
-        this.authService.hasRole('Manager') &&
-        leave.status === 'EN_ATTENTE' &&
-        !this.displayedColumns.includes('actions')
-      ) {
-        this.showActionsColumn = true;
-        this.displayedColumns.push('actions');
-      }
-    });
+    this.showActionsColumn = data.some(
+      (leave) =>
+        this.authService.hasRole('Manager') && leave.status === 'EN_ATTENTE'
+    );
+    if (this.showActionsColumn && !this.displayedColumns.includes('actions')) {
+      this.displayedColumns = [...this.displayedColumns, 'actions'];
+    }
   }
 
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
-
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }

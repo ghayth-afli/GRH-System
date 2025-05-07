@@ -37,11 +37,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
     department: '',
     role: '',
     jobTitle: '',
+    phoneNumber1: '',
+    phoneNumber2: '',
   };
 
   notificationService = inject(NotificationService);
   private authService = inject(AuthService);
-  private leaveService = inject(LeaveService);
   private route = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
   private userService = inject(UserService);
@@ -100,6 +101,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
         lastName: this.user.lastName,
         email: this.user.email,
         jobTitle: this.user.jobTitle,
+        phoneNumber1: this.user.phoneNumber1,
+        phoneNumber2: this.user.phoneNumber2,
         imageSrc: this.imageSrc,
       },
     });
@@ -118,6 +121,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
       lastName: dialogRef.componentInstance.editForm.value.lastName,
       email: dialogRef.componentInstance.editForm.value.email,
       jobTitle: dialogRef.componentInstance.editForm.value.jobTitle,
+      phoneNumber1: dialogRef.componentInstance.editForm.value.phoneNumber1,
+      phoneNumber2: dialogRef.componentInstance.editForm.value.phoneNumber2,
     };
     this.authService._setUser(this.user);
     this.loadProfilePicture();

@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MedicalVisit } from '../../models/medical-visit';
 import { MatTableDataSource } from '@angular/material/table';
@@ -12,8 +12,9 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { AppointmentService } from '../../services/appointment.service';
 import { AppointmentModalComponent } from '../../components/appointment-modal/appointment-modal.component';
 import { Appointment } from '../../models/appointment';
-import { catchError, map, Observable, of } from 'rxjs';
-// Removed unused MatSnackBar import
+import { catchError, map, Observable, of, Subscription } from 'rxjs';
+import { NotificationData } from '../../../../core/models/NotificationData';
+import { SseService } from '../../../../core/services/sse.service';
 
 @Component({
   selector: 'app-medical-visits-page',
@@ -25,39 +26,145 @@ export class MedicalVisitsPageComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   medicalVisitService = inject(MedicalVisitService);
   appointmentService = inject(AppointmentService);
+  private cdr = inject(ChangeDetectorRef);
   route = inject(Router);
   authService = inject(AuthService);
   public dialog = inject(MatDialog);
+  private sseService = inject(SseService);
   dataSource!: MatTableDataSource<MedicalVisit>;
   pageSize = 10;
   pageSizeOptions = [10, 50, 100];
   displayedColumns: string[] = [];
   medicalVisits: MedicalVisit[] = [];
+  private newVisitSubscription: Subscription | null = null;
+  private updateVisitSubscription: Subscription | null = null;
+  private deletedVisitSubscription: Subscription | null = null;
 
   ngOnInit(): void {
     this.setDisplayedColumns();
     this.loadMedicalVisits();
     this.loadAppointmentsForEmployeeOrManager();
+    this.subscribeToEventNotifications();
   }
-  makeAppointment(element: MedicalVisit): void {
-    this.dialog
-      .open(AppointmentModalComponent, {
-        width: '35%',
-        height: 'auto',
-        data: element,
-      })
-      .afterClosed()
+
+  subscribeToEventNotifications(): void {
+    this.subscribeToNewMedicalVisitEvent();
+    this.subscribeToUpdatedMedicalVisitEvent();
+    this.subscribeToDeletedMedicalVisitEvent();
+  }
+
+  private subscribeToDeletedMedicalVisitEvent(): void {
+    this.deletedVisitSubscription = this.sseService
+      .connect('DELETED_MEDICAL_VISIT')
       .subscribe({
-        next: (result) => {
-          console.log('Dialog result:', result);
-          if (result === 'submitted') {
-            this.loadMedicalVisits();
-          }
+        next: (event: NotificationData<MedicalVisit>) => {
+          console.log(
+            'Raw deleted medical visit event:',
+            event.payload['medicalVisit']
+          );
+          this.removeVisitFromDataSource(event.payload['medicalVisit']);
         },
         error: (error) => {
-          console.error('Error in dialog:', error);
+          console.error('Error in DELETED_MEDICAL_VISIT subscription:', error);
         },
       });
+  }
+
+  private subscribeToNewMedicalVisitEvent(): void {
+    this.newVisitSubscription = this.sseService
+      .connect('CREATED_MEDICAL_VISIT')
+      .subscribe({
+        next: (event: NotificationData<MedicalVisit>) => {
+          const transformedVisit = this.transformMedicalVisit(
+            event.payload['medicalVisit']
+          );
+          this.medicalVisits = [transformedVisit, ...this.medicalVisits];
+          this.initializeDataSource();
+          console.log('New medical visit event received:', transformedVisit);
+          console.log('Data source data:', this.dataSource.data);
+        },
+        error: (error) => {
+          console.error('Error in CREATED_MEDICAL_VISIT subscription:', error);
+        },
+      });
+  }
+
+  private subscribeToUpdatedMedicalVisitEvent(): void {
+    console.log('Subscribing to updated medical visit event...');
+    this.updateVisitSubscription = this.sseService
+      .connect('UPDATED_MEDICAL_VISIT')
+      .subscribe({
+        next: (event: NotificationData<MedicalVisit>) => {
+          console.log(
+            'Raw updated medical visit event:',
+            event.payload['medicalVisit']
+          );
+          const transformedVisit = this.transformMedicalVisit(
+            event.payload['medicalVisit']
+          );
+          console.log('Transformed updated medical visit:', transformedVisit);
+          this.updateVisitInDataSource(transformedVisit);
+        },
+        error: (error) => {
+          console.error('Error in UPDATED_MEDICAL_VISIT subscription:', error);
+        },
+      });
+  }
+
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    if (this.newVisitSubscription) {
+      this.newVisitSubscription.unsubscribe();
+    }
+    if (this.updateVisitSubscription) {
+      this.updateVisitSubscription.unsubscribe();
+    }
+    if (this.deletedVisitSubscription) {
+      this.deletedVisitSubscription.unsubscribe();
+    }
+    // Close the SSE connection
+    this.sseService.disconnect();
+  }
+
+  private transformMedicalVisit(visit: any): MedicalVisit {
+    return {
+      id: visit.id,
+      doctorName: visit.doctorName,
+      visitDate: new Date(this.formatDate(visit.visitDate)),
+      startTime: this.formatTime(visit.startTime),
+      endTime: this.formatTime(visit.endTime),
+      numberOfAppointments: visit.numberOfAppointments,
+    };
+  }
+
+  private formatDate(dateArray: number[]): string {
+    if (!Array.isArray(dateArray) || dateArray.length !== 3) {
+      console.error('Invalid date array:', dateArray);
+      return new Date().toISOString().split('T')[0]; // Fallback to current date
+    }
+    const [year, month, day] = dateArray;
+    return `${year}-${month.toString().padStart(2, '0')}-${day
+      .toString()
+      .padStart(2, '0')}`;
+  }
+
+  private formatTime(timeArray: number[]): string {
+    if (!Array.isArray(timeArray) || timeArray.length !== 2) {
+      console.error('Invalid time array:', timeArray);
+      return '00:00:00'; // Fallback
+    }
+    const [hour, minute] = timeArray;
+    return `${hour.toString().padStart(2, '0')}:${minute
+      .toString()
+      .padStart(2, '0')}:00`;
+  }
+
+  makeAppointment(element: MedicalVisit): void {
+    this.dialog.open(AppointmentModalComponent, {
+      width: '35%',
+      height: 'auto',
+      data: element,
+    });
   }
 
   cancelAppointment(element: MedicalVisit): void {
@@ -92,7 +199,7 @@ export class MedicalVisitsPageComponent {
   deleteVisit(element: MedicalVisit): void {
     this.medicalVisitService.deleteMedicalVisit(element.id).subscribe({
       next: () => {
-        this.removeVisitFromDataSource(element);
+        //this.removeVisitFromDataSource(element);
       },
       error: (error) => {
         console.error('Error deleting medical visit:', error);
@@ -112,12 +219,6 @@ export class MedicalVisitsPageComponent {
       width: '35%',
       height: 'auto',
       data: element,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.updateVisitInDataSource(result);
-      }
     });
   }
 
@@ -248,6 +349,10 @@ export class MedicalVisitsPageComponent {
     if (index !== -1) {
       this.medicalVisits[index] = updatedVisit;
       this.dataSource.data = this.medicalVisits;
+      this.cdr.detectChanges();
+      console.log('Updated medical visit in data source:', updatedVisit);
+    } else {
+      console.warn('Medical visit not found for update:', updatedVisit.id);
     }
   }
 

@@ -7,6 +7,9 @@ import { AppointmentService } from '../../services/appointment.service';
 import { ActivatedRoute } from '@angular/router';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { Subscription } from 'rxjs';
+import { SseService } from '../../../../core/services/sse.service';
+import { NotificationData } from '../../../../core/models/NotificationData';
 
 @Component({
   selector: 'app-appointments-page',
@@ -35,6 +38,47 @@ export class AppointmentsPageComponent {
     this.fetchRouteParams();
     this.loadAppointments();
     this.initializeDataSource();
+    this.subscribeToEventNotifications();
+  }
+
+  private sseService = inject(SseService<NotificationData<Appointment>>);
+  private newAppointmentSubscription: Subscription | null = null;
+  private updateAppointmentSubscription: Subscription | null = null;
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    if (this.newAppointmentSubscription) {
+      this.newAppointmentSubscription.unsubscribe();
+    }
+    if (this.updateAppointmentSubscription) {
+      this.updateAppointmentSubscription.unsubscribe();
+    }
+    // Close the SSE connection
+    this.sseService.disconnect();
+  }
+  subscribeToEventNotifications(): void {
+    this.subscribeToAppointmentEvent();
+    this.subscribeToUpdatedAppointmentEvent();
+  }
+
+  //updatedLeaveRequestEvent
+  private subscribeToAppointmentEvent(): void {
+    this.newAppointmentSubscription = this.sseService
+      .connect('UPDATED_MEDICAL_VISIT')
+      .subscribe({
+        next: (Event: NotificationData<Appointment>) => {
+          this.loadAppointments();
+        },
+      });
+  }
+
+  private subscribeToUpdatedAppointmentEvent(): void {
+    this.updateAppointmentSubscription = this.sseService
+      .connect('UPDATED_MEDICAL_VISIT')
+      .subscribe({
+        next: (Event: NotificationData<Appointment>) => {
+          this.loadAppointments();
+        },
+      });
   }
 
   exportCsv(): void {

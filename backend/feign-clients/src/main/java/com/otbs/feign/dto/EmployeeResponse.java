@@ -10,7 +10,9 @@ public record EmployeeResponse(
         String email,
         String department,
         String role,
-        String jobTitle
+        String jobTitle,
+        String phoneNumber1,
+        String phoneNumber2
 ) {
 
 }

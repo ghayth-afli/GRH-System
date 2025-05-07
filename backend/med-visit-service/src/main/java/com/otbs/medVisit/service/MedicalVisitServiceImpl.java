@@ -1,5 +1,6 @@
 package com.otbs.medVisit.service;
 
+import com.otbs.common.event.Event;
 import com.otbs.feign.client.EmployeeClient;
 import com.otbs.medVisit.dto.MedicalVisitRequestDTO;
 import com.otbs.medVisit.dto.MedicalVisitResponseDTO;
@@ -13,9 +14,12 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -27,6 +31,7 @@ public class MedicalVisitServiceImpl implements MedicalVisitService {
     private final MedicalVisitMapper medicalVisitMapper;
     private final EmployeeClient employeeClient;
     private final MedicalVisitNotificationService notificationService;
+    private final MedicalVisitNotificationEventService notificationEventService;
 
 
     @Override
@@ -47,6 +52,7 @@ public class MedicalVisitServiceImpl implements MedicalVisitService {
 
         // Asynchronously notify employees
         notifyEmployeesAsync(medicalVisitRequestDTO, medVisit.getId());
+        sendAsyncEventNotifications(medVisit, "CREATED_MEDICAL_VISIT");
     }
 
     @Override
@@ -70,6 +76,7 @@ public class MedicalVisitServiceImpl implements MedicalVisitService {
         medicalVisit.setStartTime(medicalVisitRequestDTO.startTime());
         medicalVisit.setEndTime(medicalVisitRequestDTO.endTime());
         medicalVisitRepository.save(medicalVisit);
+        sendAsyncEventNotifications(medicalVisit, "UPDATED_MEDICAL_VISIT");
     }
 
     @Override
@@ -78,7 +85,10 @@ public class MedicalVisitServiceImpl implements MedicalVisitService {
         if (!medicalVisitRepository.existsById(id)) {
             throw new MedicalVisitException("Medical visit not found");
         }
+        MedicalVisit medicalVisit = medicalVisitRepository.findById(id)
+                .orElseThrow(() -> new MedicalVisitException("Medical visit not found"));
         medicalVisitRepository.deleteById(id);
+        sendAsyncEventNotifications(medicalVisit, "DELETED_MEDICAL_VISIT");
     }
 
     @Override
@@ -108,6 +118,33 @@ public class MedicalVisitServiceImpl implements MedicalVisitService {
         if (request.startTime().isAfter(request.endTime()) || request.startTime().equals(request.endTime())) {
             throw new MedicalVisitException("Start time must be before end time");
         }
+    }
+
+    @Async
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void sendAsyncEventNotifications(MedicalVisit medVisit, String eventType) {
+        MedicalVisitResponseDTO medicalVisitResponseDTO = medicalVisitMapper.toDto(medVisit);
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("medicalVisit", medicalVisitResponseDTO);
+        CompletableFuture<Void> eventNotification = CompletableFuture.runAsync(() ->
+                notificationEventService.sendEventNotification(
+                        new Event(
+                                eventType,
+                                medVisit.getId().toString(),
+                                "MEDICAL_VISIT",
+                                payload
+                        )
+                ));
+
+        CompletableFuture.allOf(eventNotification)
+                .whenComplete((_, throwable) -> {
+                    if (throwable != null) {
+                        log.error("Failed to send event notifications for leave ID {}: {}",
+                                medVisit.getId(), throwable.getMessage());
+                    } else {
+                        log.debug("Event notifications sent successfully for leave ID {}", medVisit.getId());
+                    }
+                });
     }
 
     @Async

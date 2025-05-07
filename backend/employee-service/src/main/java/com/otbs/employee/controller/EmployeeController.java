@@ -142,9 +142,13 @@ public class EmployeeController {
             @Parameter(description = "Profile picture file (optional)", required = false)
             @RequestParam(value = "picture", required = false) MultipartFile picture,
             @Parameter(description = "Employee's job title", example = "Software Engineer", required = true)
-            @RequestParam("jobTitle") String department
+            @RequestParam("jobTitle") String department,
+            @Parameter(description = "Employee's phone number 1", example = "+21612345678", required = true)
+            @RequestParam("phoneNumber1") String phoneNumber1,
+            @Parameter(description = "Employee's phone number 2", example = "+21687654321", required = false)
+            @RequestParam(value = "phoneNumber2", required = false) String phoneNumber2
     ) {
-        EmployeeInfoRequestDTO employeeInfoRequestDTO = new EmployeeInfoRequestDTO(firstName, lastName, email, department);
+        EmployeeInfoRequestDTO employeeInfoRequestDTO = new EmployeeInfoRequestDTO(firstName, lastName, email, department, phoneNumber1, phoneNumber2);
         employeeService.updateEmployeeInfo(employeeInfoRequestDTO, picture);
         return ResponseEntity.ok(new MessageResponseDTO("Employee updated successfully"));
     }

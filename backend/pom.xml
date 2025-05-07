@@ -21,6 +21,7 @@
       <module>notification-service</module>
       <module>training-management-service</module>
     <module>recruitment-service</module>
+      <module>common</module>
   </modules>
 
   <properties>

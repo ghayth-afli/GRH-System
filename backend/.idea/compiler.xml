@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="feign-clients" />
         <module name="auth-service" />
+        <module name="common" />
         <module name="leave-service" />
         <module name="api-gateway" />
         <module name="med-visit-service" />

@@ -23,6 +23,9 @@ public class Employee {
     private String firstName;
     private String lastName;
     private String email;
+    private String phoneNumber1;
+    @Column(nullable = true)
+    private String phoneNumber2;
     private String department;
     private String role;
     @Lob

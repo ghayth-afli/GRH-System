@@ -7,12 +7,14 @@ import com.otbs.training.model.Training;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Optional;
+
 @Component
 @RequiredArgsConstructor
 public class TrainingMapper {
 
     private final InvitationMapper invitationMapper;
-
 
     public Training toEntity(TrainingRequestDTO dto) {
         return Training.builder()
@@ -32,7 +34,9 @@ public class TrainingMapper {
                 training.getStartDate(),
                 training.getEndDate(),
                 training.getCreatedBy(),
-                training.getInvitations().stream()
+                Optional.ofNullable(training.getInvitations())
+                        .orElse(List.of())
+                        .stream()
                         .map(invitationMapper::toResponseDTO)
                         .toList(),
                 training.getCreatedAt()

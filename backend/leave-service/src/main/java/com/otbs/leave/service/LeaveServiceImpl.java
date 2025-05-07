@@ -1,5 +1,6 @@
 package com.otbs.leave.service;
 
+import com.otbs.common.event.Event;
 import com.otbs.feign.client.EmployeeClient;
 import com.otbs.feign.dto.EmployeeResponse;
 import com.otbs.leave.dto.LeaveRequestDTO;
@@ -23,8 +24,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -37,6 +41,7 @@ public class LeaveServiceImpl implements LeaveService {
     private final LeaveBalanceRepository leaveBalanceRepository;
     private final LeaveRepository leaveRepository;
     private final LeaveNotificationService leaveNotificationService;
+    private final LeaveNotificationEventService leaveNotificationEventService;
     private final LeaveAttributesMapper leaveAttributesMapper;
     private final EmployeeClient employeeClient;
 
@@ -55,6 +60,7 @@ public class LeaveServiceImpl implements LeaveService {
         leaveRepository.save(leave);
 
         sendAsyncNotifications(user, leave);
+        sendAsyncEventNotifications(leave, "CREATED_LEAVE");
     }
 
     @Async
@@ -148,6 +154,33 @@ public class LeaveServiceImpl implements LeaveService {
                                 leave.getId(), throwable.getMessage());
                     } else {
                         log.debug("Approval notifications sent successfully for leave ID {}", leave.getId());
+                    }
+                });
+    }
+
+    @Async
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void sendAsyncEventNotifications(Leave leave, String eventType) {
+        LeaveResponseDTO leaveResponseDTO = leaveAttributesMapper.toDto(leave);
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("leave", leaveResponseDTO);
+        CompletableFuture<Void> eventNotification = CompletableFuture.runAsync(() ->
+                leaveNotificationEventService.sendEventNotification(
+                        new Event(
+                                eventType,
+                                leave.getId().toString(),
+                                "LEAVE",
+                                payload
+                        )
+                ));
+
+        CompletableFuture.allOf(eventNotification)
+                .whenComplete((_, throwable) -> {
+                    if (throwable != null) {
+                        log.error("Failed to send event notifications for leave ID {}: {}",
+                                leave.getId(), throwable.getMessage());
+                    } else {
+                        log.debug("Event notifications sent successfully for leave ID {}", leave.getId());
                     }
                 });
     }
