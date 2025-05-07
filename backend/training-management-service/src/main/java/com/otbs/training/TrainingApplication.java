@@ -7,7 +7,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableFeignClients(basePackages = "com.otbs.feign")
+@EnableFeignClients(basePackages = {"com.otbs.feign", "com.otbs.common"})
 public class TrainingApplication {
     public static void main(String[] args) {
         SpringApplication.run(TrainingApplication.class, args);

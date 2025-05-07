@@ -64,6 +64,8 @@ public class EmployeeServiceImpl implements EmployeeService {
                         employee.setPicture(info.getPicture());
                         employee.setPictureType(info.getPictureType());
                         employee.setJobTitle(info.getJobTitle());
+                        employee.setPhoneNumber1(info.getPhoneNumber1());
+                        employee.setPhoneNumber2(info.getPhoneNumber2());
                         },
                         () -> {
                             Employee employeeInfo = Employee.builder()
@@ -111,6 +113,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setEmail(employeeInfoRequestDTO.email());
         employee.setLastName(employeeInfoRequestDTO.lastName());
         employee.setFirstName(employeeInfoRequestDTO.firstName());
+        employee.setPhoneNumber1(employeeInfoRequestDTO.phoneNumber1());
+        employee.setPhoneNumber2(employeeInfoRequestDTO.phoneNumber2());
         employeeInfoRepository.save(employee);
     }
 

@@ -1,5 +1,6 @@
 package com.otbs.training.service;
 
+import com.otbs.common.event.Event;
 import com.otbs.feign.client.EmployeeClient;
 import com.otbs.feign.dto.EmployeeResponse;
 import com.otbs.training.dto.TrainingRequestDTO;
@@ -15,10 +16,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -35,6 +39,7 @@ public class TrainingServiceImpl implements TrainingService {
     private final EmployeeClient employeeClient;
     private final TrainingNotificationService trainingNotificationService;
     private final TransactionTemplate transactionTemplate;
+    private final TrainingNotificationEventService notificationEventService;
 
     @Override
     @Transactional
@@ -51,6 +56,7 @@ public class TrainingServiceImpl implements TrainingService {
         Training savedTraining = trainingRepository.save(training);
 
         fetchDepartmentEmployeesAndNotifyAsync(manager, savedTraining, request);
+        sendAsyncEventNotifications(savedTraining, "CREATED_TRAINING");
     }
 
     @Override
@@ -67,6 +73,7 @@ public class TrainingServiceImpl implements TrainingService {
         training.setEndDate(request.endDate());
 
         trainingRepository.save(training);
+        sendAsyncEventNotifications(training, "UPDATED_TRAINING");
     }
 
     @Override
@@ -75,6 +82,7 @@ public class TrainingServiceImpl implements TrainingService {
         String managerId = getCurrentUserId();
         Training training = findTrainingForManager(managerId, trainingId);
         trainingRepository.delete(training);
+        sendAsyncEventNotifications(training, "DELETED_TRAINING");
     }
 
     @Override
@@ -194,6 +202,33 @@ public class TrainingServiceImpl implements TrainingService {
                 .exceptionally(throwable -> {
                     log.error("Failed to fetch employees for training {}: {}", savedTraining.getId(), throwable.getMessage());
                     return null;
+                });
+    }
+
+    @Async
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void sendAsyncEventNotifications(Training training, String eventType) {
+        TrainingResponseDTO medicalVisitResponseDTO = trainingMapper.toResponseDTO(training);
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("training", medicalVisitResponseDTO);
+        CompletableFuture<Void> eventNotification = CompletableFuture.runAsync(() ->
+                notificationEventService.sendEventNotification(
+                        new Event(
+                                eventType,
+                                training.getId().toString(),
+                                "TRAINING",
+                                payload
+                        )
+                ));
+
+        CompletableFuture.allOf(eventNotification)
+                .whenComplete((_, throwable) -> {
+                    if (throwable != null) {
+                        log.error("Failed to send event notifications for training ID {}: {}",
+                                training.getId(), throwable.getMessage());
+                    } else {
+                        log.debug("Event notifications sent successfully for training ID {}", training.getId());
+                    }
                 });
     }
 }

@@ -1,5 +1,6 @@
 package com.otbs.medVisit.service;
 
+import com.otbs.common.event.Event;
 import com.otbs.feign.client.EmployeeClient;
 import com.otbs.feign.dto.EmployeeResponse;
 import com.otbs.medVisit.dto.AppointmentRequestDTO;
@@ -9,8 +10,10 @@ import com.otbs.medVisit.exception.AppointmentException;
 import com.otbs.medVisit.exception.MedicalVisitException;
 import com.otbs.medVisit.exception.TimeSlotNotAvailableException;
 import com.otbs.medVisit.mapper.AppointmentMapper;
+import com.otbs.medVisit.mapper.MedicalVisitMapper;
 import com.otbs.medVisit.model.Appointment;
 import com.otbs.medVisit.model.EAppointmentStatus;
+import com.otbs.medVisit.model.MedicalVisit;
 import com.otbs.medVisit.repository.AppointmentRepository;
 import com.otbs.medVisit.repository.MedicalVisitRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +22,14 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -39,6 +45,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final MedicalVisitRepository medicalVisitRepository;
     private final AppointmentMapper appointmentMapper;
     private final EmployeeClient employeeClient;
+    private final MedicalVisitMapper medicalVisitMapper;
+    private final MedicalVisitNotificationEventService notificationEventService;
 
     @Override
     @Transactional
@@ -81,6 +89,9 @@ public class AppointmentServiceImpl implements AppointmentService {
         }, () -> {
             throw new AppointmentException("Medical visit not found");
         });
+
+        sendAsyncEventNotifications(medicalVisit, "UPDATED_MEDICAL_VISIT");
+
     }
 
     @Override
@@ -109,6 +120,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         // Asynchronously send notification
         sendNotificationAsync(appointment.getEmployeeId(), "Appointment updated",
                 "Your appointment has been updated to " + appointmentRequestDTO.timeSlot());
+        sendAsyncEventNotifications(medicalVisit, "UPDATED_MEDICAL_VISIT");
     }
 
     @Override
@@ -225,4 +237,32 @@ public class AppointmentServiceImpl implements AppointmentService {
                 })
                 .toList();
     }
+
+    @Async
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void sendAsyncEventNotifications(MedicalVisitResponseDTO medVisit, String eventType) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("medicalVisit", medVisit);
+        CompletableFuture<Void> eventNotification = CompletableFuture.runAsync(() ->
+                notificationEventService.sendEventNotification(
+                        new Event(
+                                eventType,
+                                medVisit.id().toString(),
+                                "MEDICAL_VISIT",
+                                payload
+                        )
+                ));
+
+        CompletableFuture.allOf(eventNotification)
+                .whenComplete((_, throwable) -> {
+                    if (throwable != null) {
+                        log.error("Failed to send event notifications for medical visit ID {}: {}",
+                                medVisit.id(), throwable.getMessage());
+                    } else {
+                        log.debug("Event notifications sent successfully for medical visit ID {}", medVisit.id());
+                    }
+                });
+    }
+
+
 }

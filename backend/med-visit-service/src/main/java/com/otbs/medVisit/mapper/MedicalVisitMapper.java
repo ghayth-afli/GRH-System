@@ -24,7 +24,6 @@ public class MedicalVisitMapper {
                 medicalVisit.getVisitDate(),
                 medicalVisit.getStartTime(),
                 medicalVisit.getEndTime(),
-                medicalVisit.getAppointments().size()
-        );
+                (medicalVisit.getAppointments() != null ? medicalVisit.getAppointments().size() : 0)        );
     }
 }

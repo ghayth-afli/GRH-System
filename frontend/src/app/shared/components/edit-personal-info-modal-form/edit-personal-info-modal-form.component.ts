@@ -32,6 +32,14 @@ export class EditPersonalInfoModalFormComponent {
       lastName: [this.data.lastName, Validators.required],
       email: [this.data.email, [Validators.required, Validators.email]],
       jobTitle: [this.data.jobTitle, Validators.required],
+      phoneNumber1: [
+        this.data.phoneNumber1,
+        [Validators.required, Validators.pattern(/^\+216[0-9]{8}$/)],
+      ],
+      phoneNumber2: [
+        this.data.phoneNumber2,
+        Validators.pattern(/^\+216[0-9]{8}$/),
+      ],
     });
   }
 
@@ -56,13 +64,22 @@ export class EditPersonalInfoModalFormComponent {
 
   onSubmit(): void {
     if (this.editForm.valid) {
-      const { firstName, lastName, email, jobTitle } = this.editForm.value;
+      const {
+        firstName,
+        lastName,
+        email,
+        jobTitle,
+        phoneNumber1,
+        phoneNumber2,
+      } = this.editForm.value;
       this.userService
         .updateEmployeeInfo(
           firstName,
           lastName,
           email,
           jobTitle,
+          phoneNumber1,
+          phoneNumber2,
           this.selectedFile
         )
         .subscribe({

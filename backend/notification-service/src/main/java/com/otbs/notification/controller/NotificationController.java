@@ -3,6 +3,7 @@ package com.otbs.notification.controller;
 import com.otbs.notification.dto.NotificationRequestDTO;
 import com.otbs.notification.dto.NotificationResponseDTO;
 import com.otbs.notification.service.NotificationService;
+import com.otbs.notification.service.SseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -10,10 +11,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 
@@ -21,12 +24,15 @@ import java.util.List;
 @RequestMapping("/api/v1/notifications")
 @Tag(name = "Notification Management", description = "APIs for managing user notifications")
 @SecurityRequirement(name = "bearerAuth")
+@AllArgsConstructor
 public class NotificationController {
 
     private final NotificationService notificationService;
+    private final SseService sseService;
 
-    public NotificationController(NotificationService notificationService) {
-        this.notificationService = notificationService;
+    @GetMapping("/sse-endpoint")
+    public SseEmitter handleSse() {
+        return sseService.createEmitter();
     }
 
     @Operation(

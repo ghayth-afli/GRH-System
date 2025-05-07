@@ -7,6 +7,8 @@ export interface User {
   department: string;
   role: string;
   jobTitle: string;
+  phoneNumber1: string;
+  phoneNumber2: string;
 }
 
 export interface LoginResponse {

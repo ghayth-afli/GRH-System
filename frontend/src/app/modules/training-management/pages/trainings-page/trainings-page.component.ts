@@ -9,6 +9,9 @@ import { TrainingFormModalComponent } from '../../components/training-form-modal
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { InvitationService } from '../../services/invitation.service';
+import { SseService } from '../../../../core/services/sse.service';
+import { NotificationData } from '../../../../core/models/NotificationData';
+import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-trainings-page',
   standalone: false,
@@ -32,6 +35,81 @@ export class TrainingsPageComponent {
   ngOnInit(): void {
     this.setDisplayedColumns();
     this.loadTrainings();
+    this.subscribeToEventNotifications();
+  }
+
+  private sseService = inject(SseService<NotificationData<Training>>);
+  private newTrainingSubscription: Subscription | null = null;
+  private updateTrainingSubscription: Subscription | null = null;
+  private deletedTrainingSubscription: Subscription | null = null;
+  subscribeToEventNotifications(): void {
+    this.subscribeToNewTrainingEvent();
+    this.subscribeToUpdatedTrainingEvent();
+    this.subscribeToDeletedTrainingEvent();
+  }
+
+  ngOnDestroy(): void {
+    if (this.newTrainingSubscription) {
+      this.newTrainingSubscription.unsubscribe();
+    }
+    if (this.updateTrainingSubscription) {
+      this.updateTrainingSubscription.unsubscribe();
+    }
+    if (this.deletedTrainingSubscription) {
+      this.deletedTrainingSubscription.unsubscribe();
+    }
+    this.sseService.disconnect();
+  }
+
+  //updatedLeaveRequestEvent
+  private subscribeToNewTrainingEvent(): void {
+    this.newTrainingSubscription = this.sseService
+      .connect('CREATED_TRAINING')
+      .subscribe({
+        next: (Event: NotificationData<Training>) => {
+          this.loadTrainings();
+          // console.log(
+          //   'New training event received:',
+          //   Event.payload['training']
+          // );
+          // this.trainings = [Event.payload['training'], ...this.trainings];
+          // this.dataSource = new MatTableDataSource<Training>(this.trainings);
+          // this.dataSource.paginator = this.paginator;
+        },
+      });
+  }
+
+  private subscribeToUpdatedTrainingEvent(): void {
+    this.updateTrainingSubscription = this.sseService
+      .connect('UPDATED_TRAINING')
+      .subscribe({
+        next: (Event: NotificationData<Training>) => {
+          this.loadTrainings();
+          // const index = this.dataSource.data.findIndex(
+          //   (training) => training.id === Event.payload['training'].id
+          // );
+          // if (index !== -1) {
+          //   this.dataSource.data[index] = Event.payload['training'];
+          //   this.dataSource._updateChangeSubscription();
+          // }
+        },
+      });
+  }
+
+  private subscribeToDeletedTrainingEvent(): void {
+    this.deletedTrainingSubscription = this.sseService
+      .connect('DELETED_TRAINING')
+      .subscribe({
+        next: (Event: NotificationData<Training>) => {
+          this.loadTrainings();
+          this.dataSource = new MatTableDataSource(
+            this.dataSource.data.filter(
+              (t) => t.id !== Event.payload['training'].id
+            )
+          );
+          this.dataSource.paginator = this.paginator;
+        },
+      });
   }
 
   addTraining(): void {
@@ -50,9 +128,6 @@ export class TrainingsPageComponent {
   }
   deleteTraining(training: Training): void {
     this.trainingService.deleteTraining(training.id).subscribe({
-      next: () => {
-        this.loadTrainings();
-      },
       error: (error) => {
         console.error('Error deleting training:', error);
       },
@@ -62,7 +137,15 @@ export class TrainingsPageComponent {
   rejectTraining(training: Training): void {
     this.invitationService.rejectInvitation(training.id).subscribe({
       next: () => {
-        this.loadTrainings();
+        this.dataSource = new MatTableDataSource(
+          this.dataSource.data.map((t) => {
+            if (t.id === training.id) {
+              return { ...t, status: 'REJECTED' };
+            }
+            return t;
+          })
+        );
+        this.dataSource.paginator = this.paginator;
       },
       error: (error) => {
         console.error('Error rejecting training:', error);
@@ -72,7 +155,14 @@ export class TrainingsPageComponent {
   confirmTraining(training: Training): void {
     this.invitationService.confirmInvitation(training.id).subscribe({
       next: () => {
-        this.loadTrainings();
+        this.dataSource = new MatTableDataSource(
+          this.dataSource.data.map((t) => {
+            if (t.id === training.id) {
+              return { ...t, status: 'CONFIRMED' };
+            }
+            return t;
+          })
+        );
       },
       error: (error) => {
         console.error('Error accepting training:', error);

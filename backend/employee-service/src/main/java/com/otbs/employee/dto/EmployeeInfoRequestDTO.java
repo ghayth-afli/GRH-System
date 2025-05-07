@@ -23,6 +23,14 @@ public record EmployeeInfoRequestDTO(
 
         @NotBlank(message = "Job title is required")
         @Size(min = 2, max = 100, message = "Job title must be between 2 and 100 characters")
-        String jobTitle
+        String jobTitle,
+
+
+        @NotBlank(message = "Phone number is required")
+        @Pattern(regexp = "^\\+216\\d{8}$", message = "Phone number must be in the format +216XXXXXXXX")
+        String phoneNumber1,
+
+        @Pattern(regexp = "^\\+216\\d{8}$", message = "Phone number must be in the format +216XXXXXXXX")
+        String phoneNumber2
 
 ) {}

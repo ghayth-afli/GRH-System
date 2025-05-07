@@ -24,6 +24,8 @@ export class UserService {
     lastName: string,
     email: string,
     jobTitle: string,
+    phoneNumber1: string,
+    phoneNumber2?: string,
     picture?: File
   ): Observable<{ message: string }> {
     const formData = new FormData();
@@ -31,6 +33,10 @@ export class UserService {
     formData.append('lastName', lastName);
     formData.append('email', email);
     formData.append('jobTitle', jobTitle);
+    formData.append('phoneNumber1', phoneNumber1);
+    if (phoneNumber2) {
+      formData.append('phoneNumber2', phoneNumber2);
+    }
     if (picture) {
       formData.append('picture', picture);
     }
