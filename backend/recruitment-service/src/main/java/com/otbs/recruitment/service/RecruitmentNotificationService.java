@@ -1,5 +1,6 @@
 package com.otbs.recruitment.service;
 
+import com.otbs.feign.client.resumeMatcher.ResumeMatcherClient;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class RecruitmentNotificationService {
     private final RabbitTemplate rabbitTemplate;
+
 
     @Value("${notification.rabbitmq.exchange}")
     private String notificationExchange;
