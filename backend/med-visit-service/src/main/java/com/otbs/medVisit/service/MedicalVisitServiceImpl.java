@@ -1,7 +1,7 @@
 package com.otbs.medVisit.service;
 
 import com.otbs.common.event.Event;
-import com.otbs.feign.client.EmployeeClient;
+import com.otbs.feign.client.employee.EmployeeClient;
 import com.otbs.medVisit.dto.MedicalVisitRequestDTO;
 import com.otbs.medVisit.dto.MedicalVisitResponseDTO;
 import com.otbs.medVisit.exception.MedicalVisitException;
@@ -11,8 +11,6 @@ import com.otbs.medVisit.repository.MedicalVisitRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
