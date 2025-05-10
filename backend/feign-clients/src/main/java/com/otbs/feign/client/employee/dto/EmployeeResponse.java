@@ -1,4 +1,4 @@
-package com.otbs.feign.dto;
+package com.otbs.feign.client.employee.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 

@@ -1,7 +1,7 @@
 package com.otbs.training.mapper;
 
-import com.otbs.feign.client.EmployeeClient;
-import com.otbs.feign.dto.EmployeeResponse;
+import com.otbs.feign.client.employee.EmployeeClient;
+import com.otbs.feign.client.employee.dto.EmployeeResponse;
 import com.otbs.training.dto.InvitationResponseDTO;
 import com.otbs.training.model.Invitation;
 import lombok.RequiredArgsConstructor;

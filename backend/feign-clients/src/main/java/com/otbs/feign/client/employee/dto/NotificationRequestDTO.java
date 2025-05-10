@@ -1,5 +1,6 @@
-package com.otbs.feign.dto;
+package com.otbs.feign.client.employee.dto;
 
+import com.otbs.feign.client.employee.entity.NotificationType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

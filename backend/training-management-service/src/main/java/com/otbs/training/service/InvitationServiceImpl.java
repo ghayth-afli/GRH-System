@@ -1,7 +1,7 @@
 package com.otbs.training.service;
 
 import com.otbs.common.event.Event;
-import com.otbs.feign.client.EmployeeClient;
+import com.otbs.feign.client.employee.EmployeeClient;
 import com.otbs.training.dto.InvitationResponseDTO;
 import com.otbs.training.exception.InvitationException;
 import com.otbs.training.mapper.InvitationMapper;

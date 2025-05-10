@@ -1,4 +1,4 @@
-package com.otbs.feign.dto;
+package com.otbs.feign.client.employee.entity;
 
 public enum NotificationType {
     LEAVE_REQUEST,

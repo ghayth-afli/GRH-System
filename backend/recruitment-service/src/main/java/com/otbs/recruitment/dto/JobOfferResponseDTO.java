@@ -9,8 +9,11 @@ public record JobOfferResponseDTO(
         String title,
         String description,
         String department,
+        String responsibilities,
+        String qualifications,
         String role,
         EJobOfferStatus status,
         Boolean isInternal,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
 ) {}

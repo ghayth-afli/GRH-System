@@ -1,6 +1,6 @@
-package com.otbs.feign.client;
+package com.otbs.feign.client.employee;
 
-import com.otbs.feign.dto.EmployeeResponse;
+import com.otbs.feign.client.employee.dto.EmployeeResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name = "employee-service", url = "http://localhost:8082")
+@FeignClient(name = "employee-service", url = "http://localhost:8082",contextId ="employeeClient")
 public interface EmployeeClient {
 
     @GetMapping("/api/v1/employee")

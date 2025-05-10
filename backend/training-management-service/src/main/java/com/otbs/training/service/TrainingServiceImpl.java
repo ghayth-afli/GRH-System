@@ -1,8 +1,8 @@
 package com.otbs.training.service;
 
 import com.otbs.common.event.Event;
-import com.otbs.feign.client.EmployeeClient;
-import com.otbs.feign.dto.EmployeeResponse;
+import com.otbs.feign.client.employee.EmployeeClient;
+import com.otbs.feign.client.employee.dto.EmployeeResponse;
 import com.otbs.training.dto.TrainingRequestDTO;
 import com.otbs.training.dto.TrainingResponseDTO;
 import com.otbs.training.exception.TrainingException;
