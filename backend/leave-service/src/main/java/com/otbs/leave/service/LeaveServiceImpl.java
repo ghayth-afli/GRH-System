@@ -1,8 +1,8 @@
 package com.otbs.leave.service;
 
 import com.otbs.common.event.Event;
-import com.otbs.feign.client.EmployeeClient;
-import com.otbs.feign.dto.EmployeeResponse;
+import com.otbs.feign.client.employee.EmployeeClient;
+import com.otbs.feign.client.employee.dto.EmployeeResponse;
 import com.otbs.leave.dto.LeaveRequestDTO;
 import com.otbs.leave.dto.LeaveResponseDTO;
 import com.otbs.leave.exception.*;
@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
