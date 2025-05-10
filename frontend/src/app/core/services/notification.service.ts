@@ -19,7 +19,6 @@ export class NotificationService {
   private soundEnabled: boolean = true;
   private soundVolume: number = 0.5;
 
-  // Store notifications
   private notificationsSubject = new BehaviorSubject<Notification[]>([]);
   notifications$ = this.notificationsSubject.asObservable();
 

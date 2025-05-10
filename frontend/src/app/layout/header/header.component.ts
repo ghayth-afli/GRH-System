@@ -27,6 +27,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   leaveBalance$: Observable<LeaveBalance>;
   imageSrc: string | null = null;
   isDropdownOpen = false;
+  userhasNullAttributes = false;
   notificationsSubject = new BehaviorSubject<any[]>([]);
   user: User = {
     id: '',
@@ -56,7 +57,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initializeUser();
     this.loadProfilePicture();
+    this.handleIfUserHasNullAttributes();
     this.initializeNotifications();
+    this.checkAndOpenEditModal();
+  }
+
+  handleIfUserHasNullAttributes(): void {
+    this.userhasNullAttributes = Object.entries(this.user).some(
+      ([key, value]) =>
+        key !== 'phoneNumber2' && (value === null || value === '')
+    );
   }
 
   ngOnDestroy(): void {
@@ -126,6 +136,31 @@ export class HeaderComponent implements OnInit, OnDestroy {
     };
     this.authService._setUser(this.user);
     this.loadProfilePicture();
+  }
+
+  private checkAndOpenEditModal(): void {
+    if (this.userhasNullAttributes) {
+      const dialogRef = this.dialog.open(EditPersonalInfoModalFormComponent, {
+        width: '500px',
+        disableClose: true, // Prevent closing the modal manually
+        data: {
+          firstName: this.user.firstName,
+          lastName: this.user.lastName,
+          email: this.user.email,
+          jobTitle: this.user.jobTitle,
+          phoneNumber1: this.user.phoneNumber1,
+          phoneNumber2: this.user.phoneNumber2,
+          imageSrc: this.imageSrc,
+        },
+      });
+
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result) {
+          this.updateUserInfo(dialogRef);
+          this.checkAndOpenEditModal(); // Recheck after closing to ensure all attributes are filled
+        }
+      });
+    }
   }
 
   // Notification-related methods

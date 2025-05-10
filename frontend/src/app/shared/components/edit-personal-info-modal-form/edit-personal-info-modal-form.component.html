@@ -5,12 +5,28 @@
       <i class="icofont-close-line"></i>
     </button>
   </div>
+  @if(userhasNullAttributes){
+  <div class="alert-container">
+    <div class="alert alert-warning">
+      <div class="alert-icon">
+        <i class="icofont-warning-alt"></i>
+      </div>
+      <div class="alert-content">
+        <div class="alert-title">Complete Your Profile</div>
+        <div class="alert-message">
+          Please complete your personal information to ensure full access to all
+          features.
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+
   <form (ngSubmit)="onSubmit()" [formGroup]="editForm">
     <div class="modal-body">
       <div class="profile-picture-container">
         <img
           [src]="user.profilePicture"
-          alt="Profile Picture"
           class="profile-picture"
           (click)="triggerFileInput()"
         />
@@ -55,13 +71,13 @@
       <div class="form-controller-container">
         <div class="form-controller">
           <div class="label-container">
-            <label for="phoneNumber1">phoneNumber1</label>
+            <label for="phoneNumber1">Phone Number 1</label>
           </div>
           <input id="phoneNumber1" formControlName="phoneNumber1" type="text" />
         </div>
         <div class="form-controller">
           <div class="label-container">
-            <label for="phoneNumber2">phoneNumber2 (optional)</label>
+            <label for="phoneNumber2">Phone Number 2 (optional)</label>
           </div>
           <input id="phoneNumber2" formControlName="phoneNumber2" type="text" />
         </div>
