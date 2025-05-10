@@ -1,6 +1,6 @@
 package com.otbs.auth.service;
 
-import com.otbs.feign.dto.EmployeeResponse;
+import com.otbs.feign.client.employee.dto.EmployeeResponse;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
