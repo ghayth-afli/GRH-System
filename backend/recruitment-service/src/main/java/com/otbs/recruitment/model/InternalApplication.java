@@ -10,44 +10,34 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "application")
-@Getter
-@Setter
+@Table(name = "internal_applications")
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@ToString(exclude = {"resume", "coverLetter"})
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Application {
-
+public class InternalApplication {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include
     private Long id;
+
+
+    @NotBlank(message = "Applicant identifier cannot be blank")
+    @Column(name = "candidate_id", nullable = false, length = 100)
+    private Long candidateId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private EApplicationStatus status = EApplicationStatus.PENDING;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "job_offer_id", nullable = false)
     private JobOffer jobOffer;
 
-    @NotBlank(message = "Applicant identifier cannot be blank")
-    @Column(name = "applicant_identifier", nullable = false, length = 100)
-    private String applicantIdentifier;
+    @OneToOne
+    @JoinColumn(name = "match_result_id", referencedColumnName = "id")
+    private MatchResult matchResult;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "applicant_type", nullable = false)
-    private EApplicantType applicantType;
-
-    @Lob
-    @Column(name = "resume")
-    private byte[] resume;
-
-    @Lob
-    @Column(name = "cover_letter")
-    private byte[] coverLetter;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private EApplicationStatus status;
+    private String employeeId;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false, nullable = false)
@@ -65,4 +55,3 @@ public class Application {
         this.status = EApplicationStatus.REJECTED;
     }
 }
-

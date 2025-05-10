@@ -8,6 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="feign-clients" />
+        <module name="candidate-service" />
         <module name="auth-service" />
         <module name="common" />
         <module name="leave-service" />

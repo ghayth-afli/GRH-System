@@ -3,67 +3,79 @@ package com.otbs.recruitment.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "job_offer")
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class JobOffer {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include
     private Long id;
 
-    @NotBlank
-    private String title;
-
-    @NotBlank
-    @Column(length = 2000)
-    private String description;
-
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "name", column = @Column(name = "department_name"))
-    })
-    private String department;
-
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "name", column = @Column(name = "role_name"))
-    })
-    private String role;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private EJobOfferStatus status;
-
-    @NotNull
-    @Column(name = "is_internal", nullable = false)
-    private Boolean isInternal;
-
-    @OneToMany(mappedBy = "jobOffer", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<Application> applications;
-
     @CreationTimestamp
-    @Column(updatable = false, nullable = false)
+    @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @NotBlank(message = "Title is required")
+    @Size(max = 200, message = "Title must not exceed 200 characters")
+    private String title;
+
+    @NotBlank(message = "Description is required")
+    @Size(max = 2000, message = "Description must not exceed 2000 characters")
+    @Column(length = 2000)
+    private String description;
+
+    @NotBlank(message = "Department is required")
+    @Size(max = 100, message = "Department name must not exceed 100 characters")
+    @Column(name = "department_name")
+    private String department;
+
+    @NotBlank(message = "Responsibilities are required")
+    @Size(max = 2000, message = "Responsibilities must not exceed 2000 characters")
+    private String responsibilities;
+
+    @NotBlank(message = "Qualifications are required")
+    @Size(max = 2000, message = "Qualifications must not exceed 2000 characters")
+    private String qualifications;
+
+    @NotBlank(message = "Role is required")
+    @Size(max = 100, message = "Role name must not exceed 100 characters")
+    @Column(name = "role_name")
+    private String role;
+
+    @Column(name = "created_by", updatable = false)
+    private String createdBy;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EJobOfferStatus status = EJobOfferStatus.OPEN;
+
+    @Column(name = "is_internal", nullable = false)
+    private Boolean isInternal = true;
+
+    @OneToMany(mappedBy = "jobOffer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<InternalApplication> internalApplications = new ArrayList<>();
+
+    @OneToMany(mappedBy = "jobOffer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<ExternalApplication> externalApplications = new ArrayList<>();
 
     public void convertToExternal() {
         this.isInternal = false;

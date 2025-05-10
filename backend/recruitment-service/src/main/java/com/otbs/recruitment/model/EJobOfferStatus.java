@@ -1,6 +1,9 @@
 package com.otbs.recruitment.model;
 
-public enum EJobOfferStatus {
+import lombok.Getter;
+
+@Getter
+enum EJobOfferStatus {
     OPEN,
     FILLED,
     EXPIRED,
