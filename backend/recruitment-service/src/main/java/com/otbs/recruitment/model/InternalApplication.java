@@ -21,7 +21,6 @@ public class InternalApplication {
     private Long id;
 
 
-    @NotBlank(message = "Applicant identifier cannot be blank")
     @Column(name = "candidate_id", nullable = false, length = 100)
     private Long candidateId;
 

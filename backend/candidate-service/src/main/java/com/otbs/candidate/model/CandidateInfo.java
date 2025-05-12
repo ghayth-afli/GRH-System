@@ -1,6 +1,6 @@
 package com.otbs.candidate.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,6 +34,6 @@ public class CandidateInfo {
     private String website;
 
     @OneToOne(mappedBy = "candidateInfo")
-    @JsonBackReference
+    @JsonIgnore
     private Candidate candidate;
 }

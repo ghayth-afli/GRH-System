@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="8831ef2c-5863-4771-acbe-37c7b2e108e5" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/uiDesigner.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/otbs/apigw/ApiGWApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/otbs/apigw/ApiGWApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/otbs/apigw/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/otbs/apigw/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/target/classes/com/otbs/apigw/config/SecurityConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/target/classes/com/otbs/apigw/config/SecurityConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/config/LdapConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/config/LdapSecurityConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/config/OpenApiConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/config/OpenApiConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/controller/PasswordResetController.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/controller/PasswordResetController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/dto/AuthRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/dto/AuthRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/dto/ForgotPasswordRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/dto/ForgotPasswordRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/dto/JwtResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/dto/JwtResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/dto/MessageResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/dto/MessageResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/dto/RefreshRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/dto/RefreshRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/dto/ResetPasswordRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/dto/ResetPasswordRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/exception/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/exception/TokenException.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/exception/TokenException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/exception/UserException.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/exception/UserException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/mapper/UserAttributesMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/mapper/UserAttributesMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/model/PasswordResetToken.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/model/PasswordResetToken.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/model/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/repositories/PasswordResetTokenRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/repositories/PasswordResetTokenRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/security/AuthEntryPointJwt.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/security/AuthEntryPointJwt.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/security/JwtAuthFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/security/JwtAuthFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/service/AuthNotificationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/service/AuthNotificationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/service/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/service/AuthServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/service/AuthServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/service/PasswordResetService.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/service/PasswordResetService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/service/PasswordResetServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/service/PasswordResetServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/service/UserDetailsImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/service/UserDetailsImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/service/UserDetailsServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/service/UserDetailsServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/util/JwtUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/util/JwtUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/resources/banner.txt" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/resources/banner.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/banner.txt" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/target/classes/banner.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/otbs/auth/config/LdapConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/target/classes/com/otbs/auth/config/LdapConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/candidate-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/controller/CandidateController.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/controller/CandidateController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/dto/CandidateResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/dto/CandidateResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/mapper/CandidateAttributesMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/mapper/CandidateAttributesMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Candidate.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Candidate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/CandidateInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/CandidateInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Certification.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Certification.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Education.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Education.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Experience.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Experience.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Language.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Language.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Project.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Project.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Skills.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Skills.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/service/CandidateServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/service/CandidateServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/controller/CandidateController.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/controller/CandidateController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/mapper/CandidateAttributesMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/mapper/CandidateAttributesMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/service/CandidateService.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/service/CandidateService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/service/CandidateServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/service/CandidateServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/candidate/CandidateClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/candidate/CandidateClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/resumeMatcher/dto/MatchRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/resumeMatcher/dto/MatchRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/resumeMatcher/dto/MatchResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/resumeMatcher/dto/MatchResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/resumeMatcher/dto/ParsedResumeResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/resumeMatcher/dto/ParsedResumeResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/resumeMatcher/dto/ResumeRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/resumeMatcher/dto/ResumeRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/resumeMatcher/entity/Education.java" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/resumeMatcher/entity/Education.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/resumeMatcher/entity/Experience.java" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/resumeMatcher/entity/Experience.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/resumeMatcher/entity/MatchEvaluationDetail.java" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/resumeMatcher/entity/MatchEvaluationDetail.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/resumeMatcher/entity/MatchResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/resumeMatcher/entity/MatchResult.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/resumeMatcher/entity/MatchScoreDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/resumeMatcher/entity/MatchScoreDetails.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/candidate/CandidateClient.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/candidate/CandidateClient.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/candidate/dto/CandidateRequestDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/candidate/dto/CandidateRequestDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/candidate/dto/CandidateResponseDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/candidate/dto/CandidateResponseDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/candidate/dto/EmployeeClient.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/candidate/dto/EmployeeClient.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/employee/dto/EmployeeResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/employee/dto/EmployeeResponse.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/employee/dto/NotificationRequestDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/employee/dto/NotificationRequestDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/employee/entity/NotificationType.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/employee/entity/NotificationType.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/ResumeMatcherClient.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/ResumeMatcherClient.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/dto/JobDescriptionRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/dto/MatchRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/dto/MatchRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/dto/MatchResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/dto/MatchResponse.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/dto/ParsedResumeResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/dto/ParsedResumeResponse.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/dto/ResumeRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/dto/ResumeRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/dto/RoleEvaluationResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/dto/RoleEvaluationResponse.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/CandidateInfo$Location.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/CandidateInfo$Location.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/CandidateInfo.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/CandidateInfo.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/Certification.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/Certification.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/Education.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/Education.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/Experience.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/Experience.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/JobDescription.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/Language.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/Language.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/MatchEvaluationDetail.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/MatchEvaluationDetail.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/MatchResult$Criterion.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/MatchResult$Criterion.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/MatchResult.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/MatchResult.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/MatchScoreDetails.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/MatchScoreDetails.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/Project.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/Project.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/Skills.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/Skills.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/model/EJobOfferStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/model/EJobOfferStatus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/model/InternalApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/model/InternalApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/model/MatchEvaluationDetail.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/model/MatchEvaluationDetail.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/model/MatchResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/model/MatchResult.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/model/MatchScoreDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/model/MatchScoreDetails.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/service/ApplicationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/service/ApplicationServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/mapper/JobOfferAttributesMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/mapper/JobOfferAttributesMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/AbstractBaseEntity.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/Application.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/EApplicationStatus.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/EApplicationStatus.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/EJobOfferStatus.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/EJobOfferStatus.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/ExternalApplication$ExternalApplicationBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/ExternalApplication$ExternalApplicationBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/ExternalApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/ExternalApplication.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/InternalApplication$InternalApplicationBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/InternalApplication$InternalApplicationBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/InternalApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/InternalApplication.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/JobOffer$JobOfferBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/JobOffer$JobOfferBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/JobOffer.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/JobOffer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/repository/ApplicationRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/repository/JobOfferRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/repository/JobOfferRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/service/ApplicationService.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/service/ApplicationService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/service/ApplicationServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/service/ApplicationServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/service/JobOfferService.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/service/JobOfferService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/service/JobOfferServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/service/JobOfferServiceImpl.class" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings">
+    <execution />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="2wy1KeeNMH3w0bxiqZG4oemv1od" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "Spring Boot.ApiGWApplication.executor": "Run",
+    "Spring Boot.AuthApplication.executor": "Run",
+    "Spring Boot.CandidateApplication.executor": "Run",
+    "Spring Boot.EmployeeApplication.executor": "Run",
+    "Spring Boot.EurekaServerApplication.executor": "Run",
+    "Spring Boot.RecruitmentApplication.executor": "Run",
+    "git-widget-placeholder": "recruitment-service",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "run.configurations.included.in.services": "true",
+    "settings.editor.selected.configurable": "reference.projectsettings.compiler.javacompiler",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunDashboard">
+    <option name="configurationTypes">
+      <set>
+        <option value="MicronautRunConfigurationType" />
+        <option value="QuarkusRunConfigurationType" />
+        <option value="SpringBootApplicationConfigurationType" />
+      </set>
+    </option>
+  </component>
+  <component name="RunManager" selected="Spring Boot.AuthApplication">
+    <configuration name="ApiGWApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <envs>
+        <env name="JWT_ACCESS_TOKEN_EXPIRATION_MS" value="900000" />
+        <env name="JWT_REFRESH_TOKEN_EXPIRATION_MS" value="2592000000" />
+        <env name="JWT_SECRET_KEY" value="AAAAB3NzaC1yc2EAAAADAQABAAABAQDxYHbbvdhISpB+qW6WgoRW/hjsRp04ApneIy9xFPtd9HcREGbkswGI8B0C8xGXHcXjqiuDgPk8i+nuQsAR5cexZOzRTxyJHgBk/cnOLyiTKsOGzipymf6RVB6xjrdic98C++7RUaCy48NhCRRlhEkhH9Z0hyk5an+qbmp3l8uiVpssA5X2HHtOCr2r0AjGtFySXEOKTb1/wMewN5sgJmwulcFGseNn5MGGshTYbzkAFz0oT5aBvvGAJEb9vFCANZNvcBpowkf1HaQiavYhp6t/tnWiDWsTUnwEM4ufd1b60zO70" />
+        <env name="JWT_TOKEN_EXPIRATION_MS" value="86400000" />
+      </envs>
+      <module name="api-gateway" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.otbs.apigw.ApiGWApplication" />
+      <extension name="net.ashald.envfile">
+        <option name="IS_ENABLED" value="false" />
+        <option name="IS_SUBST" value="false" />
+        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+        <option name="IS_IGNORE_MISSING_FILES" value="false" />
+        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+        <ENTRIES>
+          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+        </ENTRIES>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="AuthApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <envs>
+        <env name="JWT_ACCESS_TOKEN_EXPIRATION_MS" value="900000" />
+        <env name="JWT_REFRESH_TOKEN_EXPIRATION_MS" value="2592000000" />
+        <env name="JWT_SECRET_KEY" value="AAAAB3NzaC1yc2EAAAADAQABAAABAQDxYHbbvdhISpB+qW6WgoRW/hjsRp04ApneIy9xFPtd9HcREGbkswGI8B0C8xGXHcXjqiuDgPk8i+nuQsAR5cexZOzRTxyJHgBk/cnOLyiTKsOGzipymf6RVB6xjrdic98C++7RUaCy48NhCRRlhEkhH9Z0hyk5an+qbmp3l8uiVpssA5X2HHtOCr2r0AjGtFySXEOKTb1/wMewN5sgJmwulcFGseNn5MGGshTYbzkAFz0oT5aBvvGAJEb9vFCANZNvcBpowkf1HaQiavYhp6t/tnWiDWsTUnwEM4ufd1b60zO70" />
+        <env name="JWT_TOKEN_EXPIRATION_MS" value="86400000" />
+        <env name="LDAP_AUTH_METHOD" value="simple" />
+        <env name="LDAP_BASE_DN" value="DC\=otbs,DC\=local" />
+        <env name="LDAP_BIND_DN" value="CN\=Administrator,CN\=Users,DC\=otbs,DC\=local" />
+        <env name="LDAP_BIND_PASSWORD" value="qwerty@25" />
+        <env name="LDAP_SEARCH_SCOPE" value="subtree" />
+        <env name="LDAP_SERVER_URL" value="ldap://192.168.112.133:389" />
+        <env name="LDAP_USER_SEARCH_BASE" value="ou\=users,dc\=otbs,dc\=local" />
+        <env name="LDAP_USER_SEARCH_FILTER" value="(sAMAccountName\={0})" />
+        <env name="LDAP_USERNAME" value="CN\=Administrator,CN\=Users,DC\=otbs,DC\=local" />
+        <env name="POSTGRES_DB" value="auth" />
+        <env name="POSTGRES_PASSWORD" value="admin" />
+        <env name="POSTGRES_USER" value="admin" />
+        <env name="LDAP_DOMAIN" value="otbs.local" />
+      </envs>
+      <module name="auth-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.otbs.auth.AuthApplication" />
+      <extension name="net.ashald.envfile">
+        <option name="IS_ENABLED" value="false" />
+        <option name="IS_SUBST" value="false" />
+        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+        <option name="IS_IGNORE_MISSING_FILES" value="false" />
+        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+        <ENTRIES>
+          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+        </ENTRIES>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CandidateApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <envs>
+        <env name="JWT_ACCESS_TOKEN_EXPIRATION_MS" value="900000" />
+        <env name="JWT_REFRESH_TOKEN_EXPIRATION_MS" value="2592000000" />
+        <env name="JWT_SECRET_KEY" value="AAAAB3NzaC1yc2EAAAADAQABAAABAQDxYHbbvdhISpB+qW6WgoRW/hjsRp04ApneIy9xFPtd9HcREGbkswGI8B0C8xGXHcXjqiuDgPk8i+nuQsAR5cexZOzRTxyJHgBk/cnOLyiTKsOGzipymf6RVB6xjrdic98C++7RUaCy48NhCRRlhEkhH9Z0hyk5an+qbmp3l8uiVpssA5X2HHtOCr2r0AjGtFySXEOKTb1/wMewN5sgJmwulcFGseNn5MGGshTYbzkAFz0oT5aBvvGAJEb9vFCANZNvcBpowkf1HaQiavYhp6t/tnWiDWsTUnwEM4ufd1b60zO70" />
+        <env name="JWT_TOKEN_EXPIRATION_MS" value="86400000" />
+        <env name="POSTGRES_DB" value="candidate" />
+        <env name="POSTGRES_PASSWORD" value="admin" />
+        <env name="POSTGRES_USER" value="admin" />
+      </envs>
+      <module name="candidate-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.otbs.candidate.CandidateApplication" />
+      <extension name="net.ashald.envfile">
+        <option name="IS_ENABLED" value="false" />
+        <option name="IS_SUBST" value="false" />
+        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+        <option name="IS_IGNORE_MISSING_FILES" value="false" />
+        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+        <ENTRIES>
+          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+        </ENTRIES>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="EmployeeApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <envs>
+        <env name="JWT_ACCESS_TOKEN_EXPIRATION_MS" value="900000" />
+        <env name="JWT_REFRESH_TOKEN_EXPIRATION_MS" value="2592000000" />
+        <env name="JWT_SECRET_KEY" value="AAAAB3NzaC1yc2EAAAADAQABAAABAQDxYHbbvdhISpB+qW6WgoRW/hjsRp04ApneIy9xFPtd9HcREGbkswGI8B0C8xGXHcXjqiuDgPk8i+nuQsAR5cexZOzRTxyJHgBk/cnOLyiTKsOGzipymf6RVB6xjrdic98C++7RUaCy48NhCRRlhEkhH9Z0hyk5an+qbmp3l8uiVpssA5X2HHtOCr2r0AjGtFySXEOKTb1/wMewN5sgJmwulcFGseNn5MGGshTYbzkAFz0oT5aBvvGAJEb9vFCANZNvcBpowkf1HaQiavYhp6t/tnWiDWsTUnwEM4ufd1b60zO70" />
+        <env name="JWT_TOKEN_EXPIRATION_MS" value="86400000" />
+        <env name="LDAP_AUTH_METHOD" value="simple" />
+        <env name="LDAP_BASE_DN" value="DC=otbs,DC=local" />
+        <env name="LDAP_BIND_DN" value="CN=Administrator,CN=Users,DC=otbs,DC=local" />
+        <env name="LDAP_BIND_PASSWORD" value="qwerty@25" />
+        <env name="LDAP_SEARCH_SCOPE" value="subtree" />
+        <env name="LDAP_SERVER_URL" value="ldap://192.168.112.133:389" />
+        <env name="LDAP_USER_SEARCH_BASE" value="ou=users,dc=otbs,dc=local" />
+        <env name="LDAP_USER_SEARCH_FILTER" value="(sAMAccountName={0})" />
+        <env name="LDAP_USERNAME" value="CN=Administrator,CN=Users,DC=otbs,DC=local" />
+        <env name="POSTGRES_DB" value="employee" />
+        <env name="POSTGRES_PASSWORD" value="admin" />
+        <env name="POSTGRES_USER" value="admin" />
+      </envs>
+      <module name="employee-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.otbs.employee.EmployeeApplication" />
+      <extension name="net.ashald.envfile">
+        <option name="IS_ENABLED" value="false" />
+        <option name="IS_SUBST" value="false" />
+        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+        <option name="IS_IGNORE_MISSING_FILES" value="false" />
+        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+        <ENTRIES>
+          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+        </ENTRIES>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="EurekaServerApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="eureka-server" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.otbs.eurekaserver.EurekaServerApplication" />
+      <extension name="net.ashald.envfile">
+        <option name="IS_ENABLED" value="false" />
+        <option name="IS_SUBST" value="false" />
+        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+        <option name="IS_IGNORE_MISSING_FILES" value="false" />
+        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+        <ENTRIES>
+          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+        </ENTRIES>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="LeaveApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <envs>
+        <env name="JWT_ACCESS_TOKEN_EXPIRATION_MS" value="900000" />
+        <env name="JWT_REFRESH_TOKEN_EXPIRATION_MS" value="2592000000" />
+        <env name="JWT_SECRET_KEY" value="AAAAB3NzaC1yc2EAAAADAQABAAABAQDxYHbbvdhISpB+qW6WgoRW/hjsRp04ApneIy9xFPtd9HcREGbkswGI8B0C8xGXHcXjqiuDgPk8i+nuQsAR5cexZOzRTxyJHgBk/cnOLyiTKsOGzipymf6RVB6xjrdic98C++7RUaCy48NhCRRlhEkhH9Z0hyk5an+qbmp3l8uiVpssA5X2HHtOCr2r0AjGtFySXEOKTb1/wMewN5sgJmwulcFGseNn5MGGshTYbzkAFz0oT5aBvvGAJEb9vFCANZNvcBpowkf1HaQiavYhp6t/tnWiDWsTUnwEM4ufd1b60zO70" />
+        <env name="JWT_TOKEN_EXPIRATION_MS" value="86400000" />
+        <env name="POSTGRES_DB" value="leave" />
+        <env name="POSTGRES_PASSWORD" value="admin" />
+        <env name="POSTGRES_USER" value="admin" />
+      </envs>
+      <module name="leave-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.otbs.leave.LeaveApplication" />
+      <extension name="net.ashald.envfile">
+        <option name="IS_ENABLED" value="false" />
+        <option name="IS_SUBST" value="false" />
+        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+        <option name="IS_IGNORE_MISSING_FILES" value="false" />
+        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+        <ENTRIES>
+          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+        </ENTRIES>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MedVisitApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <envs>
+        <env name="JWT_ACCESS_TOKEN_EXPIRATION_MS" value="900000" />
+        <env name="JWT_REFRESH_TOKEN_EXPIRATION_MS" value="2592000000" />
+        <env name="JWT_SECRET_KEY" value="AAAAB3NzaC1yc2EAAAADAQABAAABAQDxYHbbvdhISpB+qW6WgoRW/hjsRp04ApneIy9xFPtd9HcREGbkswGI8B0C8xGXHcXjqiuDgPk8i+nuQsAR5cexZOzRTxyJHgBk/cnOLyiTKsOGzipymf6RVB6xjrdic98C++7RUaCy48NhCRRlhEkhH9Z0hyk5an+qbmp3l8uiVpssA5X2HHtOCr2r0AjGtFySXEOKTb1/wMewN5sgJmwulcFGseNn5MGGshTYbzkAFz0oT5aBvvGAJEb9vFCANZNvcBpowkf1HaQiavYhp6t/tnWiDWsTUnwEM4ufd1b60zO70" />
+        <env name="JWT_TOKEN_EXPIRATION_MS" value="86400000" />
+        <env name="POSTGRES_DB" value="med-visit" />
+        <env name="POSTGRES_PASSWORD" value="admin" />
+        <env name="POSTGRES_USER" value="admin" />
+      </envs>
+      <module name="med-visit-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.otbs.medVisit.MedVisitApplication" />
+      <extension name="net.ashald.envfile">
+        <option name="IS_ENABLED" value="false" />
+        <option name="IS_SUBST" value="false" />
+        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+        <option name="IS_IGNORE_MISSING_FILES" value="false" />
+        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+        <ENTRIES>
+          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+        </ENTRIES>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NotificationApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <envs>
+        <env name="JWT_ACCESS_TOKEN_EXPIRATION_MS" value="900000" />
+        <env name="JWT_REFRESH_TOKEN_EXPIRATION_MS" value="2592000000" />
+        <env name="JWT_SECRET_KEY" value="AAAAB3NzaC1yc2EAAAADAQABAAABAQDxYHbbvdhISpB+qW6WgoRW/hjsRp04ApneIy9xFPtd9HcREGbkswGI8B0C8xGXHcXjqiuDgPk8i+nuQsAR5cexZOzRTxyJHgBk/cnOLyiTKsOGzipymf6RVB6xjrdic98C++7RUaCy48NhCRRlhEkhH9Z0hyk5an+qbmp3l8uiVpssA5X2HHtOCr2r0AjGtFySXEOKTb1/wMewN5sgJmwulcFGseNn5MGGshTYbzkAFz0oT5aBvvGAJEb9vFCANZNvcBpowkf1HaQiavYhp6t/tnWiDWsTUnwEM4ufd1b60zO70" />
+        <env name="JWT_TOKEN_EXPIRATION_MS" value="86400000" />
+        <env name="POSTGRES_DB" value="notification" />
+        <env name="POSTGRES_PASSWORD" value="admin" />
+        <env name="POSTGRES_USER" value="admin" />
+      </envs>
+      <module name="notification-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.otbs.notification.NotificationApplication" />
+      <extension name="net.ashald.envfile">
+        <option name="IS_ENABLED" value="false" />
+        <option name="IS_SUBST" value="false" />
+        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+        <option name="IS_IGNORE_MISSING_FILES" value="false" />
+        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+        <ENTRIES>
+          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+        </ENTRIES>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NotificationApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <envs>
+        <env name="MAIL_SMTP_HOST" value="sandbox.smtp.mailtrap.io" />
+        <env name="MAIL_SMTP_PASSWORD" value="2c81cd40cd8af7" />
+        <env name="MAIL_SMTP_PORT" value="2525" />
+        <env name="MAIL_SMTP_USERNAME" value="169c699df02ad2" />
+      </envs>
+      <module name="notification-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.otbs.notification.NotificationApplication" />
+      <extension name="net.ashald.envfile">
+        <option name="IS_ENABLED" value="false" />
+        <option name="IS_SUBST" value="false" />
+        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+        <option name="IS_IGNORE_MISSING_FILES" value="false" />
+        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+        <ENTRIES>
+          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+        </ENTRIES>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="RecruitmentApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <envs>
+        <env name="JWT_ACCESS_TOKEN_EXPIRATION_MS" value="900000" />
+        <env name="JWT_REFRESH_TOKEN_EXPIRATION_MS" value="2592000000" />
+        <env name="JWT_SECRET_KEY" value="AAAAB3NzaC1yc2EAAAADAQABAAABAQDxYHbbvdhISpB+qW6WgoRW/hjsRp04ApneIy9xFPtd9HcREGbkswGI8B0C8xGXHcXjqiuDgPk8i+nuQsAR5cexZOzRTxyJHgBk/cnOLyiTKsOGzipymf6RVB6xjrdic98C++7RUaCy48NhCRRlhEkhH9Z0hyk5an+qbmp3l8uiVpssA5X2HHtOCr2r0AjGtFySXEOKTb1/wMewN5sgJmwulcFGseNn5MGGshTYbzkAFz0oT5aBvvGAJEb9vFCANZNvcBpowkf1HaQiavYhp6t/tnWiDWsTUnwEM4ufd1b60zO70" />
+        <env name="JWT_TOKEN_EXPIRATION_MS" value="86400000" />
+        <env name="POSTGRES_DB" value="recruitment" />
+        <env name="POSTGRES_PASSWORD" value="admin" />
+        <env name="POSTGRES_USER" value="admin" />
+      </envs>
+      <module name="recruitment-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.otbs.recruitment.RecruitmentApplication" />
+      <extension name="net.ashald.envfile">
+        <option name="IS_ENABLED" value="false" />
+        <option name="IS_SUBST" value="false" />
+        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+        <option name="IS_IGNORE_MISSING_FILES" value="false" />
+        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+        <ENTRIES>
+          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+        </ENTRIES>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TrainingApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <envs>
+        <env name="JWT_ACCESS_TOKEN_EXPIRATION_MS" value="900000" />
+        <env name="JWT_REFRESH_TOKEN_EXPIRATION_MS" value="2592000000" />
+        <env name="JWT_SECRET_KEY" value="AAAAB3NzaC1yc2EAAAADAQABAAABAQDxYHbbvdhISpB+qW6WgoRW/hjsRp04ApneIy9xFPtd9HcREGbkswGI8B0C8xGXHcXjqiuDgPk8i+nuQsAR5cexZOzRTxyJHgBk/cnOLyiTKsOGzipymf6RVB6xjrdic98C++7RUaCy48NhCRRlhEkhH9Z0hyk5an+qbmp3l8uiVpssA5X2HHtOCr2r0AjGtFySXEOKTb1/wMewN5sgJmwulcFGseNn5MGGshTYbzkAFz0oT5aBvvGAJEb9vFCANZNvcBpowkf1HaQiavYhp6t/tnWiDWsTUnwEM4ufd1b60zO70" />
+        <env name="JWT_TOKEN_EXPIRATION_MS" value="86400000" />
+        <env name="POSTGRES_DB" value="training" />
+        <env name="POSTGRES_PASSWORD" value="admin" />
+        <env name="POSTGRES_USER" value="admin" />
+      </envs>
+      <module name="training-management-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.otbs.training.TrainingApplication" />
+      <extension name="net.ashald.envfile">
+        <option name="IS_ENABLED" value="false" />
+        <option name="IS_SUBST" value="false" />
+        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+        <option name="IS_IGNORE_MISSING_FILES" value="false" />
+        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+        <ENTRIES>
+          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+        </ENTRIES>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Spring Boot.AuthApplication" />
+      <item itemvalue="Spring Boot.NotificationApplication" />
+      <item itemvalue="Spring Boot.EurekaServerApplication" />
+      <item itemvalue="Spring Boot.TrainingApplication" />
+      <item itemvalue="Spring Boot.LeaveApplication" />
+      <item itemvalue="Spring Boot.MedVisitApplication" />
+      <item itemvalue="Spring Boot.EmployeeApplication" />
+      <item itemvalue="Spring Boot.ApiGWApplication" />
+      <item itemvalue="Spring Boot.CandidateApplication" />
+      <item itemvalue="Spring Boot.RecruitmentApplication" />
+    </list>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9f38398b9061-39b83d9b5494-intellij.indexing.shared.core-IU-241.18968.26" />
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-IU-241.18968.26" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8831ef2c-5863-4771-acbe-37c7b2e108e5" name="Changes" comment="" />
+      <created>1746998938445</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1746998938445</updated>
+      <workItem from="1746998940215" duration="2773000" />
+      <workItem from="1747001735325" duration="20241000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

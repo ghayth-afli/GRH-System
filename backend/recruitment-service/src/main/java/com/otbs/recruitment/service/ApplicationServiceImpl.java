@@ -9,6 +9,7 @@ import com.otbs.recruitment.dto.ApplicationResponseDTO;
 import com.otbs.recruitment.model.*;
 import com.otbs.recruitment.repository.InternalApplicationRepository;
 import com.otbs.recruitment.repository.JobOfferRepository;
+import com.otbs.recruitment.repository.MatchResultRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +27,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final ResumeMatcherClient resumeMatcherClient;
     private final CandidateClient candidateClient;
     private final InternalApplicationRepository internalapplicationRepository;
+    private final MatchResultRepository matchResultRepository;
 
     private final JobOfferRepository jobOfferRepository;
 
@@ -46,7 +48,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         String resumeType ;
         try {
             resumeBase64 = java.util.Base64.getEncoder().encodeToString(resume.getBytes());
-            resumeType = resume.getContentType();
+            resumeType = resume.getContentType().split("/")[1];
         } catch (IOException e) {
             throw new RuntimeException("Failed to process the resume file", e);
         }
@@ -59,6 +61,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         ParsedResumeResponse parsedResumeResponse = resumeMatcherClient.parseResume(resumeRequest).getBody();
 
+
         //save the resume to candidate service
         CandidateRequestDTO candidateRequestDTO = CandidateRequestDTO.builder()
                 .candidateInfo(parsedResumeResponse.getCandidateInfo())
@@ -69,7 +72,10 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .projects(parsedResumeResponse.getProjects())
                 .skills(parsedResumeResponse.getSkills())
                 .build();
+
+
         CandidateResponseDTO candidateResponseDTO = candidateClient.addCandidate(candidateRequestDTO).getBody();
+
 
         //match resume with job offer
         JobOffer jobOffer = jobOfferRepository.findById(jobOfferId)
@@ -92,6 +98,7 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .build();
 
         MatchResponse matchResponse = resumeMatcherClient.matchResume(matchRequest).getBody();
+
 
         //save the internal application
         MatchResult matchResult = MatchResult.builder()
@@ -180,10 +187,14 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .roleSpecificInsights(matchResponse.getMatchResult().getRoleSpecificInsights())
                 .build();
 
+
+
+        matchResult=matchResultRepository.save(matchResult);
         InternalApplication internalApplication = InternalApplication.builder()
                 .candidateId(candidateResponseDTO.id())
                 .jobOffer(jobOffer)
                 .matchResult(matchResult)
+                .status(EApplicationStatus.PENDING)
                 .employeeId(getCurrentUserId())
                 .build();
 

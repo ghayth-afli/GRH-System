@@ -1,6 +1,7 @@
 package com.otbs.candidate.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,7 +26,7 @@ public class Experience {
 
     @Column(nullable = false)
     private String company;
-
+    @JsonProperty("end_date")
     private String endDate;
 
     @Column(nullable = false)
@@ -33,7 +34,7 @@ public class Experience {
 
     @ElementCollection
     private List<String> responsibilities;
-
+    @JsonProperty("start_date")
     private String startDate;
 
     @Column(nullable = false)
@@ -41,6 +42,6 @@ public class Experience {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")
-    @JsonBackReference
+    @JsonIgnore
     private Candidate candidate;
 }

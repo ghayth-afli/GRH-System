@@ -9,18 +9,18 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@FeignClient(name = "candidate-service", path = "http://localhost:8089",contextId ="candidateClient")
+@FeignClient(name = "candidateClient", url = "http://localhost:8089")
 public interface CandidateClient {
 
-    @PostMapping
+    @PostMapping("/api/v1/candidates")
     ResponseEntity<CandidateResponseDTO> addCandidate(@RequestBody CandidateRequestDTO candidateRequestDTO);
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/api/v1/candidates/{id}")
     void deleteCandidate(@PathVariable("id") Long id);
 
-    @GetMapping("/{id}")
+    @GetMapping("/api/v1/candidates/{id}")
     ResponseEntity<CandidateResponseDTO> getCandidate(@PathVariable("id") Long id);
 
-    @GetMapping
+    @GetMapping("/api/v1/candidates")
     ResponseEntity<List<CandidateResponseDTO>> listCandidates();
 }

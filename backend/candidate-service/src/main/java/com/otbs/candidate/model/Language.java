@@ -1,6 +1,7 @@
 package com.otbs.candidate.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,6 +27,6 @@ public class Language {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")
-    @JsonBackReference
+    @JsonIgnore
     private Candidate candidate;
 }

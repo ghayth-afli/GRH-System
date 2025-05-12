@@ -25,6 +25,8 @@ public class SecurityConfig {
                         .pathMatchers("/api/v1/invitations/**").permitAll()
                         .pathMatchers("/api/v1/appointments/**").permitAll()
                         .pathMatchers("/api/v1/notifications/**").permitAll()
+                        .pathMatchers("/api/v1/job-offers/**").permitAll()
+                        .pathMatchers("/api/v1/internal-applications/**").permitAll()
                         .pathMatchers("/ws-notifications/**").permitAll()
                         .pathMatchers("/swagger-ui.html", "/swagger-ui/**", "/webjars/**", "/v3/api-docs").permitAll()
                         .anyExchange().authenticated()

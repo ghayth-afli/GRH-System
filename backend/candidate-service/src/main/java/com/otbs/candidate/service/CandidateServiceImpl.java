@@ -6,18 +6,22 @@ import com.otbs.candidate.mapper.CandidateAttributesMapper;
 import com.otbs.candidate.model.Candidate;
 import com.otbs.candidate.repository.CandidateRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class CandidateServiceImpl implements CandidateService {
 
     private final CandidateRepository candidateRepository;
     private final CandidateAttributesMapper candidateAttributesMapper;
 
     @Override
+    @Transactional
     public CandidateResponseDTO addCandidate(CandidateRequestDTO candidateRequestDTO) {
         Candidate candidate = candidateAttributesMapper.toEntity(candidateRequestDTO);
         Candidate savedCandidate = candidateRepository.save(candidate);
@@ -25,6 +29,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    @Transactional
     public CandidateResponseDTO updateCandidate(Long id, CandidateRequestDTO candidateRequestDTO) {
         Candidate candidate = candidateRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Candidate not found"));
@@ -36,6 +41,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    @Transactional
     public void deleteCandidateById(Long id) {
         Candidate candidate = candidateRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Candidate not found"));
@@ -43,6 +49,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CandidateResponseDTO getCandidateById(Long id) {
         Candidate candidate = candidateRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Candidate not found"));
@@ -50,6 +57,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CandidateResponseDTO> listCandidates() {
         List<Candidate> candidates = candidateRepository.findAll();
         return candidates.stream()
