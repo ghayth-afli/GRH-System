@@ -1,7 +1,10 @@
 package com.otbs.candidate.dto;
 
+import lombok.Builder;
+
 import java.util.List;
 
+@Builder
 public record ExperienceDTO(
         Long id,
         List<String> achievements,

@@ -2,7 +2,6 @@ package com.otbs.recruitment.model;
 
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -20,13 +19,9 @@ public class InternalApplication {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-    @Column(name = "candidate_id", nullable = false, length = 100)
-    private Long candidateId;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private EApplicationStatus status = EApplicationStatus.PENDING;
+    private EApplicationStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "job_offer_id", nullable = false)
@@ -35,6 +30,9 @@ public class InternalApplication {
     @OneToOne
     @JoinColumn(name = "match_result_id", referencedColumnName = "id")
     private MatchResult matchResult;
+
+    @Column(name = "candidate_id", nullable = false, length = 100)
+    private Long candidateId;
 
     private String employeeId;
 

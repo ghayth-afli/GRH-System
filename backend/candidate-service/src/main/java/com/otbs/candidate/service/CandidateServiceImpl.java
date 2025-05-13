@@ -2,6 +2,7 @@ package com.otbs.candidate.service;
 
 import com.otbs.candidate.dto.CandidateRequestDTO;
 import com.otbs.candidate.dto.CandidateResponseDTO;
+import com.otbs.candidate.exception.CandidateException;
 import com.otbs.candidate.mapper.CandidateAttributesMapper;
 import com.otbs.candidate.model.Candidate;
 import com.otbs.candidate.repository.CandidateRepository;
@@ -21,7 +22,6 @@ public class CandidateServiceImpl implements CandidateService {
     private final CandidateAttributesMapper candidateAttributesMapper;
 
     @Override
-    @Transactional
     public CandidateResponseDTO addCandidate(CandidateRequestDTO candidateRequestDTO) {
         Candidate candidate = candidateAttributesMapper.toEntity(candidateRequestDTO);
         Candidate savedCandidate = candidateRepository.save(candidate);
@@ -29,10 +29,9 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    @Transactional
     public CandidateResponseDTO updateCandidate(Long id, CandidateRequestDTO candidateRequestDTO) {
         Candidate candidate = candidateRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Candidate not found"));
+                .orElseThrow(() -> new CandidateException("Candidate not found"));
 
         Candidate updatedCandidate = candidateAttributesMapper.toEntity(candidateRequestDTO);
         updatedCandidate.setId(id);
@@ -44,7 +43,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Transactional
     public void deleteCandidateById(Long id) {
         Candidate candidate = candidateRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Candidate not found"));
+                .orElseThrow(() -> new CandidateException("Candidate not found"));
         candidateRepository.delete(candidate);
     }
 
@@ -52,7 +51,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Transactional(readOnly = true)
     public CandidateResponseDTO getCandidateById(Long id) {
         Candidate candidate = candidateRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Candidate not found"));
+                .orElseThrow(() -> new CandidateException("Candidate not found"));
         return candidateAttributesMapper.toResponseDTO(candidate);
     }
 

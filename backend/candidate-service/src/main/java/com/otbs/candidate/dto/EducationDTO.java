@@ -1,5 +1,8 @@
 package com.otbs.candidate.dto;
 
+import lombok.Builder;
+
+@Builder
 public record EducationDTO(
         Long id,
         String degree,

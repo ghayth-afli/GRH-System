@@ -49,18 +49,18 @@ public class CandidateAttributesMapper {
     }
 
     public CandidateResponseDTO toResponseDTO(Candidate entity) {
-        return new CandidateResponseDTO(
-                entity.getId(),
-                toCandidateInfoDTO(entity.getCandidateInfo()),
-                toCertificationDTOList(entity.getCertifications()),
-                toEducationDTOList(entity.getEducation()),
-                toExperienceDTOList(entity.getExperience()),
-                toLanguageDTOList(entity.getLanguages()),
-                toProjectDTOList(entity.getProjects()),
-                toSkillsDTO(entity.getSkills()),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt()
-        );
+        return CandidateResponseDTO.builder()
+                .id(entity.getId())
+                .candidateInfo(toCandidateInfoDTO(entity.getCandidateInfo()))
+                .certifications(toCertificationDTOList(entity.getCertifications()))
+                .education(toEducationDTOList(entity.getEducation()))
+                .experience(toExperienceDTOList(entity.getExperience()))
+                .languages(toLanguageDTOList(entity.getLanguages()))
+                .projects(toProjectDTOList(entity.getProjects()))
+                .skills(toSkillsDTO(entity.getSkills()))
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .build();
     }
 
     public CandidateInfoDTO toCandidateInfoDTO(CandidateInfo candidateInfo) {
@@ -68,15 +68,15 @@ public class CandidateAttributesMapper {
             return null;
         }
 
-        return new CandidateInfoDTO(
-                candidateInfo.getId(),
-                candidateInfo.getEmail(),
-                candidateInfo.getLinkedin(),
-                toLocationDTO(candidateInfo.getLocation()),
-                candidateInfo.getName(),
-                candidateInfo.getPhone(),
-                candidateInfo.getWebsite()
-        );
+        return CandidateInfoDTO.builder()
+                .id(candidateInfo.getId())
+                .email(candidateInfo.getEmail())
+                .linkedin(candidateInfo.getLinkedin())
+                .location(toLocationDTO(candidateInfo.getLocation()))
+                .name(candidateInfo.getName())
+                .phone(candidateInfo.getPhone())
+                .website(candidateInfo.getWebsite())
+                .build();
     }
 
     public LocationDTO toLocationDTO(Location location) {
@@ -84,12 +84,12 @@ public class CandidateAttributesMapper {
             return null;
         }
 
-        return new LocationDTO(
-                location.getId(),
-                location.getCity(),
-                location.getCountry(),
-                location.getState()
-        );
+        return LocationDTO.builder()
+                .id(location.getId())
+                .city(location.getCity())
+                .country(location.getCountry())
+                .state(location.getState())
+                .build();
     }
 
     public List<CertificationDTO> toCertificationDTOList(List<Certification> certifications) {
@@ -103,10 +103,10 @@ public class CandidateAttributesMapper {
     }
 
     public CertificationDTO toCertificationDTO(Certification certification) {
-        return new CertificationDTO(
-                certification.getId(),
-                certification.getName()
-        );
+        return CertificationDTO.builder()
+                .id(certification.getId())
+                .name(certification.getName())
+                .build();
     }
 
     public List<EducationDTO> toEducationDTOList(List<Education> educations) {
@@ -120,15 +120,15 @@ public class CandidateAttributesMapper {
     }
 
     public EducationDTO toEducationDTO(Education education) {
-        return new EducationDTO(
-                education.getId(),
-                education.getDegree(),
-                education.getEndDate(),
-                education.getFieldOfStudy(),
-                education.getInstitution(),
-                education.getLocation(),
-                education.getStartDate()
-        );
+        return EducationDTO.builder()
+                .id(education.getId())
+                .degree(education.getDegree())
+                .endDate(education.getEndDate())
+                .fieldOfStudy(education.getFieldOfStudy())
+                .institution(education.getInstitution())
+                .location(education.getLocation())
+                .startDate(education.getStartDate())
+                .build();
     }
 
     public List<ExperienceDTO> toExperienceDTOList(List<Experience> experiences) {
@@ -142,16 +142,16 @@ public class CandidateAttributesMapper {
     }
 
     public ExperienceDTO toExperienceDTO(Experience experience) {
-        return new ExperienceDTO(
-                experience.getId(),
-                experience.getAchievements(),
-                experience.getCompany(),
-                experience.getEndDate(),
-                experience.getLocation(),
-                experience.getResponsibilities(),
-                experience.getStartDate(),
-                experience.getTitle()
-        );
+        return ExperienceDTO.builder()
+                .id(experience.getId())
+                .achievements(experience.getAchievements())
+                .company(experience.getCompany())
+                .endDate(experience.getEndDate())
+                .location(experience.getLocation())
+                .responsibilities(experience.getResponsibilities())
+                .startDate(experience.getStartDate())
+                .title(experience.getTitle())
+                .build();
     }
 
     public List<LanguageDTO> toLanguageDTOList(List<Language> languages) {
@@ -165,11 +165,11 @@ public class CandidateAttributesMapper {
     }
 
     public LanguageDTO toLanguageDTO(Language language) {
-        return new LanguageDTO(
-                language.getId(),
-                language.getLanguage(),
-                language.getProficiency()
-        );
+        return LanguageDTO.builder()
+                .id(language.getId())
+                .language(language.getLanguage())
+                .proficiency(language.getProficiency())
+                .build();
     }
 
     public List<ProjectDTO> toProjectDTOList(List<Project> projects) {
@@ -183,13 +183,13 @@ public class CandidateAttributesMapper {
     }
 
     public ProjectDTO toProjectDTO(Project project) {
-        return new ProjectDTO(
-                project.getId(),
-                project.getName(),
-                project.getDescription(),
-                project.getTechnologies(),
-                project.getUrl()
-        );
+        return ProjectDTO.builder()
+                .id(project.getId())
+                .name(project.getName())
+                .description(project.getDescription())
+                .technologies(project.getTechnologies())
+                .url(project.getUrl())
+                .build();
     }
 
     public SkillsDTO toSkillsDTO(Skills skills) {
@@ -197,10 +197,10 @@ public class CandidateAttributesMapper {
             return null;
         }
 
-        return new SkillsDTO(
-                skills.getId(),
-                skills.getSoft(),
-                skills.getTechnical()
-        );
+        return SkillsDTO.builder()
+                .id(skills.getId())
+                .soft(skills.getSoft())
+                .technical(skills.getTechnical())
+                .build();
     }
 }

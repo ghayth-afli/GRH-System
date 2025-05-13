@@ -1,5 +1,6 @@
 package com.otbs.recruitment.service;
 
+import com.otbs.recruitment.dto.ApplicationDetailsResponseDTO;
 import com.otbs.recruitment.dto.ApplicationResponseDTO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -9,5 +10,7 @@ public interface ApplicationService {
     void createApplication(Long jobOfferId,  MultipartFile attachment);
     void deleteApplication(Long applicationId);
     ApplicationResponseDTO getApplicationById(Long applicationId);
-    List<ApplicationResponseDTO> getAllApplications();
+    List<ApplicationResponseDTO> getAllApplications(Long jobId);
+    //getApplicationDetails
+    ApplicationDetailsResponseDTO getApplicationDetails(Long applicationId);
 }

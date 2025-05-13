@@ -1,5 +1,8 @@
 package com.otbs.candidate.dto;
 
+import lombok.Builder;
+
+@Builder
 public record CandidateInfoDTO(
         Long id,
         String email,

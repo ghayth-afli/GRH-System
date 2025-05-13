@@ -1,9 +1,12 @@
 package com.otbs.candidate.dto;
 
 
+import lombok.Builder;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Builder
 public record CandidateResponseDTO(
         Long id,
         CandidateInfoDTO candidateInfo,

@@ -1,19 +1,21 @@
 package com.otbs.feign.client.candidate.dto;
 
-import com.otbs.feign.client.resumeMatcher.entity.*;
+
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Builder
 public record CandidateResponseDTO(
         Long id,
-        CandidateInfo candidateInfo,
-        List<Certification> certifications,
-        List<Education> education,
-        List<Experience> experience,
-        List<Language> languages,
-        List<Project> projects,
-        Skills skills,
+        CandidateInfoDTO candidateInfo,
+        List<CertificationDTO> certifications,
+        List<EducationDTO> education,
+        List<ExperienceDTO> experience,
+        List<LanguageDTO> languages,
+        List<ProjectDTO> projects,
+        SkillsDTO skills,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {}

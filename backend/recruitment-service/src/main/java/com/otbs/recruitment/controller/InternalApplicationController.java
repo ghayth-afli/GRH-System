@@ -1,5 +1,6 @@
 package com.otbs.recruitment.controller;
 
+import com.otbs.recruitment.dto.ApplicationDetailsResponseDTO;
 import com.otbs.recruitment.dto.ApplicationResponseDTO;
 import com.otbs.recruitment.service.ApplicationService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ public class InternalApplicationController {
 
     private final ApplicationService applicationService;
 
-    @PostMapping("/{jobOfferId}")
+    @PostMapping("/job-offer/{jobOfferId}")
     @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager')")
     public ResponseEntity<Void> createApplication(
             @PathVariable("jobOfferId") Long jobOfferId,
@@ -34,17 +35,27 @@ public class InternalApplicationController {
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager')")
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('Manager')")
     @GetMapping("/{applicationId}")
-    public ResponseEntity<ApplicationResponseDTO> getApplicationById(@PathVariable Long applicationId) {
+    public ResponseEntity<ApplicationResponseDTO> getApplicationById(@PathVariable("applicationId") Long applicationId) {
         ApplicationResponseDTO response = applicationService.getApplicationById(applicationId);
         return ResponseEntity.ok(response);
     }
 
     @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager')")
-    @GetMapping
-    public ResponseEntity<List<ApplicationResponseDTO>> getAllApplications() {
-        List<ApplicationResponseDTO> applications = applicationService.getAllApplications();
+    @GetMapping("/job-offer/{jobId}")
+    public ResponseEntity<List<ApplicationResponseDTO>> getAllApplications(
+            @PathVariable("jobId") Long jobId
+    ) {
+        List<ApplicationResponseDTO> applications = applicationService.getAllApplications(jobId);
         return ResponseEntity.ok(applications);
+    }
+
+    //getApplicationDetails
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('Manager')")
+    @GetMapping("/details/{applicationId}")
+    public ResponseEntity<ApplicationDetailsResponseDTO> getApplicationDetails(@PathVariable("applicationId") Long applicationId) {
+        ApplicationDetailsResponseDTO response = applicationService.getApplicationDetails(applicationId);
+        return ResponseEntity.ok(response);
     }
 }

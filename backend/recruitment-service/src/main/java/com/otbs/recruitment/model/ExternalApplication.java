@@ -19,18 +19,6 @@ public class ExternalApplication {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false, nullable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
-
-    @NotBlank(message = "Applicant identifier cannot be blank")
-    @Column(name = "candidate_id", nullable = false, length = 100)
-    private Long candidateId;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private EApplicationStatus status = EApplicationStatus.PENDING;
@@ -38,6 +26,18 @@ public class ExternalApplication {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "job_offer_id", nullable = false)
     private JobOffer jobOffer;
+
+    @NotBlank(message = "Applicant identifier cannot be blank")
+    @Column(name = "candidate_id", nullable = false, length = 100)
+    private Long candidateId;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false, nullable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 
     public void markAsSelected() {
         this.status = EApplicationStatus.SELECTED;

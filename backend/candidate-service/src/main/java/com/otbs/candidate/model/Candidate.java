@@ -9,12 +9,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Data
 @Table(name = "candidates")
 public class Candidate {
 
@@ -25,6 +23,10 @@ public class Candidate {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_info_id")
     private CandidateInfo candidateInfo;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "skills_id")
+    private Skills skills;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "candidate")
     private List<Certification> certifications;
@@ -40,10 +42,6 @@ public class Candidate {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "candidate")
     private List<Project> projects;
-
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "skills_id")
-    private Skills skills;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false, nullable = false)

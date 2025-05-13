@@ -30,19 +30,19 @@ public class CandidateController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CandidateResponseDTO> updateCandidate(@PathVariable Long id, @Valid @RequestBody CandidateRequestDTO candidateRequestDTO) {
+    public ResponseEntity<CandidateResponseDTO> updateCandidate(@PathVariable("id") Long id, @Valid @RequestBody CandidateRequestDTO candidateRequestDTO) {
         CandidateResponseDTO updatedCandidate = candidateService.updateCandidate(id, candidateRequestDTO);
         return ResponseEntity.ok(updatedCandidate);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCandidate(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCandidate(@PathVariable("id") Long id) {
         candidateService.deleteCandidateById(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CandidateResponseDTO> getCandidate(@PathVariable Long id) {
+    public ResponseEntity<CandidateResponseDTO> getCandidate(@PathVariable("id") Long id) {
         CandidateResponseDTO candidate = candidateService.getCandidateById(id);
         return ResponseEntity.ok(candidate);
     }
