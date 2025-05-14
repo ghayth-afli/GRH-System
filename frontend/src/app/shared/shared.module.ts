@@ -10,6 +10,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TimeAgoPipe } from './pipes/time-ago.pipe';
 import { CustomSnackbarComponent } from './components/custom-snackbar/custom-snackbar.component';
+import { ConfirmationModalComponent } from './components/confirmation-modal/confirmation-modal.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { CustomSnackbarComponent } from './components/custom-snackbar/custom-sna
     EditPersonalInfoModalFormComponent,
     TimeAgoPipe,
     CustomSnackbarComponent,
+    ConfirmationModalComponent,
   ],
   imports: [
     CommonModule,

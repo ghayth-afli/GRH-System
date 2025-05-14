@@ -78,7 +78,13 @@
         <div class="action-buttons">
           <button
             class="action-btn delete"
-            (click)="deleteJobOffer(jobOffer.id)"
+            (click)="
+              openDeleteConfirmation(
+                jobOffer.id,
+                jobOffer.title,
+                jobOffer.createdOn
+              )
+            "
           >
             <i class="action-icon fa-solid fa-trash"></i> Delete
           </button>
