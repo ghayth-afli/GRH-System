@@ -55,6 +55,13 @@ const routes: Routes = [
         canActivate: [RoleGuard],
         data: { roles: ['Manager', 'HR', 'Employee'] },
       },
+      {
+        path: 'recruitment',
+        loadChildren: () =>
+          import('./modules/recruitment/recruitment.module').then(
+            (m) => m.RecruitmentModule
+          ),
+      },
       { path: '', redirectTo: 'home', pathMatch: 'full' },
     ],
   },

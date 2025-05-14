@@ -1,0 +1,8 @@
+/* Scoped styles for error message spacing */
+.form-group {
+  position: relative;
+}
+
+.form-error {
+  min-height: 16px; /* Reserve space for error messages to prevent layout shift */
+}

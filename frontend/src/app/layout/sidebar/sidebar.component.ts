@@ -12,7 +12,11 @@ import { Router } from '@angular/router';
 export class SidebarComponent {
   authService = inject(AuthService);
   private router = inject(Router);
+  isExpanded = true;
 
+  toggleSidebar() {
+    this.isExpanded = !this.isExpanded;
+  }
   logout() {
     this.authService.logout();
 

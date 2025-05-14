@@ -1,0 +1,49 @@
+<div class="job-offer-details">
+  <div class="job-offer-section">
+    <button
+      class="copy-btn"
+      (click)="copyToClipboard()"
+      aria-label="Copy job offer details to clipboard"
+    >
+      <i class="copy-btn-icon fa-solid fa-copy"></i> Copy to Clipboard
+    </button>
+    <span class="copy-feedback" *ngIf="isCopied">Copied!</span>
+  </div>
+  <h2 class="job-offer-title">{{ jobOffer.title }}</h2>
+  <div class="job-offer-section">
+    <h3 class="job-offer-section-title">Department</h3>
+    <p class="job-offer-section-content">{{ jobOffer.department }}</p>
+  </div>
+  <div class="job-offer-section">
+    <h3 class="job-offer-section-title">Role</h3>
+    <p class="job-offer-section-content">{{ jobOffer.role }}</p>
+  </div>
+  <div class="job-offer-section">
+    <h3 class="job-offer-section-title">Type</h3>
+    <p class="job-offer-section-content">
+      {{ jobOffer.isInternal ? "Internal" : "External" }}
+    </p>
+  </div>
+  <div class="job-offer-section">
+    <h3 class="job-offer-section-title">Status</h3>
+    <p class="job-offer-section-content">{{ jobOffer.status }}</p>
+  </div>
+  <div class="job-offer-section">
+    <h3 class="job-offer-section-title">Applicants</h3>
+    <p class="job-offer-section-content">
+      {{ jobOffer.applicants }} applicants
+    </p>
+  </div>
+  <div class="job-offer-section">
+    <h3 class="job-offer-section-title">Description</h3>
+    <p class="job-offer-section-content">{{ jobOffer.description }}</p>
+  </div>
+  <div class="job-offer-section">
+    <h3 class="job-offer-section-title">Responsibilities</h3>
+    <p class="job-offer-section-content">{{ jobOffer.responsibilities }}</p>
+  </div>
+  <div class="job-offer-section">
+    <h3 class="job-offer-section-title">Qualifications</h3>
+    <p class="job-offer-section-content">{{ jobOffer.qualifications }}</p>
+  </div>
+</div>

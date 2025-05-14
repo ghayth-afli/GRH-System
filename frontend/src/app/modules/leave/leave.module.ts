@@ -14,7 +14,6 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LeaveRequestFormModalComponent } from './components/leave-request-form-modal/leave-request-form-modal.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { SnackBarComponent } from '../../shared/components/snack-bar/snack-bar.component';
 
 @NgModule({
   declarations: [

@@ -1,0 +1,9 @@
+/* Scoped styles for layout */
+.form-group {
+  position: relative;
+}
+
+.form-error,
+.file-selected {
+  min-height: 16px; /* Reserve space to prevent layout shift */
+}

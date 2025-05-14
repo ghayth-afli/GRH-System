@@ -1,0 +1,146 @@
+<div class="filter-section">
+  <div class="filter-header">
+    <h2 class="filter-title">Filters</h2>
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Search applicants..."
+      />
+    </div>
+  </div>
+  <div class="filter-controls">
+    <div class="filter-group">
+      <label class="filter-label">Status:</label>
+      <select class="filter-select">
+        <option value="all">All Status</option>
+        <option value="pending">Pending</option>
+        <option value="reviewed">Reviewed</option>
+        <option value="interviewing">Interviewing</option>
+        <option value="rejected">Rejected</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label class="filter-label">Score:</label>
+      <select class="filter-select">
+        <option value="all">All Scores</option>
+        <option value="high">High (80-100%)</option>
+        <option value="medium">Medium (60-79%)</option>
+        <option value="low">Low (0-59%)</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label class="filter-label">Date:</label>
+      <select class="filter-select">
+        <option value="newest">Newest First</option>
+        <option value="oldest">Oldest First</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="list-view">
+  <a routerLink="/recruitment/1" class="application-card">
+    <div class="card-header">
+      <div class="candidate-info">
+        <h3 class="candidate-name">MOHAMED GHAYTH AFLI</h3>
+        <p class="candidate-email">mohamed.ghayth12gmail.com</p>
+        <p class="candidate-phone">+216 95 357 697</p>
+      </div>
+      <div class="status-score">
+        <span class="status-badge pending">PENDING</span>
+        <div class="score-display">
+          <span class="score-label">Match Score:</span>
+          <span class="score-value score-medium">72%</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-content">
+      <div class="candidate-tags">
+        <span class="tag">SpringBoot</span>
+        <span class="tag">React</span>
+        <span class="tag">MySQL</span>
+        <span class="tag">Docker</span>
+        <span class="tag">AWS</span>
+      </div>
+      <div class="application-date">Applied: May 13, 2025</div>
+    </div>
+  </a>
+
+  <a routerLink="/recruitment/2" class="application-card">
+    <div class="card-header">
+      <div class="candidate-info">
+        <h3 class="candidate-name">Jane Smith</h3>
+        <p class="candidate-email">jane.smithexample.com</p>
+        <p class="candidate-phone">+1 234 567 8901</p>
+      </div>
+      <div class="status-score">
+        <span class="status-badge reviewed">REVIEWED</span>
+        <div class="score-display">
+          <span class="score-label">Match Score:</span>
+          <span class="score-value score-high">88%</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-content">
+      <div class="candidate-tags">
+        <span class="tag">Java</span>
+        <span class="tag">Spring</span>
+        <span class="tag">Kubernetes</span>
+        <span class="tag">Microservices</span>
+      </div>
+      <div class="application-date">Applied: May 10, 2025</div>
+    </div>
+  </a>
+
+  <a routerLink="/recruitment/3" class="application-card">
+    <div class="card-header">
+      <div class="candidate-info">
+        <h3 class="candidate-name">David Johnson</h3>
+        <p class="candidate-email">david.johnsonexample.com</p>
+        <p class="candidate-phone">+1 987 654 3210</p>
+      </div>
+      <div class="status-score">
+        <span class="status-badge interviewing">INTERVIEWING</span>
+        <div class="score-display">
+          <span class="score-label">Match Score:</span>
+          <span class="score-value score-medium">76%</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-content">
+      <div class="candidate-tags">
+        <span class="tag">Java</span>
+        <span class="tag">Spring Boot</span>
+        <span class="tag">PostgreSQL</span>
+        <span class="tag">CI/CD</span>
+      </div>
+      <div class="application-date">Applied: May 8, 2025</div>
+    </div>
+  </a>
+
+  <div class="pagination">
+    <div class="pagination-info">
+      Showing <b>1-{{ pageSize }}</b> of <b>25</b> applications
+    </div>
+    <div class="pagination-controls">
+      <select
+        class="page-size-select"
+        [(ngModel)]="pageSize"
+        (ngModelChange)="onPageSizeChange()"
+      >
+        <option *ngFor="let size of pageSizeOptions" [value]="size">
+          {{ size }} per page
+        </option>
+      </select>
+      <button class="pagination-btn disabled">◀</button>
+      <button class="pagination-btn active">1</button>
+      <button class="pagination-btn">2</button>
+      <button class="pagination-btn">3</button>
+      <button class="pagination-btn">...</button>
+      <button class="pagination-btn">9</button>
+      <button class="pagination-btn">▶</button>
+    </div>
+  </div>
+</div>

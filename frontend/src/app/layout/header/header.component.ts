@@ -23,170 +23,33 @@ import { NotificationService } from '../../core/services/notification.service';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
 })
-export class HeaderComponent implements OnInit, OnDestroy {
-  leaveBalance$: Observable<LeaveBalance>;
-  imageSrc: string | null = null;
+export class HeaderComponent {
   isDropdownOpen = false;
-  userhasNullAttributes = false;
-  notificationsSubject = new BehaviorSubject<any[]>([]);
-  user: User = {
-    id: '',
-    username: '',
-    firstName: '',
-    lastName: '',
-    email: '',
-    department: '',
-    role: '',
-    jobTitle: '',
-    phoneNumber1: '',
-    phoneNumber2: '',
-  };
+  showBadge = true;
+  notifications = [
+    {
+      message: 'New application from MOHAMED GHAYTH AFLI',
+      time: 'May 13, 2025, 2:30 PM',
+      unread: true,
+    },
+    {
+      message: 'Interview scheduled for Jane Smith',
+      time: 'May 12, 2025, 10:15 AM',
+      unread: true,
+    },
+    {
+      message: 'David Johnson’s application reviewed',
+      time: 'May 11, 2025, 4:00 PM',
+      unread: false,
+    },
+  ];
 
-  notificationService = inject(NotificationService);
-  private authService = inject(AuthService);
-  private route = inject(ActivatedRoute);
-  private dialog = inject(MatDialog);
-  private userService = inject(UserService);
-
-  constructor() {
-    this.leaveBalance$ = this.route.data.pipe(
-      map((data) => data['leaveBalance'])
-    );
-  }
-
-  ngOnInit(): void {
-    this.initializeUser();
-    this.loadProfilePicture();
-    this.handleIfUserHasNullAttributes();
-    this.initializeNotifications();
-    this.checkAndOpenEditModal();
-  }
-
-  handleIfUserHasNullAttributes(): void {
-    this.userhasNullAttributes = Object.entries(this.user).some(
-      ([key, value]) =>
-        key !== 'phoneNumber2' && (value === null || value === '')
-    );
-  }
-
-  ngOnDestroy(): void {
-    document.removeEventListener('click', this.onDocumentClick);
-  }
-
-  // User-related methods
-  private initializeUser(): void {
-    this.user = this.authService.authenticatedUser || this.user;
-  }
-
-  private loadProfilePicture(): void {
-    this.userService.getProfilePicture(this.user.username).subscribe({
-      next: (response) => {
-        this.imageSrc = this.getBase64Image(response);
-      },
-      error: (error) => {
-        console.error(error);
-      },
-    });
-  }
-
-  private getBase64Image(profilePicture: ProfilePicture): string {
-    if (profilePicture.base64Image) {
-      return profilePicture.base64Image;
-    } else {
-      const binary = new Uint8Array(profilePicture.picture);
-      const base64String = btoa(String.fromCharCode(...binary));
-      return `data:image/${profilePicture.type};base64,${base64String}`;
-    }
-  }
-
-  isEmployee(): boolean {
-    return this.authService.hasRole('Employee');
-  }
-
-  openEditModal(): void {
-    const dialogRef = this.dialog.open(EditPersonalInfoModalFormComponent, {
-      width: '500px',
-      data: {
-        firstName: this.user.firstName,
-        lastName: this.user.lastName,
-        email: this.user.email,
-        jobTitle: this.user.jobTitle,
-        phoneNumber1: this.user.phoneNumber1,
-        phoneNumber2: this.user.phoneNumber2,
-        imageSrc: this.imageSrc,
-      },
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.updateUserInfo(dialogRef);
-      }
-    });
-  }
-
-  private updateUserInfo(dialogRef: any): void {
-    this.user = {
-      ...this.user,
-      firstName: dialogRef.componentInstance.editForm.value.firstName,
-      lastName: dialogRef.componentInstance.editForm.value.lastName,
-      email: dialogRef.componentInstance.editForm.value.email,
-      jobTitle: dialogRef.componentInstance.editForm.value.jobTitle,
-      phoneNumber1: dialogRef.componentInstance.editForm.value.phoneNumber1,
-      phoneNumber2: dialogRef.componentInstance.editForm.value.phoneNumber2,
-    };
-    this.authService._setUser(this.user);
-    this.loadProfilePicture();
-  }
-
-  private checkAndOpenEditModal(): void {
-    if (this.userhasNullAttributes) {
-      const dialogRef = this.dialog.open(EditPersonalInfoModalFormComponent, {
-        width: '500px',
-        disableClose: true, // Prevent closing the modal manually
-        data: {
-          firstName: this.user.firstName,
-          lastName: this.user.lastName,
-          email: this.user.email,
-          jobTitle: this.user.jobTitle,
-          phoneNumber1: this.user.phoneNumber1,
-          phoneNumber2: this.user.phoneNumber2,
-          imageSrc: this.imageSrc,
-        },
-      });
-
-      dialogRef.afterClosed().subscribe((result) => {
-        if (result) {
-          this.updateUserInfo(dialogRef);
-          this.checkAndOpenEditModal(); // Recheck after closing to ensure all attributes are filled
-        }
-      });
-    }
-  }
-
-  // Notification-related methods
-  private initializeNotifications(): void {
-    this.notificationService.loadNotifications();
-    this.notificationService.notifications$.subscribe((notifications) => {
-      this.notificationsSubject.next(notifications);
-    });
-
-    this.notificationService.unreadCount$.subscribe((count) => {});
-  }
-
-  // Dropdown-related methods
-  toggleDropdown(): void {
+  toggleNotifications() {
     this.isDropdownOpen = !this.isDropdownOpen;
-    this.notificationService.markAllAsRead().subscribe(() => {});
   }
 
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
-    const target = event.target as HTMLElement;
-    const notificationContainer = document.querySelector(
-      '.notification-container'
-    );
-    if (notificationContainer && !notificationContainer.contains(target)) {
-      this.isDropdownOpen = false;
-    }
+  clearNotifications() {
+    this.notifications = [];
+    this.showBadge = false;
   }
 }

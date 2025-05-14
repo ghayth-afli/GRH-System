@@ -5,153 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8831ef2c-5863-4771-acbe-37c7b2e108e5" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-gateway/target/classes/com/otbs/apigw/ApiGWApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/target/classes/com/otbs/apigw/ApiGWApplication.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/otbs/auth/config/LdapConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/target/classes/com/otbs/auth/config/LdapConfig.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-service/target/classes/com/otbs/auth/config/SecurityConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/target/classes/com/otbs/auth/config/SecurityConfig.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/AuthApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/config/LdapConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/config/LdapConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/config/LdapSecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/config/LdapSecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/config/OpenApiConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/config/SecurityConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/controller/AuthController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/controller/PasswordResetController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/dto/AuthRequestDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/dto/ForgotPasswordRequestDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/dto/JwtResponseDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/dto/MessageResponseDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/dto/RefreshRequestDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/dto/ResetPasswordRequestDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/exception/GlobalExceptionHandler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/exception/TokenException.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/exception/UserException.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/mapper/UserAttributesMapper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/model/PasswordResetToken.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/model/User.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/repositories/PasswordResetTokenRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/security/AuthEntryPointJwt.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/security/JwtAuthFilter.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/service/AuthNotificationService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/service/AuthService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/service/AuthServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/service/PasswordResetService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/service/PasswordResetServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/service/UserDetailsImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/service/UserDetailsServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/java/com/otbs/auth/util/JwtUtils.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/resources/application.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/src/main/resources/banner.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/target/classes/application.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/target/classes/banner.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/target/classes/com/otbs/auth/AuthApplication.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/target/classes/com/otbs/auth/config/LdapConfig.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/target/classes/com/otbs/auth/config/LdapSecurityConfig.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/target/classes/com/otbs/auth/config/OpenApiConfig.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-serviced/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/controller/CandidateController.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/controller/CandidateController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/dto/CandidateInfoDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/dto/CandidateInfoDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/dto/CandidateResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/dto/CandidateResponseDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/dto/CertificationDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/dto/CertificationDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/dto/EducationDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/dto/EducationDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/dto/ExperienceDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/dto/ExperienceDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/dto/LanguageDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/dto/LanguageDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/dto/LocationDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/dto/LocationDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/dto/ProjectDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/dto/ProjectDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/dto/SkillsDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/dto/SkillsDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/exception/GlobalExceptionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/mapper/CandidateAttributesMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/mapper/CandidateAttributesMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Candidate.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Candidate.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/CandidateInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/CandidateInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Certification.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Certification.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Education.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Education.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Experience.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Experience.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Language.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Language.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Location.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Location.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Project.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Project.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Skills.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/model/Skills.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/service/CandidateServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/java/com/otbs/candidate/service/CandidateServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/controller/CandidateController.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/controller/CandidateController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/dto/CandidateInfoDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/dto/CandidateInfoDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/dto/CandidateResponseDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/dto/CandidateResponseDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/dto/CertificationDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/dto/CertificationDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/dto/EducationDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/dto/EducationDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/dto/ExperienceDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/dto/ExperienceDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/dto/LanguageDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/dto/LanguageDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/dto/LocationDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/dto/LocationDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/dto/ProjectDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/dto/ProjectDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/dto/SkillsDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/dto/SkillsDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/exception/GlobalExceptionHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/exception/GlobalExceptionHandler.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/mapper/CandidateAttributesMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/mapper/CandidateAttributesMapper.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Candidate$CandidateBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Candidate$CandidateBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Candidate.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Candidate.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/CandidateInfo$CandidateInfoBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/CandidateInfo$CandidateInfoBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/CandidateInfo.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/CandidateInfo.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Certification$CertificationBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Certification$CertificationBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Certification.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Certification.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Education$EducationBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Education$EducationBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Education.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Education.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Experience$ExperienceBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Experience$ExperienceBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Experience.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Experience.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Language$LanguageBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Language$LanguageBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Language.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Language.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Location$LocationBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Location$LocationBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Location.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Location.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Project$ProjectBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Project$ProjectBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Project.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Project.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Skills$SkillsBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Skills$SkillsBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Skills.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/model/Skills.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/service/CandidateServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/com/otbs/candidate/service/CandidateServiceImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feign-clients/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/candidate/CandidateClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/candidate/CandidateClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/candidate/dto/CandidateResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/candidate/dto/CandidateResponseDTO_.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/candidate/CandidateClient.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/candidate/CandidateClient.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/candidate/dto/CandidateRequestDTO$CandidateRequestDTOBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/candidate/dto/CandidateRequestDTO$CandidateRequestDTOBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/candidate/dto/CandidateRequestDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/candidate/dto/CandidateRequestDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/candidate/dto/CandidateResponseDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/candidate/dto/CandidateResponseDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/candidate/dto/EmployeeClient.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/candidate/dto/EmployeeClient.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/employee/EmployeeClient.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/employee/EmployeeClient.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/employee/dto/EmployeeResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/employee/dto/EmployeeResponse.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/employee/dto/NotificationRequestDTO$NotificationRequestDTOBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/employee/dto/NotificationRequestDTO$NotificationRequestDTOBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/employee/dto/NotificationRequestDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/employee/dto/NotificationRequestDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/employee/entity/NotificationType.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/employee/entity/NotificationType.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/ResumeMatcherClient.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/ResumeMatcherClient.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/dto/JobOfferRequestDTO$JobOfferRequestDTOBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/dto/JobOfferRequestDTO$JobOfferRequestDTOBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/dto/JobOfferRequestDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/dto/JobOfferRequestDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/dto/RoleEvaluationResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/dto/RoleEvaluationResponse.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/CandidateInfo$Location.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/CandidateInfo$Location.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/CandidateInfo.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/CandidateInfo.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/Certification.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/Certification.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/Language.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/Language.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/Project.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/Project.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/Skills.class" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/target/classes/com/otbs/feign/client/resumeMatcher/entity/Skills.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/controller/InternalApplicationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/controller/InternalApplicationController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/dto/ApplicationRequestDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/dto/ApplicationResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/dto/ApplicationResponseDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/model/ExternalApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/model/ExternalApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/model/InternalApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/model/InternalApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/model/JobOffer.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/model/JobOffer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/repository/InternalApplicationRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/repository/InternalApplicationRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/service/ApplicationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/service/ApplicationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/service/ApplicationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/service/InternalApplicationServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/controller/InternalApplicationController.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/controller/InternalApplicationController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/dto/ApplicationRequestDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/dto/ApplicationResponseDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/dto/ApplicationResponseDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/ExternalApplication$ExternalApplicationBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/ExternalApplication$ExternalApplicationBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/ExternalApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/ExternalApplication.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/InternalApplication$InternalApplicationBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/InternalApplication$InternalApplicationBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/InternalApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/InternalApplication.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/JobOffer$JobOfferBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/JobOffer$JobOfferBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/JobOffer.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/model/JobOffer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/repository/InternalApplicationRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/repository/InternalApplicationRepository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/service/ApplicationService.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/service/ApplicationService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/service/ApplicationServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/app/app-routing.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/app-routing.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/app/layout/header/header.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/layout/header/header.component.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/app/layout/header/header.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/layout/header/header.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/app/layout/header/header.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/layout/header/header.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/app/layout/layout.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/layout/layout.component.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/app/layout/layout.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/layout/layout.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/app/layout/layout.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/layout/layout.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/app/layout/sidebar/sidebar.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/layout/sidebar/sidebar.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/app/layout/sidebar/sidebar.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/layout/sidebar/sidebar.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/styles.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -191,36 +58,36 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Spring Boot.ApiGWApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.AuthApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.CandidateApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.EmployeeApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.EurekaServerApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.RecruitmentApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;recruitment-service&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/Tekup/internship/GRH-System/backend/feign-clients/src/main/java/com/otbs/feign/client/candidate/dto&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.javacompiler&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Spring Boot.ApiGWApplication.executor": "Run",
+    "Spring Boot.AuthApplication.executor": "Run",
+    "Spring Boot.CandidateApplication.executor": "Run",
+    "Spring Boot.EmployeeApplication.executor": "Run",
+    "Spring Boot.EurekaServerApplication.executor": "Run",
+    "Spring Boot.RecruitmentApplication.executor": "Run",
+    "git-widget-placeholder": "recruitment-service-new-ui-styles",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/Tekup/internship/GRH-System/backend/feign-clients/src/main/java/com/otbs/feign/client/candidate/dto",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "run.configurations.included.in.services": "true",
+    "settings.editor.selected.configurable": "reference.projectsettings.compiler.javacompiler",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\Tekup\internship\GRH-System\backend\feign-clients\src\main\java\com\otbs\feign\client\candidate\dto" />
@@ -561,6 +428,7 @@
       <workItem from="1747032351547" duration="13000" />
       <workItem from="1747032423796" duration="16844000" />
       <workItem from="1747090866156" duration="923000" />
+      <workItem from="1747174934481" duration="1923000" />
     </task>
     <servers />
   </component>

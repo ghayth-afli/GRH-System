@@ -1,0 +1,213 @@
+<div class="form-container">
+  <h2 class="form-title">
+    {{ isEditMode ? "Update Job Offer" : "Create Job Offer" }}
+  </h2>
+  <form #jobOfferForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="form-group">
+      <label for="title" class="form-label">Job Title *</label>
+      <input
+        type="text"
+        id="title"
+        name="title"
+        class="form-input"
+        [(ngModel)]="jobOffer.title"
+        #title="ngModel"
+        required
+        maxlength="200"
+        placeholder="e.g., Senior Java Developer"
+        [attr.aria-describedby]="'title-error-required title-error-maxlength'"
+      />
+      <div
+        class="form-error"
+        id="title-error-required"
+        *ngIf="(title.touched || submitted) && title.errors?.['required']"
+      >
+        Job Title is required
+      </div>
+      <div
+        class="form-error"
+        id="title-error-maxlength"
+        *ngIf="(title.touched || submitted) && title.errors?.['maxlength']"
+      >
+        Job Title cannot exceed 200 characters
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="description" class="form-label">Description *</label>
+      <textarea
+        id="description"
+        name="description"
+        class="form-textarea"
+        [(ngModel)]="jobOffer.description"
+        #description="ngModel"
+        required
+        maxlength="2000"
+        placeholder="e.g., We are looking for an experienced Java developer..."
+        [attr.aria-describedby]="
+          'description-error-required description-error-maxlength'
+        "
+      ></textarea>
+      <div
+        class="form-error"
+        id="description-error-required"
+        *ngIf="(description.touched || submitted) && description.errors?.['required']"
+      >
+        Description is required
+      </div>
+      <div
+        class="form-error"
+        id="description-error-maxlength"
+        *ngIf="(description.touched || submitted) && description.errors?.['maxlength']"
+      >
+        Description cannot exceed 2000 characters
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="department" class="form-label">Department *</label>
+      <select
+        id="department"
+        name="department"
+        class="form-select"
+        [(ngModel)]="jobOffer.department"
+        #department="ngModel"
+        required
+        aria-describedby="department-error-required"
+      >
+        <option value="" disabled>Select a department</option>
+        <option value="Software Engineering">Software Engineering</option>
+        <option value="Marketing">Marketing</option>
+        <option value="Human Resources">Human Resources</option>
+        <option value="Finance">Finance</option>
+      </select>
+      <div
+        class="form-error"
+        id="department-error-required"
+        *ngIf="(department.touched || submitted) && department.errors?.['required']"
+      >
+        Department is required
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="responsibilities" class="form-label"
+        >Responsibilities *</label
+      >
+      <textarea
+        id="responsibilities"
+        name="responsibilities"
+        class="form-textarea"
+        [(ngModel)]="jobOffer.responsibilities"
+        #responsibilities="ngModel"
+        required
+        maxlength="2000"
+        placeholder="e.g., Design, implement, and maintain Java-based applications..."
+        [attr.aria-describedby]="
+          'responsibilities-error-required responsibilities-error-maxlength'
+        "
+      ></textarea>
+      <div
+        class="form-error"
+        id="responsibilities-error-required"
+        *ngIf="(responsibilities.touched || submitted) && responsibilities.errors?.['required']"
+      >
+        Responsibilities are required
+      </div>
+      <div
+        class="form-error"
+        id="responsibilities-error-maxlength"
+        *ngIf="(responsibilities.touched || submitted) && responsibilities.errors?.['maxlength']"
+      >
+        Responsibilities cannot exceed 2000 characters
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="qualifications" class="form-label">Qualifications *</label>
+      <textarea
+        id="qualifications"
+        name="qualifications"
+        class="form-textarea"
+        [(ngModel)]="jobOffer.qualifications"
+        #qualifications="ngModel"
+        required
+        maxlength="2000"
+        placeholder="e.g., Bachelor's degree in Computer Science or related field..."
+        [attr.aria-describedby]="
+          'qualifications-error-required qualifications-error-maxlength'
+        "
+      ></textarea>
+      <div
+        class="form-error"
+        id="qualifications-error-required"
+        *ngIf="(qualifications.touched || submitted) && qualifications.errors?.['required']"
+      >
+        Qualifications are required
+      </div>
+      <div
+        class="form-error"
+        id="qualifications-error-maxlength"
+        *ngIf="(qualifications.touched || submitted) && qualifications.errors?.['maxlength']"
+      >
+        Qualifications cannot exceed 2000 characters
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="role" class="form-label">Role *</label>
+      <input
+        type="text"
+        id="role"
+        name="role"
+        class="form-input"
+        [(ngModel)]="jobOffer.role"
+        #role="ngModel"
+        required
+        maxlength="100"
+        placeholder="e.g., Backend Developer"
+        [attr.aria-describedby]="'role-error-required role-error-maxlength'"
+      />
+      <div
+        class="form-error"
+        id="role-error-required"
+        *ngIf="(role.touched || submitted) && role.errors?.['required']"
+      >
+        Role is required
+      </div>
+      <div
+        class="form-error"
+        id="role-error-maxlength"
+        *ngIf="(role.touched || submitted) && role.errors?.['maxlength']"
+      >
+        Role cannot exceed 100 characters
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="form-checkbox">
+        <input
+          type="checkbox"
+          id="isInternal"
+          name="isInternal"
+          class="form-checkbox-input"
+          [(ngModel)]="jobOffer.isInternal"
+        />
+        <label for="isInternal" class="form-checkbox-label"
+          >Internal Job Offer</label
+        >
+      </div>
+    </div>
+    <div class="form-actions">
+      <button
+        type="button"
+        class="form-btn cancel"
+        [routerLink]="['/recruitment/job-offers']"
+      >
+        <i class="form-btn-icon fa-solid fa-times"></i> Cancel
+      </button>
+      <button
+        type="submit"
+        class="form-btn save"
+        [disabled]="jobOfferForm.invalid"
+      >
+        <i class="form-btn-icon fa-solid fa-save"></i>
+        {{ isEditMode ? "Update" : "Save" }}
+      </button>
+    </div>
+  </form>
+</div>

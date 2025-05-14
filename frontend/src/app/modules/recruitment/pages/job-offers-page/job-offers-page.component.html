@@ -1,0 +1,133 @@
+<div class="job-offers-page">
+  <a routerLink="/recruitment/job-offers/create" class="create-btn">
+    <i class="create-icon fa-solid fa-plus"></i> Create Job Offer
+  </a>
+
+  <div class="filter-section">
+    <div class="filter-header">
+      <h2 class="filter-title">Filters</h2>
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search job titles..."
+        />
+      </div>
+    </div>
+    <div class="filter-controls">
+      <div class="filter-group">
+        <label class="filter-label">Department:</label>
+        <select class="filter-select">
+          <option value="all">All Departments</option>
+          <option value="engineering">Engineering</option>
+          <option value="marketing">Marketing</option>
+          <option value="hr">Human Resources</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Type:</label>
+        <select class="filter-select">
+          <option value="all">All Types</option>
+          <option value="internal">Internal</option>
+          <option value="external">External</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Status:</label>
+        <select class="filter-select">
+          <option value="all">All Status</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+          <option value="finished">Finished</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="list-view">
+    <div class="no-job-offers" *ngIf="!jobOffers.length">
+      There are currently no job offers listed.
+    </div>
+    <div
+      class="job-offer-card"
+      *ngFor="let jobOffer of jobOffers"
+      [routerLink]="['/recruitment/job-offers', jobOffer.id]"
+    >
+      <div class="job-offer-info">
+        <h3 class="job-offer-title">{{ jobOffer.title }}</h3>
+        <p class="job-offer-department">
+          Department: {{ jobOffer.department }}
+        </p>
+        <p class="job-offer-type">
+          Type: {{ jobOffer.isInternal ? "Internal" : "External" }}
+        </p>
+        <p class="job-offer-status" [ngClass]="jobOffer.status.toLowerCase()">
+          Status: {{ jobOffer.status }}
+        </p>
+      </div>
+      <div class="job-offer-actions">
+        <a
+          [routerLink]="['/recruitment']"
+          [queryParams]="{ jobId: jobOffer.id }"
+          class="applicants-btn"
+        >
+          <i class="applicants-icon fa-solid fa-users"></i>
+          {{ jobOffer.applicants }} Applicants
+        </a>
+        <div class="action-buttons">
+          <button
+            class="action-btn delete"
+            (click)="deleteJobOffer(jobOffer.id)"
+          >
+            <i class="action-icon fa-solid fa-trash"></i> Delete
+          </button>
+          <button
+            class="action-btn update"
+            [routerLink]="['/recruitment/job-offers/edit', jobOffer.id]"
+          >
+            <i class="action-icon fa-solid fa-edit"></i> Update
+          </button>
+          <button
+            class="action-btn toggle"
+            (click)="toggleInternalExternal(jobOffer.id)"
+          >
+            <i class="action-icon fa-solid fa-exchange-alt"></i> Toggle
+            {{ jobOffer.isInternal ? "External" : "Internal" }}
+          </button>
+          <button
+            class="action-btn finish-stop"
+            (click)="finishStopJobOffer(jobOffer.id)"
+          >
+            <i class="action-icon fa-solid fa-stop-circle"></i>
+            {{ jobOffer.status === "Active" ? "Finish" : "Activate" }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="pagination">
+      <div class="pagination-info">
+        Showing <b>1-{{ pageSize }}</b> of <b>25</b> job offers
+      </div>
+      <div class="pagination-controls">
+        <select
+          class="page-size-select"
+          [(ngModel)]="pageSize"
+          (ngModelChange)="onPageSizeChange()"
+        >
+          <option *ngFor="let size of pageSizeOptions" [value]="size">
+            {{ size }} per page
+          </option>
+        </select>
+        <button class="pagination-btn disabled">◀</button>
+        <button class="pagination-btn active">1</button>
+        <button class="pagination-btn">2</button>
+        <button class="pagination-btn">3</button>
+        <button class="pagination-btn">...</button>
+        <button class="pagination-btn">9</button>
+        <button class="pagination-btn">▶</button>
+      </div>
+    </div>
+  </div>
+</div>

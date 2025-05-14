@@ -1,0 +1,6 @@
+/* Scoped styles for layout */
+.job-offer-details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
