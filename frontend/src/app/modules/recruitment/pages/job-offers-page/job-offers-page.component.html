@@ -46,14 +46,7 @@
   </div>
 
   <div class="list-view">
-    <div class="no-job-offers" *ngIf="!jobOffers.length">
-      There are currently no job offers listed.
-    </div>
-    <div
-      class="job-offer-card"
-      *ngFor="let jobOffer of jobOffers"
-      [routerLink]="['/recruitment/job-offers', jobOffer.id]"
-    >
+    <div class="job-offer-card" *ngFor="let jobOffer of jobOffers">
       <div class="job-offer-info">
         <h3 class="job-offer-title">{{ jobOffer.title }}</h3>
         <p class="job-offer-department">
@@ -67,24 +60,26 @@
         </p>
       </div>
       <div class="job-offer-actions">
-        <a
+        <!-- <a
           [routerLink]="['/recruitment']"
           [queryParams]="{ jobId: jobOffer.id }"
           class="applicants-btn"
         >
           <i class="applicants-icon fa-solid fa-users"></i>
           {{ jobOffer.applicants }} Applicants
+        </a> -->
+        <a
+          [routerLink]="['/recruitment']"
+          [queryParams]="{ jobId: jobOffer.id }"
+          class="applicants-btn"
+        >
+          <i class="applicants-icon fa-solid fa-users"></i>
+          0 Applicants
         </a>
         <div class="action-buttons">
           <button
             class="action-btn delete"
-            (click)="
-              openDeleteConfirmation(
-                jobOffer.id,
-                jobOffer.title,
-                jobOffer.createdOn
-              )
-            "
+            (click)="deleteJobOffer(jobOffer.id)"
           >
             <i class="action-icon fa-solid fa-trash"></i> Delete
           </button>

@@ -10,7 +10,7 @@ const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
-    //canActivate: [AuthRedirectGuard],
+    canActivate: [AuthRedirectGuard],
   },
   {
     path: 'forgot-password',

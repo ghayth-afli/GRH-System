@@ -26,6 +26,24 @@ import { NotificationService } from '../../core/services/notification.service';
 export class HeaderComponent {
   isDropdownOpen = false;
   showBadge = true;
+  imageSrc: string | null = null;
+  user: User = {
+    id: '',
+    username: '',
+    firstName: '',
+    lastName: '',
+    email: '',
+    department: '',
+    role: '',
+    jobTitle: '',
+    phoneNumber1: '',
+    phoneNumber2: '',
+  };
+  notificationService = inject(NotificationService);
+  private authService = inject(AuthService);
+  private route = inject(ActivatedRoute);
+  private dialog = inject(MatDialog);
+  private userService = inject(UserService);
   notifications = [
     {
       message: 'New application from MOHAMED GHAYTH AFLI',
@@ -43,6 +61,33 @@ export class HeaderComponent {
       unread: false,
     },
   ];
+  ngOnInit(): void {
+    this.initializeUser();
+    this.loadProfilePicture();
+  }
+  private initializeUser(): void {
+    this.user = this.authService.authenticatedUser || this.user;
+  }
+  private loadProfilePicture(): void {
+    this.userService.getProfilePicture(this.user.username).subscribe({
+      next: (response) => {
+        this.imageSrc = this.getBase64Image(response);
+      },
+      error: (error) => {
+        console.error(error);
+      },
+    });
+  }
+
+  private getBase64Image(profilePicture: ProfilePicture): string {
+    if (profilePicture.base64Image) {
+      return profilePicture.base64Image;
+    } else {
+      const binary = new Uint8Array(profilePicture.picture);
+      const base64String = btoa(String.fromCharCode(...binary));
+      return `data:image/${profilePicture.type};base64,${base64String}`;
+    }
+  }
 
   toggleNotifications() {
     this.isDropdownOpen = !this.isDropdownOpen;

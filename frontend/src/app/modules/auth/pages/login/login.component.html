@@ -1,5 +1,10 @@
 <div class="login-container">
-  <form #loginForm="ngForm" class="login-form" (ngSubmit)="onSubmit()">
+  <form
+    #loginForm="ngForm"
+    class="login-form"
+    (ngSubmit)="onSubmit()"
+    [attr.aria-busy]="isLoading ? 'true' : 'false'"
+  >
     <img
       src="../../../../../assets/images/onetech_Logo-300x300.png"
       alt="Company Logo"
@@ -17,6 +22,7 @@
         #usernameInput="ngModel"
         required
         aria-describedby="username-error"
+        [disabled]="isLoading"
       />
       <div
         class="login-form-error"
@@ -38,12 +44,14 @@
         #passwordInput="ngModel"
         required
         aria-describedby="password-error"
+        [disabled]="isLoading"
       />
       <i
         class="password-toggle fa-solid"
         [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"
         (click)="togglePassword()"
         aria-label="Toggle password visibility"
+        *ngIf="!isLoading"
       ></i>
       <div
         class="login-form-error"
@@ -56,10 +64,11 @@
     <button
       type="submit"
       class="login-btn"
-      [disabled]="loginForm.invalid"
+      [disabled]="loginForm.invalid || isLoading"
       aria-label="Log in to your account"
     >
-      Login
+      <span class="loader" *ngIf="isLoading" aria-label="Loading"></span>
+      <span *ngIf="!isLoading">Login</span>
     </button>
     <p class="login-quote">"Great teams start with great people."</p>
   </form>

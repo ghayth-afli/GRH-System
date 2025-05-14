@@ -1,14 +1,14 @@
 <header>
   <div class="user-info">
     <img
-      src="https://via.placeholder.com/48"
+      [src]="imageSrc || 'assets/images/nopicture.png'"
       alt="User Photo"
       class="user-photo"
     />
     <div class="user-details">
-      <span class="user-name">Alex Johnson</span>
-      <span class="user-role">Hiring Manager</span>
-      <span class="user-email">alex.johnsonexample.com</span>
+      <span class="user-name">{{ user.firstName }} {{ user.lastName }}</span>
+      <span class="user-role">{{ user.jobTitle }}</span>
+      <span class="user-email">{{ user.email }}</span>
     </div>
   </div>
   <button

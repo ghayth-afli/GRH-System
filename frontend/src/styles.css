@@ -46,6 +46,26 @@ h6 {
   font-weight: 600;
 }
 
+/* Loader */
+.loader {
+  border: 3px solid var(--white);
+  border-top: 3px solid var(--accent);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 /* Login Page Container */
 .login-container {
   display: flex;
@@ -1676,6 +1696,12 @@ header {
 
 /* Responsive */
 @media (max-width: 768px) {
+  .loader {
+    width: 20px;
+    height: 20px;
+    border-width: 2px;
+  }
+
   .login-container {
     padding: 16px;
   }
