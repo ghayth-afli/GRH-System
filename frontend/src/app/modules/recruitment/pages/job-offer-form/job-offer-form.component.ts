@@ -1,6 +1,10 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, inject, Inject, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { JobOfferService } from '../../services/job-offer.service';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { CustomSnackbarComponent } from '../../../../shared/components/custom-snackbar/custom-snackbar.component';
 
 @Component({
   selector: 'app-job-offer-form',
@@ -12,7 +16,8 @@ export class JobOfferFormComponent {
   isEditMode = false;
   submitted = false;
   @ViewChild('jobOfferForm') jobOfferForm!: NgForm;
-
+  jobOfferService = inject(JobOfferService);
+  snackBar = inject(MatSnackBar);
   jobOffer = {
     title: '',
     description: '',
@@ -23,26 +28,31 @@ export class JobOfferFormComponent {
     isInternal: false,
   };
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    jobService: JobOfferService
+  ) {}
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!id;
     if (this.isEditMode) {
       // Simulate fetching job offer data for edit mode
-      this.jobOffer = {
-        title: 'Senior Java Developer',
-        description:
-          'We are looking for an experienced Java developer to join our backend team. You will be responsible for developing scalable and high-performance enterprise applications.',
-        department: 'Software Engineering',
-        responsibilities:
-          'Design, implement, and maintain Java-based applications. Collaborate with cross-functional teams. Participate in code reviews and contribute to best practices.',
-        qualifications:
-          "Bachelor's degree in Computer Science or related field. 5+ years of experience in Java development. Strong understanding of Spring Boot and RESTful APIs.",
-        role: 'Backend Developer',
-        isInternal: true,
-      };
+      this.loadJobOffer(Number(id));
     }
+  }
+
+  private loadJobOffer(id: number) {
+    this.jobOfferService.getJobOfferById(id).subscribe({
+      next: (response) => {
+        this.jobOffer = response;
+        console.log('Job offer loaded:', this.jobOffer);
+      },
+      error: (error) => {
+        console.error('Error loading job offer:', error);
+      },
+    });
   }
 
   onSubmit() {
@@ -52,7 +62,38 @@ export class JobOfferFormComponent {
       console.log('Submitting job offer:', jsonRequest);
       // Simulate backend request
       // In a real app, send to backend via HttpClient
-      this.router.navigate(['/recruitment/job-offers']);
+      // this.router.navigate(['/recruitment/job-offers']);
+      this.jobOfferService.createJobOffer(this.jobOfferForm.value).subscribe({
+        next: (response) => {
+          console.log('Job offer created successfully:', response);
+          this.snackBar.openFromComponent(CustomSnackbarComponent, {
+            data: {
+              message: 'Job offer created successfully.',
+              type: 'success',
+            },
+            duration: 5000,
+            panelClass: ['custom-snackbar'],
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+          });
+          this.router.navigate(['/recruitment/job-offers']);
+        },
+        error: (error) => {
+          this.snackBar.openFromComponent(CustomSnackbarComponent, {
+            data: {
+              message:
+                error.message === ''
+                  ? 'Job offer creation failed. Please try again.'
+                  : error.message,
+              type: 'error',
+            },
+            duration: 5000,
+            panelClass: ['custom-snackbar'],
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+          });
+        },
+      });
     }
   }
 }

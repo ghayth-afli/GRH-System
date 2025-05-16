@@ -13,7 +13,7 @@
   --light-gray: #f5f5f7;
   --border-radius: 8px;
   --box-shadow: 0 4px 12px rgba(3, 10, 35, 0.1);
-  --sidebar-width: 250px;
+  --sidebar-width: 205px;
   --sidebar-collapsed-width: 60px;
   --success: #28a745;
   --warning: #ffc107;
@@ -1184,6 +1184,7 @@ header {
   flex-direction: column;
   gap: 8px;
   max-width: 50%;
+  cursor: pointer;
 }
 
 .job-offer-title {
@@ -1301,110 +1302,6 @@ header {
 
 .action-icon {
   font-size: 16px;
-}
-
-/* Job Offer Details Container */
-.job-offer-details {
-  background-color: var(--white);
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-  padding: 24px;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.job-offer-title {
-  font-family: "Kode Mono", monospace;
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--primary-dark);
-  margin-bottom: 16px;
-}
-
-.job-offer-section {
-  margin-bottom: 24px;
-}
-
-.job-offer-section-title {
-  font-family: "Kode Mono", monospace;
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--primary-dark);
-  margin-bottom: 8px;
-}
-
-.job-offer-section-content {
-  font-family: "Open Sans", sans-serif;
-  font-size: 14px;
-  color: var(--gray);
-  line-height: 1.6;
-}
-
-.job-offer-section-content strong {
-  color: var(--primary-dark);
-}
-
-.no-job-offers {
-  font-family: "Open Sans", sans-serif;
-  font-size: 16px;
-  color: var(--primary-dark);
-  text-align: center;
-  padding: 40px 20px;
-  background-color: var(--white);
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-  margin: 16px 0;
-}
-
-/* Copy Button */
-.copy-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  background-color: var(--accent);
-  color: var(--white);
-  border: none;
-  border-radius: var(--border-radius);
-  font-family: "Kode Mono", monospace;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.copy-btn:hover {
-  background-color: #e05100;
-}
-
-.copy-btn-icon {
-  font-size: 18px;
-}
-
-/* Copy Feedback */
-.copy-feedback {
-  display: inline-block;
-  margin-left: 12px;
-  font-family: "Open Sans", sans-serif;
-  font-size: 14px;
-  color: var(--success);
-  opacity: 0;
-  animation: fadeInOut 2s ease-in-out;
-}
-
-@keyframes fadeInOut {
-  0% {
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
 }
 
 /* Create Button */
@@ -1694,6 +1591,100 @@ header {
   background-color: var(--light-gray);
 }
 
+/* Job Offer Details */
+.job-details-container {
+  max-width: 800px;
+  margin: 24px auto;
+  padding: 24px;
+  background-color: var(--white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.job-details-header {
+  margin-bottom: 24px;
+}
+
+.job-details-title {
+  font-family: "Kode Mono", monospace;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin: 0;
+}
+
+.job-details-meta {
+  font-family: "Open Sans", sans-serif;
+  font-size: 14px;
+  color: var(--gray);
+  margin: 8px 0 0;
+}
+
+.job-details-meta p {
+  margin: 4px 0;
+}
+
+.job-details-description {
+  font-family: "Open Sans", sans-serif;
+  font-size: 16px;
+  color: var(--primary-dark);
+  line-height: 1.6;
+  margin: 16px 0;
+}
+
+.job-details-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-bottom: 24px;
+}
+
+.applied-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "Open Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--success);
+  margin-right: auto;
+}
+
+.applied-status-icon {
+  font-size: 18px;
+}
+
+/* Action Buttons */
+.action-btn {
+  padding: 8px 16px;
+  border-radius: var(--border-radius);
+  font-family: "Kode Mono", monospace;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-btn.apply {
+  background-color: var(--accent);
+  color: var(--white);
+  border: none;
+}
+
+.action-btn.apply:hover {
+  background-color: #e65000;
+}
+
+.action-btn.remove {
+  background-color: #d94f00;
+  color: var(--white);
+  border: none;
+}
+
+.action-btn.remove:hover {
+  background-color: #b94400;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .loader {
@@ -1868,6 +1859,37 @@ header {
   }
 
   .dialog-btn {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+
+  .job-details-container {
+    margin: 16px;
+    padding: 16px;
+  }
+
+  .job-details-title {
+    font-size: 20px;
+  }
+
+  .job-details-description {
+    font-size: 14px;
+  }
+
+  .job-details-meta {
+    font-size: 12px;
+  }
+
+  .job-details-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .applied-status {
+    margin-bottom: 12px;
+  }
+
+  .action-btn {
     font-size: 12px;
     padding: 6px 12px;
   }

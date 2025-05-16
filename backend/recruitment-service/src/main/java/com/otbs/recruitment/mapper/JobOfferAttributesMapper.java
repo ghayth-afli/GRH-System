@@ -17,24 +17,25 @@ public class JobOfferAttributesMapper {
                 .responsibilities(dto.responsibilities())
                 .qualifications(dto.qualifications())
                 .role(dto.role())
-                .status(EJobOfferStatus.valueOf(dto.status()))
+                .status(EJobOfferStatus.OPEN)
                 .isInternal(dto.isInternal())
                 .build();
     }
 
     public JobOfferResponseDTO toResponseDTO(JobOffer entity) {
-        return new JobOfferResponseDTO(
-                entity.getId(),
-                entity.getTitle(),
-                entity.getDescription(),
-                entity.getDepartment(),
-                entity.getResponsibilities(),
-                entity.getQualifications(),
-                entity.getRole(),
-                entity.getStatus(),
-                entity.getIsInternal(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt()
-        );
+        return JobOfferResponseDTO.builder()
+                .id(entity.getId())
+                .title(entity.getTitle())
+                .description(entity.getDescription())
+                .department(entity.getDepartment())
+                .responsibilities(entity.getResponsibilities())
+                .qualifications(entity.getQualifications())
+                .role(entity.getRole())
+                .status(entity.getStatus())
+                .isInternal(entity.getIsInternal())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .build();
+
     }
 }

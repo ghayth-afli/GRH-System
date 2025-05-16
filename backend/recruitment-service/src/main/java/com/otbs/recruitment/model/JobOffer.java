@@ -48,18 +48,13 @@ public class JobOffer {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private EJobOfferStatus status = EJobOfferStatus.OPEN;
+    private EJobOfferStatus status;
 
     @Column(name = "is_internal", nullable = false)
-    private Boolean isInternal = true;
+    private Boolean isInternal;
 
     @OneToMany(mappedBy = "jobOffer", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<InternalApplication> internalApplications = new ArrayList<>();
-
-    @OneToMany(mappedBy = "jobOffer", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<ExternalApplication> externalApplications = new ArrayList<>();
+    private List<InternalApplication> internalApplications;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false, nullable = false)
@@ -69,8 +64,4 @@ public class JobOffer {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    public void convertToExternal() {
-        this.isInternal = false;
-        this.status = EJobOfferStatus.CONVERTED_TO_EXTERNAL;
-    }
 }

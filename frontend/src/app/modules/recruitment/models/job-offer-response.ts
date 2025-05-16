@@ -1,8 +1,17 @@
-import { JobOffer } from './job-offer';
+import { EjobOfferStatus } from './EjobOfferStatus';
 
 export interface JobOfferResponse {
-  totalItems: number;
-  totalPages: number;
-  currentPage: number;
-  content: JobOffer[];
+  id: number;
+  title: string;
+  description: string;
+  department: string;
+  responsibilities: string;
+  qualifications: string;
+  role: string;
+  applied: boolean;
+  numberOfApplications: number;
+  status: string;
+  isInternal: boolean;
+  createdAt: string;
+  updatedAt: string;
 }

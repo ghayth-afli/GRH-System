@@ -1,6 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-
+export interface ConfirmationModalData {
+  title: string;
+  message: string;
+  confirmButtonText?: string;
+  cancelButtonText?: string;
+}
 @Component({
   selector: 'app-confirmation-modal',
   standalone: false,
@@ -9,11 +14,13 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 })
 export class ConfirmationModalComponent {
   constructor(
-    public dialogRef: MatDialogRef<ConfirmationModalComponent> //@Inject(MAT_DIALOG_DATA) public data: ConfirmationModalData
+    public dialogRef: MatDialogRef<ConfirmationModalComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: ConfirmationModalData
   ) {}
 
   onConfirm() {
-    //this.dialogRef.close({ confirmed: true, jobId: this.data.jobId });
+    console.log(this.data); // ✅ Now it will correctly log the passed data
+    this.dialogRef.close({ confirmed: true });
   }
 
   onCancel() {

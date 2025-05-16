@@ -307,6 +307,18 @@ public class InternalApplicationServiceImpl implements ApplicationService {
                 .build();
     }
 
+    @Override
+    public void updateApplicationStatus(Long applicationId, EApplicationStatus status) {
+        InternalApplication internalApplication = internalapplicationRepository.findById(applicationId)
+                .orElseThrow(() -> new IllegalArgumentException("Application not found"));
+        switch (status) {
+            case SHORTLISTED -> internalApplication.setStatus(EApplicationStatus.SHORTLISTED);
+            case SELECTED -> internalApplication.setStatus(EApplicationStatus.SELECTED);
+            case REJECTED -> internalApplication.setStatus(EApplicationStatus.REJECTED);
+        }
+        internalapplicationRepository.save(internalApplication);
+    }
+
     private String getCurrentUserId() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }

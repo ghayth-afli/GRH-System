@@ -2,6 +2,7 @@ package com.otbs.recruitment.controller;
 
 import com.otbs.recruitment.dto.ApplicationDetailsResponseDTO;
 import com.otbs.recruitment.dto.ApplicationResponseDTO;
+import com.otbs.recruitment.model.EApplicationStatus;
 import com.otbs.recruitment.service.ApplicationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ public class InternalApplicationController {
 
     @PreAuthorize("hasAuthority('HR')")
     @DeleteMapping("/{applicationId}")
-    public ResponseEntity<Void> deleteApplication(@PathVariable Long applicationId) {
+    public ResponseEntity<Void> deleteApplication(@PathVariable("applicationId") Long applicationId) {
         applicationService.deleteApplication(applicationId);
         return ResponseEntity.noContent().build();
     }
@@ -51,11 +52,21 @@ public class InternalApplicationController {
         return ResponseEntity.ok(applications);
     }
 
-    //getApplicationDetails
     @PreAuthorize("hasAuthority('HR') or hasAuthority('Manager')")
     @GetMapping("/details/{applicationId}")
     public ResponseEntity<ApplicationDetailsResponseDTO> getApplicationDetails(@PathVariable("applicationId") Long applicationId) {
         ApplicationDetailsResponseDTO response = applicationService.getApplicationDetails(applicationId);
         return ResponseEntity.ok(response);
+    }
+
+    //change application status
+    @PreAuthorize("hasAuthority('HR')")
+    @PutMapping("/{applicationId}/status")
+    public ResponseEntity<Void> updateApplicationStatus(
+            @PathVariable("applicationId") Long applicationId,
+            @RequestParam("status") EApplicationStatus status
+    ) {
+        applicationService.updateApplicationStatus(applicationId, status);
+        return ResponseEntity.ok().build();
     }
 }

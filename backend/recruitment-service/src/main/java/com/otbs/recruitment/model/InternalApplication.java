@@ -1,6 +1,7 @@
 package com.otbs.recruitment.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -34,6 +35,7 @@ public class InternalApplication {
     @Column(name = "candidate_id", nullable = false, length = 100)
     private Long candidateId;
 
+    @Column(name = "employee_id", nullable = false, length = 100)
     private String employeeId;
 
     @CreationTimestamp

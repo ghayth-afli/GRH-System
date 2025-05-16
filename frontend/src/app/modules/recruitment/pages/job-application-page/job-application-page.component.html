@@ -52,19 +52,22 @@
       </div>
     </div>
     <div class="upload-form-actions">
-      <button
-        type="button"
-        class="form-btn cancel"
-        [routerLink]="['/recruitment/job-offers']"
-      >
+      @if(!isLoading){
+      <button type="button" class="form-btn cancel" (click)="onCancel()">
         <i class="form-btn-icon fa-solid fa-times"></i> Cancel
       </button>
+      }
+
       <button
         type="submit"
         class="form-btn save"
         [disabled]="!selectedFile || fileError"
       >
-        <i class="form-btn-icon fa-solid fa-upload"></i> Submit
+        @if(isLoading){
+        <span class="loader" aria-label="Loading"></span>
+
+        }@else{
+        <i class="form-btn-icon fa-solid fa-upload"></i> Submit }
       </button>
     </div>
   </form>

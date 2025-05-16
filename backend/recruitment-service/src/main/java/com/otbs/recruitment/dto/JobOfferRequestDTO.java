@@ -29,9 +29,6 @@ public record JobOfferRequestDTO(
         @Size(max = 100, message = "Role name must not exceed 100 characters")
         String role,
 
-        @NotBlank(message = "Status is required")
-        String status,
-
         @NotNull(message = "Internal status is required")
         Boolean isInternal
 ) {}

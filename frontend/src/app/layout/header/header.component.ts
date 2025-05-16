@@ -39,7 +39,7 @@ export class HeaderComponent {
     phoneNumber1: '',
     phoneNumber2: '',
   };
-  notificationService = inject(NotificationService);
+  //notificationService = inject(NotificationService);
   private authService = inject(AuthService);
   private route = inject(ActivatedRoute);
   private dialog = inject(MatDialog);

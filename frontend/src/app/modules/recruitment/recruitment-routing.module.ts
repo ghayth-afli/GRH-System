@@ -14,7 +14,10 @@ const routes: Routes = [
   { path: 'job-offers/create', component: JobOfferFormComponent },
   { path: 'job-offers/edit/:id', component: JobOfferFormComponent },
   { path: 'job-offers/:id', component: JobOfferDetailsComponent },
-  { path: 'job-application', component: JobApplicationPageComponent },
+  {
+    path: 'job-offers/:id/apply',
+    component: JobApplicationPageComponent,
+  },
 ];
 
 @NgModule({
