@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
   ApplicationDetailsResponseDTO,
@@ -74,6 +74,23 @@ export class JobApplicationService {
   ): Observable<ApplicationDetailsResponseDTO> {
     return this.http.get<ApplicationDetailsResponseDTO>(
       `${this.baseUrl}/details/${applicationId}`
+    );
+  }
+
+  /**
+   * Updates the status of an application (HR only)
+   * @param applicationId - ID of the application to update
+   * @param status - New status for the application
+   * @returns Observable that completes when the operation is done
+   */
+  updateApplicationStatus(
+    applicationId: number,
+    status: string
+  ): Observable<void> {
+    const params = new HttpParams().set('status', status);
+    return this.http.put<void>(
+      `${this.baseUrl}/${applicationId}/status?status=${status}`,
+      null
     );
   }
 }

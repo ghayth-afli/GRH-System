@@ -97,20 +97,40 @@ export class JobOffersPageComponent implements OnInit {
       });
       return;
     }
-    const dialogRef = this.dialog.open(ConfirmationModalComponent, {
-      data: {
-        title: 'Finish Job Offer',
-        message: `Are you sure you want to finish the job offer?`,
-        confirmButtonText: 'Finish',
-        cancelButtonText: 'Cancel',
-      },
-    });
+    if (status === 'CLOSED') {
+      const dialogRef = this.dialog.open(ConfirmationModalComponent, {
+        data: {
+          title: 'Finish Job Offer',
+          message: `Are you sure you want to finish the job offer?`,
+          confirmButtonText: 'Finish',
+          cancelButtonText: 'Cancel',
+        },
+      });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result?.confirmed) {
-        this.toggleJobOfferStatus(id, status);
-      }
-    });
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result?.confirmed) {
+          this.toggleJobOfferStatus(id, status);
+        }
+      });
+      return;
+    }
+    if (status === 'OPEN') {
+      const dialogRef = this.dialog.open(ConfirmationModalComponent, {
+        data: {
+          title: 'Finish Job Offer',
+          message: `Are you sure you want to finish the job offer?`,
+          confirmButtonText: 'Open',
+          cancelButtonText: 'Cancel',
+        },
+      });
+
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result?.confirmed) {
+          this.toggleJobOfferStatus(id, status);
+        }
+      });
+      return;
+    }
   }
 
   // Filter handlers

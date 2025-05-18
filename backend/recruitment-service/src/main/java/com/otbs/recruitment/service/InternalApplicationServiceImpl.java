@@ -216,25 +216,15 @@ public class InternalApplicationServiceImpl implements ApplicationService {
         internalapplicationRepository.deleteById(applicationId);
     }
 
+
     @Override
-    public ApplicationResponseDTO getApplicationById(Long applicationId) {
-        if(getCurrentUserRole().equals("HR")){
-            return internalapplicationRepository.findById(applicationId)
-                    .map(application -> {
-                        CandidateResponseDTO candidate = candidateClient.getCandidate(application.getCandidateId()).getBody();
-                        return applicationAttributesMapper.internalApplicationToResponseDTO(
-                                application,
-                                candidate.candidateInfo().name(),
-                                candidate.candidateInfo().email(),
-                                candidate.candidateInfo().phone()
-                        );
-                    })
-                    .orElseThrow(() -> new IllegalArgumentException("Application not found"));
-        }
-        return internalapplicationRepository.findById(applicationId)
-                .filter(application -> application.getJobOffer().getDepartment().equals(getCurrentUserDepartment()))
+    public List<ApplicationResponseDTO> getAllApplications(Long jobId) {
+        var jobOffer = jobOfferRepository.findById(jobId)
+                .orElseThrow(() -> new IllegalArgumentException("Job offer not found"));
+
+        return jobOffer.getInternalApplications().stream()
                 .map(application -> {
-                    CandidateResponseDTO candidate = candidateClient.getCandidate(application.getCandidateId()).getBody();
+                    var candidate = candidateClient.getCandidate(application.getCandidateId()).getBody();
                     return applicationAttributesMapper.internalApplicationToResponseDTO(
                             application,
                             candidate.candidateInfo().name(),
@@ -242,68 +232,20 @@ public class InternalApplicationServiceImpl implements ApplicationService {
                             candidate.candidateInfo().phone()
                     );
                 })
-                .orElseThrow(() -> new IllegalArgumentException("Application not found"));
-    }
-
-    @Override
-    public List<ApplicationResponseDTO> getAllApplications(Long jobId){
-        if(getCurrentUserRole().equals("HR")){
-            return internalapplicationRepository.findAllByJobOfferId(jobId)
-                    .stream()
-                    .map(application -> {
-                        CandidateResponseDTO candidate = candidateClient.getCandidate(application.getCandidateId()).getBody();
-                        return applicationAttributesMapper.internalApplicationToResponseDTO(
-                                application,
-                                candidate.candidateInfo().name(),
-                                candidate.candidateInfo().email(),
-                                candidate.candidateInfo().phone()
-                        );
-                    })
-                    .toList();
-        }
-        else if(getCurrentUserRole().equals("Employee")){
-            return internalapplicationRepository.findAllByJobOfferId(jobId)
-                    .stream()
-                    .filter(application -> application.getEmployeeId().equals(getCurrentUserId()))
-                    .map(application -> {
-                        CandidateResponseDTO candidate = candidateClient.getCandidate(application.getCandidateId()).getBody();
-                        return applicationAttributesMapper.internalApplicationToResponseDTO(
-                                application,
-                                candidate.candidateInfo().name(),
-                                candidate.candidateInfo().email(),
-                                candidate.candidateInfo().phone()
-                        );
-                    })
-                    .toList();
-        }
-        else {
-            return internalapplicationRepository.findAllByJobOfferId(jobId)
-                    .stream()
-                    .filter(application -> application.getJobOffer().getDepartment().equals(getCurrentUserDepartment()))
-                    .map(application -> {
-                        CandidateResponseDTO candidate = candidateClient.getCandidate(application.getCandidateId()).getBody();
-                        return applicationAttributesMapper.internalApplicationToResponseDTO(
-                                application,
-                                candidate.candidateInfo().name(),
-                                candidate.candidateInfo().email(),
-                                candidate.candidateInfo().phone()
-                        );
-                    })
-                    .toList();
-        }
+                .toList();
     }
 
     @Override
     public ApplicationDetailsResponseDTO getApplicationDetails(Long applicationId) {
-        InternalApplication internalApplication = internalapplicationRepository.findById(applicationId)
+        InternalApplication application = internalapplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new IllegalArgumentException("Application not found"));
 
-        CandidateResponseDTO candidate = candidateClient.getCandidate(internalApplication.getCandidateId()).getBody();
+        var candidate = candidateClient.getCandidate(application.getCandidateId()).getBody();
 
         return ApplicationDetailsResponseDTO.builder()
-                .applicationId(internalApplication.getId())
+                .applicationId(application.getId())
                 .resume(candidate)
-                .matchResult(internalApplication.getMatchResult())
+                .matchResult(application.getMatchResult())
                 .build();
     }
 

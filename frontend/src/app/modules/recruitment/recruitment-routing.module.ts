@@ -8,8 +8,11 @@ import { JobOfferDetailsComponent } from './pages/job-offer-details/job-offer-de
 import { JobApplicationPageComponent } from './pages/job-application-page/job-application-page.component';
 
 const routes: Routes = [
-  { path: 'applications', component: ApplicationPageComponent },
-  { path: 'applications/:id', component: ApplicationDetailsPageComponent },
+  { path: 'job-offers/:id/applications', component: ApplicationPageComponent },
+  {
+    path: 'job-offers/:id/applications/:applicationid',
+    component: ApplicationDetailsPageComponent,
+  },
   { path: 'job-offers', component: JobOffersPageComponent },
   { path: 'job-offers/create', component: JobOfferFormComponent },
   { path: 'job-offers/edit/:id', component: JobOfferFormComponent },

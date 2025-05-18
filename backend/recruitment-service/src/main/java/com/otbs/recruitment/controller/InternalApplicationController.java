@@ -36,14 +36,9 @@ public class InternalApplicationController {
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasAuthority('HR') or hasAuthority('Manager')")
-    @GetMapping("/{applicationId}")
-    public ResponseEntity<ApplicationResponseDTO> getApplicationById(@PathVariable("applicationId") Long applicationId) {
-        ApplicationResponseDTO response = applicationService.getApplicationById(applicationId);
-        return ResponseEntity.ok(response);
-    }
 
-    @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager')")
+
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('Manager')")
     @GetMapping("/job-offer/{jobId}")
     public ResponseEntity<List<ApplicationResponseDTO>> getAllApplications(
             @PathVariable("jobId") Long jobId
@@ -64,9 +59,10 @@ public class InternalApplicationController {
     @PutMapping("/{applicationId}/status")
     public ResponseEntity<Void> updateApplicationStatus(
             @PathVariable("applicationId") Long applicationId,
-            @RequestParam("status") EApplicationStatus status
+            @RequestParam("status") String status
     ) {
-        applicationService.updateApplicationStatus(applicationId, status);
-        return ResponseEntity.ok().build();
+        applicationService.updateApplicationStatus(applicationId, EApplicationStatus.valueOf(status));
+        return new ResponseEntity<>(HttpStatus.OK);
     }
+
 }

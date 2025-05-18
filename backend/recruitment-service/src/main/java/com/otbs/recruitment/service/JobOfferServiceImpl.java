@@ -4,7 +4,9 @@ import com.otbs.feign.client.employee.EmployeeClient;
 import com.otbs.recruitment.dto.JobOfferRequestDTO;
 import com.otbs.recruitment.dto.JobOfferResponseDTO;
 import com.otbs.recruitment.mapper.JobOfferAttributesMapper;
+import com.otbs.recruitment.model.EApplicationStatus;
 import com.otbs.recruitment.model.EJobOfferStatus;
+import com.otbs.recruitment.model.InternalApplication;
 import com.otbs.recruitment.repository.JobOfferRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -62,9 +64,17 @@ public JobOfferResponseDTO getJobOfferById(Long id) {
     Integer numberOfApplications = getCurrentUserRole().equals("HR")
             ? jobOffer.getInternalApplications().size()
             : null;
+    EApplicationStatus applicationStatus = !getCurrentUserRole().equals("HR")
+            ? jobOffer.getInternalApplications().stream()
+            .filter(app -> app.getEmployeeId().equals(getCurrentUserId()))
+            .map(InternalApplication::getStatus)
+            .findFirst()
+            .orElse(null)
+            : null;
     var responseDTO = jobOfferAttributesMapper.toResponseDTO(jobOffer);
     responseDTO.setNumberOfApplications(numberOfApplications);
     responseDTO.setApplied(isApplied);
+    responseDTO.setApplicationStatus(applicationStatus);
     return responseDTO;
 }
 
@@ -79,7 +89,15 @@ public JobOfferResponseDTO getJobOfferById(Long id) {
                     Integer numberOfApplications = getCurrentUserRole().equals("HR")
                             ? jobOffer.getInternalApplications().size()
                             : null;
+                    EApplicationStatus applicationStatus = !getCurrentUserRole().equals("HR")
+                            ? jobOffer.getInternalApplications().stream()
+                            .filter(app -> app.getEmployeeId().equals(getCurrentUserId()))
+                            .map(InternalApplication::getStatus)
+                            .findFirst()
+                            .orElse(null)
+                            : null;
                     responseDTO.setNumberOfApplications(numberOfApplications);
+                    responseDTO.setApplicationStatus(applicationStatus);
                     return responseDTO;
                 })
                 .toList();

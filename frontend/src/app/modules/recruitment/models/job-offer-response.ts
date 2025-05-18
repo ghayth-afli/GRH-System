@@ -10,6 +10,7 @@ export interface JobOfferResponse {
   role: string;
   applied: boolean;
   numberOfApplications: number;
+  applicationStatus: string;
   status: string;
   isInternal: boolean;
   createdAt: string;

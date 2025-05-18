@@ -3,3 +3,74 @@
   flex-direction: column;
   gap: 16px;
 }
+/* Add to existing styles.css */
+
+/* Application Actions */
+.application-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.application-actions .action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--border-radius);
+  font-family: "Kode Mono", monospace;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.action-btn.shortlist {
+  background-color: var(--info);
+  color: var(--white);
+}
+
+.action-btn.shortlist:hover {
+  background-color: #0056b3;
+}
+
+.action-btn.select {
+  background-color: var(--success);
+  color: var(--white);
+}
+
+.action-btn.select:hover {
+  background-color: #218838;
+}
+
+.action-btn.reject {
+  background-color: #d94f00;
+  color: var(--white);
+}
+
+.action-btn.reject:hover {
+  background-color: #b94400;
+}
+
+.action-btn i {
+  font-size: 18px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .application-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .application-actions .action-btn {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .application-actions .action-btn i {
+    font-size: 16px;
+  }
+}

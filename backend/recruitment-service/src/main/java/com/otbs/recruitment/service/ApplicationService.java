@@ -10,7 +10,6 @@ import java.util.List;
 public interface ApplicationService {
     void createApplication(Long jobOfferId,  MultipartFile attachment);
     void deleteApplication(Long applicationId);
-    ApplicationResponseDTO getApplicationById(Long applicationId);
     List<ApplicationResponseDTO> getAllApplications(Long jobId);
     ApplicationDetailsResponseDTO getApplicationDetails(Long applicationId);
     void updateApplicationStatus(Long applicationId, EApplicationStatus status);

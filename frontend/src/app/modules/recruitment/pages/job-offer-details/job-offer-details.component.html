@@ -28,16 +28,26 @@
     <h2 class="job-details-title">{{ jobOffer?.title }}</h2>
     <div class="job-details-meta">
       <p><strong>Department:</strong> {{ jobOffer?.department }}</p>
+      @if(authService.hasRole("HR")) {
       <p>
         <strong>Type:</strong>
         {{ jobOffer?.isInternal ? "Internal" : "External" }}
       </p>
       <p><strong>Status:</strong> {{ jobOffer?.status }}</p>
+      }
       <p>
         <strong>Created On:</strong>
         {{ jobOffer?.createdAt | date : "MMM d, yyyy" }}
       </p>
-      <p><strong>Applicants:</strong> {{ jobOffer?.numberOfApplications }}</p>
+      @if(!authService.hasRole("HR") && (jobOffer?.applied)) {
+      <p>
+        <strong>Application Status:</strong>
+        {{
+          jobOffer!.applicationStatus.toLowerCase().charAt(0).toUpperCase() +
+            jobOffer!.applicationStatus.toLowerCase().slice(1)
+        }}
+      </p>
+      }
     </div>
   </div>
   <h3 class="job-details-subtitle">Job Description :</h3>

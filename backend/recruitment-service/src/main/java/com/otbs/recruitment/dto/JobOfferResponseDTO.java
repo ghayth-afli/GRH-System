@@ -1,5 +1,6 @@
 package com.otbs.recruitment.dto;
 
+import com.otbs.recruitment.model.EApplicationStatus;
 import com.otbs.recruitment.model.EJobOfferStatus;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +22,7 @@ public class JobOfferResponseDTO {
     private boolean isApplied;
     private Integer numberOfApplications;
     private EJobOfferStatus status;
+    private EApplicationStatus applicationStatus;
     private Boolean isInternal;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

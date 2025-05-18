@@ -28,9 +28,12 @@
           (ngModelChange)="onDepartmentChange()"
         >
           <option value="all">All Departments</option>
-          <option value="engineering">Engineering</option>
-          <option value="marketing">Marketing</option>
-          <option value="hr">Human Resources</option>
+          <option value="support services">Support Services</option>
+          <option value="research & development">Research & Development</option>
+          <option value="human resources">Human Resources</option>
+          <option value="supply chain">Supply Chain</option>
+          <option value="it">IT</option>
+          <option value="commercial">Commercial</option>
         </select>
       </div>
       @if(authService.hasRole("HR")) {
@@ -64,6 +67,8 @@
 
   <div class="list-view">
     @for (jobOffer of displayedJobOffers; track jobOffer.id) {
+    @if((!authService.hasRole("HR"))&&(jobOffer.status !==
+    "CLOSED")&&(jobOffer.isInternal)) {
     <div class="job-offer-card">
       <div
         class="job-offer-info"
@@ -73,11 +78,42 @@
         <p class="job-offer-department">
           Department: {{ jobOffer.department }}
         </p>
-        @if(authService.hasRole("HR")) {
+
+        @if(jobOffer?.applied) {
+        <p class="job-offer-status" [class]="jobOffer.status.toLowerCase()">
+          Application Status:
+          {{
+            jobOffer!.applicationStatus.toLowerCase().charAt(0).toUpperCase() +
+              jobOffer!.applicationStatus.toLowerCase().slice(1)
+          }}
+        </p>
+        }
+      </div>
+      <div class="job-offer-actions">
+        <div class="action-buttons">
+          <button
+            class="action-btn update"
+            [routerLink]="['/recruitment/job-offers', jobOffer.id]"
+          >
+            <i class="action-icon fa-solid fa-eye"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    } @else if(authService.hasRole("HR")){
+    <div class="job-offer-card">
+      <div
+        class="job-offer-info"
+        [routerLink]="['/recruitment/job-offers', jobOffer.id]"
+      >
+        <h3 class="job-offer-title">{{ jobOffer.title }}</h3>
+        <p class="job-offer-department">
+          Department: {{ jobOffer.department }}
+        </p>
+
         <p class="job-offer-type">
           Type: {{ jobOffer.isInternal ? "Internal" : "External" }}
         </p>
-        }
 
         <p class="job-offer-status" [class]="jobOffer.status.toLowerCase()">
           Status:
@@ -88,18 +124,19 @@
         </p>
       </div>
       <div class="job-offer-actions">
-        @if(authService.hasRole("HR")) {
         <a
-          [routerLink]="['/recruitment']"
-          [queryParams]="{ jobId: jobOffer.id }"
+          [routerLink]="[
+            '/recruitment/job-offers',
+            jobOffer.id,
+            'applications'
+          ]"
           class="applicants-btn"
         >
           <i class="applicants-icon fa-solid fa-users"></i>
-          {{ jobOffer.numberOfApplications }} Applicants </a
-        >}
+          {{ jobOffer.numberOfApplications }} Applicants
+        </a>
 
         <div class="action-buttons">
-          @if(authService.hasRole("HR")) {
           <button
             class="action-btn delete"
             (click)="openDeleteConfirmation(jobOffer.id)"
@@ -135,7 +172,7 @@
           } @if(jobOffer.status !== "CLOSED") {
           <button
             class="action-btn finish-stop"
-            (click)="onToggleJobOfferStatus(jobOffer.id, 'FILLED')"
+            (click)="onToggleJobOfferStatus(jobOffer.id, 'CLOSED')"
           >
             <i class="action-icon fa-solid fa-stop-circle"></i>
             Finish
@@ -148,22 +185,16 @@
             <i class="action-icon fa-solid fa-stop-circle"></i>
             Open
           </button>
-          } } @else {
-          <button
-            class="action-btn update"
-            [routerLink]="['/recruitment/job-offers', jobOffer.id]"
-          >
-            <i class="action-icon fa-solid fa-eye"></i>
-          </button>
           }
         </div>
       </div>
     </div>
-    }
+    } }
 
     <div class="pagination">
       <div class="pagination-info">
-        Showing <b>1-{{ pageSize }}</b> of <b>25</b> job offers
+        Showing <b>1-{{ pageSize }}</b> of <b>{{ jobOffers.length }}</b> job
+        offers
       </div>
       <div class="pagination-controls">
         <select
