@@ -10,5 +10,7 @@ public interface InternalApplicationRepository extends JpaRepository<InternalApp
     //findByIdAndEmployeeId
     Optional<InternalApplication> findByIdAndEmployeeId(Long id, String employeeId);
     List<InternalApplication> findAllByJobOfferId(Long jobOffer_id);
+    //findByJobOfferIdAndEmployeeId
+    Optional<InternalApplication> findByJobOfferIdAndEmployeeId(Long jobOfferId, String employeeId);
 }
 

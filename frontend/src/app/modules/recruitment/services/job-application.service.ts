@@ -93,4 +93,8 @@ export class JobApplicationService {
       null
     );
   }
+
+  cancelApplication(jobOfferId: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/cancel/${jobOfferId}`);
+  }
 }

@@ -26,6 +26,7 @@
           <option value="shortlisted">Shortlisted</option>
           <option value="selected">Selected</option>
           <option value="rejected">Rejected</option>
+          <option value="hired">Hired</option>
         </select>
       </div>
       <div class="filter-group">
@@ -52,7 +53,15 @@
       class="application-card"
       *ngFor="let application of displayedApplications"
     >
-      <div class="card-header">
+      <div
+        class="card-header"
+        [routerLink]="[
+          '/recruitment/job-offers',
+          jobId,
+          'applications',
+          application.id
+        ]"
+      >
         <div class="candidate-info">
           <h3 class="candidate-name">{{ application.FullName }}</h3>
           <p class="candidate-email">{{ application.Email }}</p>
@@ -117,6 +126,13 @@
             <i class="fa-solid fa-times-circle"></i> Reject
           </button>
           } @if(application.status === 'SELECTED') {
+          <button
+            class="action-btn hire"
+            (click)="hireApplication(application.id)"
+            aria-label="Hire application"
+          >
+            <i class="fa-solid fa-user-check"></i> Hire
+          </button>
           <button
             class="action-btn reject"
             (click)="rejectApplication(application.id)"

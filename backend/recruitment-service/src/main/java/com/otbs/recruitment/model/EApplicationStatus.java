@@ -7,5 +7,6 @@ public enum EApplicationStatus {
     PENDING,
     SHORTLISTED,
     SELECTED,
-    REJECTED
+    REJECTED,
+    HIRED,
 }

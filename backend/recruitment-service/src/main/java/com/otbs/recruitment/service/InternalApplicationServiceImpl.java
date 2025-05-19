@@ -2,7 +2,6 @@ package com.otbs.recruitment.service;
 
 import com.otbs.feign.client.candidate.CandidateClient;
 import com.otbs.feign.client.candidate.dto.CandidateRequestDTO;
-import com.otbs.feign.client.candidate.dto.CandidateResponseDTO;
 import com.otbs.feign.client.candidate.dto.CandidateResponseDTO_;
 import com.otbs.feign.client.employee.EmployeeClient;
 import com.otbs.feign.client.resumeMatcher.ResumeMatcherClient;
@@ -16,12 +15,14 @@ import com.otbs.recruitment.repository.JobOfferRepository;
 import com.otbs.recruitment.repository.MatchResultRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +34,7 @@ public class InternalApplicationServiceImpl implements ApplicationService {
     private final InternalApplicationRepository internalapplicationRepository;
     private final MatchResultRepository matchResultRepository;
     private final ApplicationAttributesMapper applicationAttributesMapper;
+    private final RecruitmentNotificationService recruitmentNotificationService;
 
     private final JobOfferRepository jobOfferRepository;
     private final EmployeeClient employeeClient;
@@ -256,9 +258,32 @@ public class InternalApplicationServiceImpl implements ApplicationService {
         switch (status) {
             case SHORTLISTED -> internalApplication.setStatus(EApplicationStatus.SHORTLISTED);
             case SELECTED -> internalApplication.setStatus(EApplicationStatus.SELECTED);
-            case REJECTED -> internalApplication.setStatus(EApplicationStatus.REJECTED);
+            case REJECTED -> {
+                internalApplication.setStatus(EApplicationStatus.REJECTED);
+                fetchEmployeeAndNotifyAsync(
+                        internalApplication.getEmployeeId(),
+                        EApplicationStatus.REJECTED,
+                        internalApplication.getJobOffer().getTitle()
+                );
+            }
+            case HIRED -> {
+                internalApplication.setStatus(EApplicationStatus.HIRED);
+                fetchEmployeeAndNotifyAsync(
+                        internalApplication.getEmployeeId(),
+                        EApplicationStatus.HIRED,
+                        internalApplication.getJobOffer().getTitle()
+                );
+            }
         }
         internalapplicationRepository.save(internalApplication);
+    }
+
+    @Override
+    public void deleteApplicationByJobOfferId(Long jobOfferId) {
+        InternalApplication c = internalapplicationRepository.findByJobOfferIdAndEmployeeId(jobOfferId, getCurrentUserId())
+                .orElseThrow(() -> new IllegalArgumentException("Application not found"));
+
+        internalapplicationRepository.delete(c);
     }
 
     private String getCurrentUserId() {
@@ -271,5 +296,57 @@ public class InternalApplicationServiceImpl implements ApplicationService {
 
     private String getCurrentUserRole() {
         return employeeClient.getEmployeeByDn(getCurrentUserId()).role();
+    }
+
+    @Async
+    protected void fetchEmployeeAndNotifyAsync(String employeeId, EApplicationStatus status,String jobOfferTitle) {
+        CompletableFuture.supplyAsync(() -> {
+            try {
+                return employeeClient.getEmployeeByDn(employeeId);
+            } catch (RuntimeException e) {
+                log.error("Error fetching employee details for ID {}: {}", employeeId, e.getMessage());
+                throw new RuntimeException("Error fetching employee details");
+            }
+        }).thenAccept(employee -> {
+            switch (status) {
+                case REJECTED -> {
+                    String mailBody =
+                    "Dear " + employee.firstName()+" "+employee.lastName() + ",\n\n"
+                    + "Thank you for your interest in the" +jobOfferTitle +". "
+                    + "After careful consideration, we regret to inform you that we have decided to move forward with other candidates at this time.\n\n"
+                    + "We truly appreciate the time and effort you invested in applying and interviewing with us. "
+                    + "Please do not hesitate to apply for future openings that match your skills and experience.\n\n"
+                    + "We wish you the best of luck in your job search and future endeavors.\n\n"
+                    + "Sincerely,\n"
+                    + "Hr Team\n"
+                    + "OTBS";
+                    recruitmentNotificationService.sendMailNotification(
+                            employee.email(),
+                            "Application Rejection",
+                            mailBody
+                    );
+                }
+                case HIRED -> {
+                    String mailBody =
+                            "Dear " + employee.firstName()+" "+employee.lastName() + ",\n\n"
+                                    + "Congratulations! We are pleased to inform you that you have been selected for the position of" +jobOfferTitle +". "
+                                    + "We were impressed with your skills and experience, and we believe you will be a valuable addition to our team.\n\n"
+                                    + "Please find attached the offer letter for your review. If you have any questions or need further information, "
+                                    + "please do not hesitate to reach out.\n\n"
+                                    + "We look forward to welcoming you to our team!\n\n"
+                                    + "Best regards,\n"
+                                    + "Hr Team\n"
+                                    + "OTBS";
+                    recruitmentNotificationService.sendMailNotification(
+                            employee.email(),
+                            "Application Acceptance",
+                            mailBody
+                    );
+                }
+            }
+        }).exceptionally(throwable -> {
+            log.error("Failed to send notification for employee {}: {}", employeeId, throwable.getMessage());
+            return null;
+        });
     }
 }

@@ -31,6 +31,7 @@ export class ApplicationPageComponent {
   searchTerm: string = '';
   selectedScore: string = 'all';
   selectedStatus: string = 'all';
+  jobId: number | null = null;
 
   // Data
   applications: ApplicationResponseDTO[] = [];
@@ -160,6 +161,39 @@ export class ApplicationPageComponent {
     });
   }
 
+  hireApplication(id: number) {
+    const dialogRef = this.dialog.open(ConfirmationModalComponent, {
+      data: {
+        title: 'Confirmation',
+        message: `Are you sure you want to hire this application?`,
+        confirmButtonText: 'Hire',
+        cancelButtonText: 'Cancel',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.confirmed) {
+        this.jobApplicationService
+          .updateApplicationStatus(id, 'HIRED')
+          .subscribe({
+            next: () => {
+              this.launchSnackbar('Application hired successfully.', 'success');
+              //update the application status in the list
+              const index = this.applications.findIndex(
+                (application) => application.id === id
+              );
+              if (index !== -1) {
+                this.applications[index].status = 'HIRED';
+              }
+            },
+            error: () => {
+              this.launchSnackbar('Failed to hire the application.', 'error');
+            },
+          });
+      }
+    });
+  }
+
   private launchSnackbar(message: string, type: 'success' | 'error') {
     this.snackBar.openFromComponent(CustomSnackbarComponent, {
       data: {
@@ -237,6 +271,7 @@ export class ApplicationPageComponent {
 
   private loadApplications() {
     const jobIdParam = this.route.snapshot.paramMap.get('id');
+    this.jobId = jobIdParam ? Number(jobIdParam) : null;
     const jobId = jobIdParam ? Number(jobIdParam) : null;
     if (jobId === null || isNaN(jobId)) {
       this.snackBar.open('Invalid job ID.', 'Close', { duration: 3000 });

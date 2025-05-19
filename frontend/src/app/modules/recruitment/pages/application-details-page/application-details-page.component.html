@@ -1,22 +1,33 @@
 <div class="detail-view">
-  <a routerLink="/recruitment" class="back-btn">← Back to List</a>
+  <a
+    routerLink="/recruitment/job-offers/{{ jobId }}/applications"
+    class="back-btn"
+    >← Back to List</a
+  >
 
-  <div class="detail-header">
+  <div class="detail-header" *ngIf="applicationDetails">
     <div class="detail-candidate-info">
-      <h2 class="detail-candidate-name">MOHAMED GHAYTH AFLI</h2>
+      <h2 class="detail-candidate-name">
+        {{ applicationDetails.resume.candidateInfo.name | uppercase }}
+      </h2>
       <div class="detail-candidate-contact">
-        <span>📧 mohamed.ghayth12gmail.com</span>
-        <span>📱 +216 95 357 697</span>
+        <span>📧 {{ applicationDetails.resume.candidateInfo.email }}</span>
+        <span>📱 {{ applicationDetails.resume.candidateInfo.phone }}</span>
       </div>
-      <div class="detail-candidate-location">📍 Ariana, Tunisia</div>
+      <div class="detail-candidate-location">
+        📍 {{ applicationDetails.resume.candidateInfo.location.city }},
+        {{ applicationDetails.resume.candidateInfo.location.country }}
+      </div>
     </div>
     <div class="detail-actions">
-      <button class="action-btn btn-secondary">Change Status</button>
-      <button class="action-btn btn-primary">Schedule Interview</button>
+      <button class="action-btn btn-primary" (click)="downloadResume()">
+        <i class="fa-solid fa-download"></i>
+        Download Resume
+      </button>
     </div>
   </div>
 
-  <div class="detail-content">
+  <div class="detail-content" *ngIf="applicationDetails">
     <div class="detail-column">
       <div class="detail-section">
         <h3 class="section-title">
@@ -38,82 +49,45 @@
         <div class="score-overview">
           <div class="score-circle">
             <canvas #scoreChart width="160" height="160"></canvas>
-            <div class="score-text">72%</div>
+            <div class="score-text">{{ formatScorePercentage() }}</div>
           </div>
           <div class="score-label">Match Score</div>
           <div class="score-interpretation">
-            Good Fit – Strong candidate, minor gaps
+            {{ applicationDetails.matchResult.interpretation }}
           </div>
         </div>
-        <div class="score-breakdown">
+        <!-- <div class="score-breakdown">
           <h4 class="breakdown-title">Score Breakdown</h4>
-          <div class="breakdown-item">
-            <div>
-              <div class="breakdown-label">Technical Skills Match</div>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 70%"></div>
+
+          <ng-container
+            *ngFor="
+              let criteria of applicationDetails.matchResult.adapted_criteria
+            "
+          >
+            <div class="breakdown-item">
+              <div>
+                <div class="breakdown-label">{{ criteria.name }}</div>
+                <div class="progress-bar">
+                  <div
+                    class="progress-fill"
+                    [style.width.%]="
+                      getAdaptedCriteriaValue(criteria.name).percentage
+                    "
+                  ></div>
+                </div>
+              </div>
+              <div class="breakdown-value">
+                {{ getAdaptedCriteriaValue(criteria.name).value }}/{{
+                  criteria.weight
+                }}
               </div>
             </div>
-            <div class="breakdown-value">28/40</div>
-          </div>
-          <div class="breakdown-item">
-            <div>
-              <div class="breakdown-label">Relevant Experience</div>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 75%"></div>
-              </div>
-            </div>
-            <div class="breakdown-value">15/20</div>
-          </div>
-          <div class="breakdown-item">
-            <div>
-              <div class="breakdown-label">Problem Solving Capability</div>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 70%"></div>
-              </div>
-            </div>
-            <div class="breakdown-value">7/10</div>
-          </div>
-          <div class="breakdown-item">
-            <div>
-              <div class="breakdown-label">Education</div>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 90%"></div>
-              </div>
-            </div>
-            <div class="breakdown-value">9/10</div>
-          </div>
-          <div class="breakdown-item">
-            <div>
-              <div class="breakdown-label">Technical Certifications</div>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 0%"></div>
-              </div>
-            </div>
-            <div class="breakdown-value">0/10</div>
-          </div>
-          <div class="breakdown-item">
-            <div>
-              <div class="breakdown-label">Development Tools/Frameworks</div>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 100%"></div>
-              </div>
-            </div>
-            <div class="breakdown-value">5/5</div>
-          </div>
-          <div class="breakdown-item">
-            <div>
-              <div class="breakdown-label">Open Source Contributions</div>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 70%"></div>
-              </div>
-            </div>
-            <div class="breakdown-value">3.5/5</div>
-          </div>
-        </div>
-        <div class="flags-section">
+          </ng-container>
+        </div> -->
+
+        <div class="flags-section" *ngIf="getRedFlags().length > 0">
           <h4 class="breakdown-title">Red Flags</h4>
-          <div class="flag-item">
+          <div class="flag-item" *ngFor="let flag of getRedFlags()">
             <svg
               class="flag-icon"
               xmlns="http://www.w3.org/2000/svg"
@@ -132,56 +106,11 @@
               <line x1="12" y1="9" x2="12" y2="13"></line>
               <line x1="12" y1="17" x2="12.01" y2="17"></line>
             </svg>
-            <div class="flag-text">Lack of explicit Java experience</div>
-          </div>
-          <div class="flag-item">
-            <svg
-              class="flag-icon"
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path
-                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
-              ></path>
-              <line x1="12" y1="9" x2="12" y2="13"></line>
-              <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
-            <div class="flag-text">
-              Insufficient professional experience for a senior role
-            </div>
-          </div>
-          <div class="flag-item">
-            <svg
-              class="flag-icon"
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path
-                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
-              ></path>
-              <line x1="12" y1="9" x2="12" y2="13"></line>
-              <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
-            <div class="flag-text">
-              Resume mentions a six-month gap in employment
-            </div>
+            <div class="flag-text">{{ flag }}</div>
           </div>
         </div>
       </div>
+
       <div class="detail-section">
         <h3 class="section-title">
           <svg
@@ -203,30 +132,16 @@
           Role-Specific Insights
         </h3>
         <ul class="insights-list">
-          <li class="insight-item">
-            <p class="insight-text">
-              The candidate's proficiency in Spring Boot and RESTful APIs is a
-              strong positive, aligning well with the requirement for developing
-              scalable and high-performance enterprise applications.
-            </p>
-          </li>
-          <li class="insight-item">
-            <p class="insight-text">
-              The resume highlights experience with relevant technologies
-              (MySQL, SQL, Design Patterns), indicating a broad understanding of
-              backend development principles.
-            </p>
-          </li>
-          <li class="insight-item">
-            <p class="insight-text">
-              The candidate's demonstrated ability in teamwork and
-              problem-solving is positive, but further probing into project
-              complexity is needed.
-            </p>
+          <li
+            class="insight-item"
+            *ngFor="let insight of getRoleSpecificInsights()"
+          >
+            <p class="insight-text">{{ insight }}</p>
           </li>
         </ul>
       </div>
     </div>
+
     <div class="detail-column">
       <div class="detail-section">
         <h3 class="section-title">
@@ -250,56 +165,62 @@
           </svg>
           Resume Overview
         </h3>
+
         <div class="resume-section">
           <h4 class="resume-section-title">Experience</h4>
-          <div class="resume-item">
-            <div class="resume-item-title">DevSecOps Intern</div>
-            <div class="resume-item-subtitle">APIA Technology</div>
+          <div
+            class="resume-item"
+            *ngFor="let exp of applicationDetails.resume.experience"
+          >
+            <div class="resume-item-title">{{ exp.title }}</div>
+            <div class="resume-item-subtitle">{{ exp.company }}</div>
             <div class="resume-item-dates">
-              July 2024 - September 2024 | Paris, France (Remote)
+              {{ exp.startDate }} - {{ exp.endDate }} | {{ exp.location }}
             </div>
             <ul class="resume-item-list">
-              <li>Developed back-end functionality for MeetSoccer app.</li>
-              <li>Deployed applications on AWS with Docker.</li>
-              <li>Automated CI/CD pipelines using GitHub Actions.</li>
-            </ul>
-          </div>
-          <div class="resume-item">
-            <div class="resume-item-title">Blockchain Development Intern</div>
-            <div class="resume-item-subtitle">Pepolls</div>
-            <div class="resume-item-dates">
-              March 2024 - August 2024 | Tunis, Tunisia
-            </div>
-            <ul class="resume-item-list">
-              <li>Built decentralized applications (DApps).</li>
-              <li>Integrated Web3 technologies.</li>
+              <li *ngFor="let resp of exp.responsibilities">{{ resp }}</li>
             </ul>
           </div>
         </div>
+
         <div class="resume-section">
           <h4 class="resume-section-title">Education</h4>
-          <div class="resume-item">
-            <div class="resume-item-title">Computer Engineering</div>
-            <div class="resume-item-subtitle">TEK-UP University</div>
+          <div
+            class="resume-item"
+            *ngFor="let edu of applicationDetails.resume.education"
+          >
+            <div class="resume-item-title">{{ edu.degree }}</div>
+            <div class="resume-item-subtitle">{{ edu.institution }}</div>
             <div class="resume-item-dates">
-              2022 - Present | Ariana, Tunisia
+              {{ edu.startDate }} - {{ edu.endDate }} | {{ edu.location }}
             </div>
             <div class="resume-item-description">
-              Web, Mobile, and Multimedia Development
+              {{ edu.fieldOfStudy }}
             </div>
           </div>
         </div>
+
         <div class="resume-section">
           <h4 class="resume-section-title">Skills</h4>
           <div class="skills-container">
-            <span class="skill-tag highlight">SpringBoot</span>
-            <span class="skill-tag highlight">MySQL</span>
-            <span class="skill-tag">React</span>
-            <span class="skill-tag">Docker</span>
-            <span class="skill-tag">AWS</span>
+            <ng-container
+              *ngFor="let skill of applicationDetails.resume.skills.technical"
+            >
+              <span
+                class="skill-tag"
+                [class.highlight]="
+                  applicationDetails.matchResult.details.skills_match.matching_skills.includes(
+                    skill
+                  )
+                "
+              >
+                {{ skill }}
+              </span>
+            </ng-container>
           </div>
         </div>
       </div>
+
       <div class="detail-section">
         <h3 class="section-title">
           <svg
@@ -318,18 +239,18 @@
           Final Assessment
         </h3>
         <ul class="insights-list">
-          <li class="insight-item">
-            <p class="insight-text">
-              Employment gaps need clarification before proceeding.
-            </p>
-          </li>
-          <li class="insight-item">
-            <p class="insight-text">
-              A technical assessment is recommended to validate Java expertise.
-            </p>
+          <li
+            class="insight-item"
+            *ngFor="let insight of getRoleSpecificInsights().slice(-2)"
+          >
+            <p class="insight-text">{{ insight }}</p>
           </li>
         </ul>
       </div>
     </div>
+  </div>
+
+  <div class="loading-indicator" *ngIf="!applicationDetails">
+    Loading application details...
   </div>
 </div>

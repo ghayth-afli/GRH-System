@@ -10,6 +10,7 @@ import { CustomSnackbarComponent } from '../../../../shared/components/custom-sn
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { JobOfferService } from '../../services/job-offer.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { JobApplicationService } from '../../services/job-application.service';
 
 @Component({
   selector: 'app-job-offer-details',
@@ -25,6 +26,7 @@ export class JobOfferDetailsComponent {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private jobOfferService = inject(JobOfferService);
+  private jobApplicationService = inject(JobApplicationService);
   authService = inject(AuthService);
   constructor(private dialog: MatDialog, private snackBar: MatSnackBar) {}
 
@@ -60,6 +62,34 @@ export class JobOfferDetailsComponent {
     dialogRef.afterClosed().subscribe((result) => {
       if (result?.confirmed) {
         this.deleteJobOffer(id);
+      }
+    });
+  }
+
+  onJobApplicationCancel(id: number) {
+    const dialogRef = this.dialog.open(ConfirmationModalComponent, {
+      data: {
+        title: 'Cancel Job Application',
+        message: 'Are you sure you want to cancel your job application?',
+        confirmButtonText: 'Cancel',
+        cancelButtonText: 'No',
+      },
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.confirmed) {
+        this.jobApplicationService.cancelApplication(id).subscribe({
+          next: () => {
+            this.hasApplied = false;
+            this.launchSnackbar(
+              'Job application cancelled successfully',
+              'success'
+            );
+          },
+          error: (error) => {
+            console.error('Error cancelling job application:', error);
+            this.launchSnackbar('Error cancelling job application', 'error');
+          },
+        });
       }
     });
   }

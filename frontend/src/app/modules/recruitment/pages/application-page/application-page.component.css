@@ -54,6 +54,15 @@
   background-color: #b94400;
 }
 
+.action-btn.hire {
+  background-color: var(--success);
+  color: var(--white);
+}
+
+.action-btn.hire:hover {
+  background-color: #218838;
+}
+
 .action-btn i {
   font-size: 18px;
 }

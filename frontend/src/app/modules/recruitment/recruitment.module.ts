@@ -9,7 +9,9 @@ import { JobOffersPageComponent } from './pages/job-offers-page/job-offers-page.
 import { JobOfferFormComponent } from './pages/job-offer-form/job-offer-form.component';
 import { JobOfferDetailsComponent } from './pages/job-offer-details/job-offer-details.component';
 import { JobApplicationPageComponent } from './pages/job-application-page/job-application-page.component';
-
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatTabsModule } from '@angular/material/tabs';
 @NgModule({
   declarations: [
     ApplicationPageComponent,
@@ -19,6 +21,13 @@ import { JobApplicationPageComponent } from './pages/job-application-page/job-ap
     JobOfferDetailsComponent,
     JobApplicationPageComponent,
   ],
-  imports: [CommonModule, RecruitmentRoutingModule, FormsModule],
+  imports: [
+    CommonModule,
+    RecruitmentRoutingModule,
+    FormsModule,
+    MatSnackBarModule,
+    MatDialogModule,
+    MatTabsModule,
+  ],
 })
 export class RecruitmentModule {}

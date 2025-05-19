@@ -17,6 +17,7 @@
       *ngIf="hasApplied"
       class="action-btn remove"
       aria-label="Remove your application"
+      (click)="onJobApplicationCancel(jobOffer!.id)"
     >
       <i class="remove-icon fa-solid fa-times"></i>
       Cancel Application

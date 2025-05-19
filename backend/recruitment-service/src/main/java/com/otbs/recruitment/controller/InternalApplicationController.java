@@ -36,6 +36,15 @@ public class InternalApplicationController {
         return ResponseEntity.noContent().build();
     }
 
+    //cancel application
+    @PreAuthorize("hasAuthority('Employee') or hasAuthority('Manager')")
+    @DeleteMapping("/cancel/{jobOfferId}")
+    public ResponseEntity<Void> cancelApplication(@PathVariable("jobOfferId") Long jobOfferId) {
+        applicationService.deleteApplicationByJobOfferId(jobOfferId);
+        return ResponseEntity.noContent().build();
+    }
+
+
 
 
     @PreAuthorize("hasAuthority('HR') or hasAuthority('Manager')")
