@@ -1,0 +1,6 @@
+export enum EjobOfferStatus {
+  OPEN = 'OPEN',
+  FILLED = 'FILLED',
+  EXPIRED = 'EXPIRED',
+  CONVERTED_TO_EXTERNAL = 'CONVERTED_TO_EXTERNAL',
+}

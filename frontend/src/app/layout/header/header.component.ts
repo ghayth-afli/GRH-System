@@ -23,11 +23,10 @@ import { NotificationService } from '../../core/services/notification.service';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
 })
-export class HeaderComponent implements OnInit, OnDestroy {
-  leaveBalance$: Observable<LeaveBalance>;
-  imageSrc: string | null = null;
+export class HeaderComponent {
   isDropdownOpen = false;
-  notificationsSubject = new BehaviorSubject<any[]>([]);
+  showBadge = true;
+  imageSrc: string | null = null;
   user: User = {
     id: '',
     username: '',
@@ -40,34 +39,35 @@ export class HeaderComponent implements OnInit, OnDestroy {
     phoneNumber1: '',
     phoneNumber2: '',
   };
-
-  notificationService = inject(NotificationService);
+  //notificationService = inject(NotificationService);
   private authService = inject(AuthService);
   private route = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
   private userService = inject(UserService);
-
-  constructor() {
-    this.leaveBalance$ = this.route.data.pipe(
-      map((data) => data['leaveBalance'])
-    );
-  }
-
+  notifications = [
+    {
+      message: 'New application from MOHAMED GHAYTH AFLI',
+      time: 'May 13, 2025, 2:30 PM',
+      unread: true,
+    },
+    {
+      message: 'Interview scheduled for Jane Smith',
+      time: 'May 12, 2025, 10:15 AM',
+      unread: true,
+    },
+    {
+      message: 'David Johnson’s application reviewed',
+      time: 'May 11, 2025, 4:00 PM',
+      unread: false,
+    },
+  ];
   ngOnInit(): void {
     this.initializeUser();
     this.loadProfilePicture();
-    this.initializeNotifications();
   }
-
-  ngOnDestroy(): void {
-    document.removeEventListener('click', this.onDocumentClick);
-  }
-
-  // User-related methods
   private initializeUser(): void {
     this.user = this.authService.authenticatedUser || this.user;
   }
-
   private loadProfilePicture(): void {
     this.userService.getProfilePicture(this.user.username).subscribe({
       next: (response) => {
@@ -89,69 +89,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 
-  isEmployee(): boolean {
-    return this.authService.hasRole('Employee');
-  }
-
-  openEditModal(): void {
-    const dialogRef = this.dialog.open(EditPersonalInfoModalFormComponent, {
-      width: '500px',
-      data: {
-        firstName: this.user.firstName,
-        lastName: this.user.lastName,
-        email: this.user.email,
-        jobTitle: this.user.jobTitle,
-        phoneNumber1: this.user.phoneNumber1,
-        phoneNumber2: this.user.phoneNumber2,
-        imageSrc: this.imageSrc,
-      },
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.updateUserInfo(dialogRef);
-      }
-    });
-  }
-
-  private updateUserInfo(dialogRef: any): void {
-    this.user = {
-      ...this.user,
-      firstName: dialogRef.componentInstance.editForm.value.firstName,
-      lastName: dialogRef.componentInstance.editForm.value.lastName,
-      email: dialogRef.componentInstance.editForm.value.email,
-      jobTitle: dialogRef.componentInstance.editForm.value.jobTitle,
-      phoneNumber1: dialogRef.componentInstance.editForm.value.phoneNumber1,
-      phoneNumber2: dialogRef.componentInstance.editForm.value.phoneNumber2,
-    };
-    this.authService._setUser(this.user);
-    this.loadProfilePicture();
-  }
-
-  // Notification-related methods
-  private initializeNotifications(): void {
-    this.notificationService.loadNotifications();
-    this.notificationService.notifications$.subscribe((notifications) => {
-      this.notificationsSubject.next(notifications);
-    });
-
-    this.notificationService.unreadCount$.subscribe((count) => {});
-  }
-
-  // Dropdown-related methods
-  toggleDropdown(): void {
+  toggleNotifications() {
     this.isDropdownOpen = !this.isDropdownOpen;
-    this.notificationService.markAllAsRead().subscribe(() => {});
   }
 
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
-    const target = event.target as HTMLElement;
-    const notificationContainer = document.querySelector(
-      '.notification-container'
-    );
-    if (notificationContainer && !notificationContainer.contains(target)) {
-      this.isDropdownOpen = false;
-    }
+  clearNotifications() {
+    this.notifications = [];
+    this.showBadge = false;
   }
 }

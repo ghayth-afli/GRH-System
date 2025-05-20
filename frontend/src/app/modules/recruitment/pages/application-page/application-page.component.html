@@ -1,0 +1,194 @@
+<div class="application-page">
+  <div class="filter-section">
+    <div class="filter-header">
+      <h2 class="filter-title">Filters</h2>
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search job titles..."
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchTermChange()"
+        />
+      </div>
+    </div>
+    <div class="filter-controls">
+      <div class="filter-group">
+        <label class="filter-label">Status:</label>
+        <select
+          class="filter-select"
+          [(ngModel)]="selectedStatus"
+          (ngModelChange)="onStatusChange()"
+        >
+          <option value="all">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="shortlisted">Shortlisted</option>
+          <option value="selected">Selected</option>
+          <option value="rejected">Rejected</option>
+          <option value="hired">Hired</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Score:</label>
+        <select
+          class="filter-select"
+          [(ngModel)]="selectedScore"
+          (ngModelChange)="onScoreChange()"
+        >
+          <option value="all">All Scores</option>
+          <option value="high">High (80-100%)</option>
+          <option value="medium">Medium (60-79%)</option>
+          <option value="low">Low (0-59%)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="list-view">
+    <div class="no-applications" *ngIf="!applications.length">
+      There are currently no applications listed.
+    </div>
+    <div
+      class="application-card"
+      *ngFor="let application of displayedApplications"
+    >
+      <div
+        class="card-header"
+        [routerLink]="[
+          '/recruitment/job-offers',
+          jobId,
+          'applications',
+          application.id
+        ]"
+      >
+        <div class="candidate-info">
+          <h3 class="candidate-name">{{ application.FullName }}</h3>
+          <p class="candidate-email">{{ application.Email }}</p>
+          <p class="candidate-phone">{{ application.Phone }}</p>
+        </div>
+        <div class="status-score">
+          <span
+            class="status-badge"
+            [ngClass]="application.status.toLowerCase()"
+            >{{ application.status | uppercase }}</span
+          >
+          <div class="score-display">
+            <span class="score-label">Match Score:</span>
+            <span
+              class="score-value"
+              [ngClass]="getScoreClass(application.score)"
+              >{{ application.score * 100 }}%</span
+            >
+          </div>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="application-date">
+          Applied: {{ application.submissionDate | date : "MMM d, yyyy" }}
+        </div>
+        <div class="application-actions">
+          @if(application.status === 'PENDING') {
+          <button
+            class="action-btn shortlist"
+            (click)="shortlistApplication(application.id)"
+            aria-label="Shortlist application"
+          >
+            <i class="fa-solid fa-star"></i> Shortlist
+          </button>
+          <button
+            class="action-btn select"
+            (click)="selectApplication(application.id)"
+            aria-label="Select application"
+          >
+            <i class="fa-solid fa-check-circle"></i> Select
+          </button>
+          <button
+            class="action-btn reject"
+            (click)="rejectApplication(application.id)"
+            aria-label="Reject application"
+          >
+            <i class="fa-solid fa-times-circle"></i> Reject
+          </button>
+          } @if(application.status === 'SHORTLISTED') {
+          <button
+            class="action-btn select"
+            (click)="selectApplication(application.id)"
+            aria-label="Select application"
+          >
+            <i class="fa-solid fa-check-circle"></i> Select
+          </button>
+          <button
+            class="action-btn reject"
+            (click)="rejectApplication(application.id)"
+            aria-label="Reject application"
+          >
+            <i class="fa-solid fa-times-circle"></i> Reject
+          </button>
+          } @if(application.status === 'SELECTED') {
+          <button
+            class="action-btn hire"
+            (click)="hireApplication(application.id)"
+            aria-label="Hire application"
+          >
+            <i class="fa-solid fa-user-check"></i> Hire
+          </button>
+          <button
+            class="action-btn reject"
+            (click)="rejectApplication(application.id)"
+            aria-label="Reject application"
+          >
+            <i class="fa-solid fa-times-circle"></i> Reject
+          </button>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="pagination">
+      <div class="pagination-info">
+        Showing <b>1-{{ pageSize }}</b> of <b>{{ applications.length }}</b> job
+        offers
+      </div>
+      <div class="pagination-controls">
+        <select
+          class="page-size-select"
+          [(ngModel)]="pageSize"
+          (ngModelChange)="onPageSizeChange()"
+        >
+          @for (size of pageSizeOptions; track size) {
+          <option [value]="size">{{ size }} per page</option>
+          }
+        </select>
+        <button
+          class="pagination-btn"
+          [class.disabled]="isPrevDisabled()"
+          (click)="previousPage()"
+        >
+          ◀
+        </button>
+
+        @for (page of visiblePages; track page; let i = $index) { @if(page !==
+        '...') {
+        <button
+          class="pagination-btn"
+          [class.active]="page === pageIndex"
+          (click)="goToPage(+page)"
+        >
+          {{ +page + 1 }}
+        </button>
+        } @else {
+        <button class="pagination-btn" disabled>...</button>
+        } }
+
+        <button
+          class="pagination-btn"
+          [class.disabled]="isNextDisabled()"
+          (click)="nextPage()"
+        >
+          ▶
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

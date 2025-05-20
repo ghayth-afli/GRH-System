@@ -23,6 +23,18 @@
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
             <version>4.2.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.34</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.otbs</groupId>
+            <artifactId>candidate-service</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 </project>

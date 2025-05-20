@@ -1,0 +1,11 @@
+<div class="snackbar" [ngClass]="data.type">
+  <i class="snackbar-icon" [ngClass]="getIconClass()"></i>
+  <span class="snackbar-message">{{ data.message }}</span>
+  <button
+    class="snackbar-action"
+    (click)="dismiss()"
+    aria-label="Dismiss notification"
+  >
+    Dismiss
+  </button>
+</div>

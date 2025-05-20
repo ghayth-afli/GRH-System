@@ -1,16 +1,21 @@
 package com.otbs.recruitment.dto;
 
-import com.otbs.recruitment.model.EApplicantType;
 import com.otbs.recruitment.model.EApplicationStatus;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 
+@Builder
 public record ApplicationResponseDTO(
         Long id,
-        Long jobOfferId,
-        String applicantIdentifier,
-        EApplicantType applicantType,
+        Long candidateId,
+        String FullName,
+        boolean isInternal,
+        String Email,
+        String Phone,
         EApplicationStatus status,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt
-) {}
+        double score,
+        LocalDateTime submissionDate
+) {
+
+}

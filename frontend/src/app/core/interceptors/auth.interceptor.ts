@@ -1,7 +1,6 @@
 import {
   HttpEvent,
-  HttpHandler,
-  HttpInterceptor,
+  HttpHandlerFn,
   HttpInterceptorFn,
   HttpRequest,
 } from '@angular/common/http';
@@ -15,79 +14,78 @@ import {
   throwError,
 } from 'rxjs';
 import { AuthService } from '../services/auth.service';
-import { Injectable } from '@angular/core';
+import { inject } from '@angular/core';
 import { ApiErrorResponse } from '../models/auth-responses.interface';
 
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
-  private isRefreshing = false;
+// Global variables to handle token refresh state
+let isRefreshing = false;
+const refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
-  // BehaviorSubject to store the new token value when refreshing the token and to emit the new token value to the subscribers
-  private refreshTokenSubject = new BehaviorSubject<string | null>(null);
+export const authInterceptor: HttpInterceptorFn = (
+  request: HttpRequest<unknown>,
+  next: HttpHandlerFn
+): Observable<HttpEvent<unknown>> => {
+  const authService = inject(AuthService);
 
-  // Inject AuthService
-  constructor(private authService: AuthService) {}
+  // Add authorization header to the request
+  request = addAuthorizationHeader(request, authService);
 
-  // Intercept method to add the Authorization header to the request
-  intercept(
-    request: HttpRequest<any>,
-    next: HttpHandler
-  ): Observable<HttpEvent<any>> {
-    request = this._addAuthorizationHeader(request);
+  return next(request).pipe(
+    catchError((err) => {
+      if (err.status === 401) {
+        return handle401Error(request, next, authService);
+      }
 
-    return next.handle(request).pipe(
-      catchError((err) => {
-        if (err.status === 401) {
-          return this._handle401Error(request, next);
-        }
+      return throwError(() => new Error(err.error.message));
+    })
+  );
+};
 
-        return throwError(() => new Error(err.error.message));
-      })
+// Helper function to add the Authorization header to the request
+function addAuthorizationHeader(
+  request: HttpRequest<unknown>,
+  authService: AuthService
+): HttpRequest<unknown> {
+  if (authService.accessToken) {
+    return request.clone({
+      setHeaders: { Authorization: `Bearer ${authService.accessToken}` },
+    });
+  }
+
+  return request;
+}
+
+// Helper function to handle 401 error and refresh the token
+function handle401Error(
+  request: HttpRequest<unknown>,
+  next: HttpHandlerFn,
+  authService: AuthService
+): Observable<HttpEvent<unknown>> {
+  // If the token is already refreshing, wait for the new token to be emitted
+  if (isRefreshing) {
+    return refreshTokenSubject.pipe(
+      filter((token) => !!token),
+      take(1),
+      switchMap(() => next(addAuthorizationHeader(request, authService)))
     );
   }
 
-  // Method to add the Authorization header to the request
-  private _addAuthorizationHeader(request: HttpRequest<any>): HttpRequest<any> {
-    if (this.authService.accessToken) {
-      return request.clone({
-        setHeaders: { Authorization: `Bearer ${this.authService.accessToken}` },
-      });
-    }
+  // If the token is not refreshing, refresh the token
+  isRefreshing = true;
+  refreshTokenSubject.next(null);
 
-    return request;
-  }
+  return authService.refreshToken().pipe(
+    switchMap(() => {
+      isRefreshing = false;
+      refreshTokenSubject.next(authService.accessToken);
 
-  // Method to handle 401 error and refresh the token
-  private _handle401Error(
-    request: HttpRequest<any>,
-    next: HttpHandler
-  ): Observable<HttpEvent<any>> {
-    // If the token is already refreshing, wait for the new token to be emitted
-    if (this.isRefreshing) {
-      return this.refreshTokenSubject.pipe(
-        filter((token) => !!token),
-        take(1),
-        switchMap(() => next.handle(this._addAuthorizationHeader(request)))
-      );
-    }
+      return next(addAuthorizationHeader(request, authService));
+    }),
+    catchError((error: ApiErrorResponse) => {
+      isRefreshing = false;
+      authService.logout();
 
-    // If the token is not refreshing, refresh the token
-    this.isRefreshing = true;
-    this.refreshTokenSubject.next(null);
-
-    return this.authService.refreshToken().pipe(
-      switchMap(() => {
-        this.isRefreshing = false;
-        this.refreshTokenSubject.next(this.authService.accessToken);
-
-        return next.handle(this._addAuthorizationHeader(request));
-      }),
-      catchError((error: ApiErrorResponse) => {
-        this.isRefreshing = false;
-        this.authService.logout();
-
-        return throwError(() => new Error(error.message));
-      })
-    );
-  }
+      return throwError(() => new Error(error.message));
+    })
+  );
 }

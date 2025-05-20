@@ -1,0 +1,82 @@
+<div class="job-details-container">
+  @if(!authService.hasRole("HR")) {
+  <div class="job-details-actions">
+    <div class="applied-status" *ngIf="hasApplied" aria-live="polite">
+      <i class="applied-status-icon fa-solid fa-check-circle"></i>
+      Applied
+    </div>
+    <button
+      *ngIf="!hasApplied"
+      class="action-btn apply"
+      [routerLink]="['/recruitment/job-offers', jobOffer!.id, 'apply']"
+      aria-label="Apply for this job offer"
+    >
+      Apply
+    </button>
+    <button
+      *ngIf="hasApplied"
+      class="action-btn remove"
+      aria-label="Remove your application"
+      (click)="onJobApplicationCancel(jobOffer!.id)"
+    >
+      <i class="remove-icon fa-solid fa-times"></i>
+      Cancel Application
+    </button>
+  </div>
+  }
+
+  <div class="job-details-header">
+    <h2 class="job-details-title">{{ jobOffer?.title }}</h2>
+    <div class="job-details-meta">
+      <p><strong>Department:</strong> {{ jobOffer?.department }}</p>
+      @if(authService.hasRole("HR")) {
+      <p>
+        <strong>Type:</strong>
+        {{ jobOffer?.isInternal ? "Internal" : "External" }}
+      </p>
+      <p><strong>Status:</strong> {{ jobOffer?.status }}</p>
+      }
+      <p>
+        <strong>Created On:</strong>
+        {{ jobOffer?.createdAt | date : "MMM d, yyyy" }}
+      </p>
+      @if(!authService.hasRole("HR") && (jobOffer?.applied)) {
+      <p>
+        <strong>Application Status:</strong>
+        {{
+          jobOffer!.applicationStatus.toLowerCase().charAt(0).toUpperCase() +
+            jobOffer!.applicationStatus.toLowerCase().slice(1)
+        }}
+      </p>
+      }
+    </div>
+  </div>
+  <h3 class="job-details-subtitle">Job Description :</h3>
+  <div class="job-details-description">
+    <p>{{ jobOffer?.description }}</p>
+  </div>
+  <h4 class="job-details-subtitle">Responsibilities :</h4>
+  <div class="job-details-description">
+    <p>{{ jobOffer?.description }}</p>
+  </div>
+  <h4 class="job-details-subtitle">Qualifications :</h4>
+  <div class="job-details-description">
+    <p>{{ jobOffer?.qualifications }}</p>
+  </div>
+  <div class="action-buttons">
+    @if(authService.hasRole("HR")) {
+    <button
+      class="action-btn delete"
+      (click)="openDeleteConfirmation(jobOffer!.id)"
+    >
+      <i class="action-icon fa-solid fa-trash"></i> Delete
+    </button>
+    <button
+      class="action-btn update"
+      [routerLink]="['/recruitment/job-offers/edit', jobOffer!.id]"
+    >
+      <i class="action-icon fa-solid fa-edit"></i> Update
+    </button>
+    }
+  </div>
+</div>

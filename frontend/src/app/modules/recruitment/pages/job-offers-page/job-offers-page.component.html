@@ -1,0 +1,240 @@
+<div class="job-offers-page">
+  @if(authService.hasRole("HR")) {
+  <a routerLink="/recruitment/job-offers/create" class="create-btn">
+    <i class="create-icon fa-solid fa-plus"></i> Create Job Offer
+  </a>
+  }
+
+  <div class="filter-section">
+    <div class="filter-header">
+      <h2 class="filter-title">Filters</h2>
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search job titles..."
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchTermChange()"
+        />
+      </div>
+    </div>
+    <div class="filter-controls">
+      <div class="filter-group">
+        <label class="filter-label">Department:</label>
+        <select
+          class="filter-select"
+          [(ngModel)]="selectedDepartment"
+          (ngModelChange)="onDepartmentChange()"
+        >
+          <option value="all">All Departments</option>
+          <option value="support services">Support Services</option>
+          <option value="research & development">Research & Development</option>
+          <option value="human resources">Human Resources</option>
+          <option value="supply chain">Supply Chain</option>
+          <option value="it">IT</option>
+          <option value="commercial">Commercial</option>
+        </select>
+      </div>
+      @if(authService.hasRole("HR")) {
+      <div class="filter-group">
+        <label class="filter-label">Type:</label>
+        <select
+          class="filter-select"
+          [(ngModel)]="selectedType"
+          (ngModelChange)="onTypeChange()"
+        >
+          <option value="all">All Types</option>
+          <option value="internal">Internal</option>
+          <option value="external">External</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Status:</label>
+        <select
+          class="filter-select"
+          [(ngModel)]="selectedStatus"
+          (ngModelChange)="onStatusChange()"
+        >
+          <option value="all">All Status</option>
+          <option value="OPEN">Open</option>
+          <option value="CLOSED">Closed</option>
+        </select>
+      </div>
+      }
+    </div>
+  </div>
+
+  <div class="list-view">
+    @for (jobOffer of displayedJobOffers; track jobOffer.id) {
+    @if((!authService.hasRole("HR"))&&(jobOffer.status !==
+    "CLOSED")&&(jobOffer.isInternal)) {
+    <div class="job-offer-card">
+      <div
+        class="job-offer-info"
+        [routerLink]="['/recruitment/job-offers', jobOffer.id]"
+      >
+        <h3 class="job-offer-title">{{ jobOffer.title }}</h3>
+        <p class="job-offer-department">
+          Department: {{ jobOffer.department }}
+        </p>
+
+        @if(jobOffer?.applied) {
+        <p class="job-offer-status" [class]="jobOffer.status.toLowerCase()">
+          Application Status:
+          {{
+            jobOffer!.applicationStatus.toLowerCase().charAt(0).toUpperCase() +
+              jobOffer!.applicationStatus.toLowerCase().slice(1)
+          }}
+        </p>
+        }
+      </div>
+      <div class="job-offer-actions">
+        <div class="action-buttons">
+          <button
+            class="action-btn update"
+            [routerLink]="['/recruitment/job-offers', jobOffer.id]"
+          >
+            <i class="action-icon fa-solid fa-eye"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    } @else if(authService.hasRole("HR")){
+    <div class="job-offer-card">
+      <div
+        class="job-offer-info"
+        [routerLink]="['/recruitment/job-offers', jobOffer.id]"
+      >
+        <h3 class="job-offer-title">{{ jobOffer.title }}</h3>
+        <p class="job-offer-department">
+          Department: {{ jobOffer.department }}
+        </p>
+
+        <p class="job-offer-type">
+          Type: {{ jobOffer.isInternal ? "Internal" : "External" }}
+        </p>
+
+        <p class="job-offer-status" [class]="jobOffer.status.toLowerCase()">
+          Status:
+          {{
+            jobOffer.status.toLowerCase().charAt(0).toUpperCase() +
+              jobOffer.status.toLowerCase().slice(1)
+          }}
+        </p>
+      </div>
+      <div class="job-offer-actions">
+        <a
+          [routerLink]="[
+            '/recruitment/job-offers',
+            jobOffer.id,
+            'applications'
+          ]"
+          class="applicants-btn"
+        >
+          <i class="applicants-icon fa-solid fa-users"></i>
+          {{ jobOffer.numberOfApplications }} Applicants
+        </a>
+
+        <div class="action-buttons">
+          <button
+            class="action-btn delete"
+            (click)="openDeleteConfirmation(jobOffer.id)"
+          >
+            <i class="action-icon fa-solid fa-trash"></i> Delete
+          </button>
+          <button
+            class="action-btn update"
+            [routerLink]="['/recruitment/job-offers/edit', jobOffer.id]"
+          >
+            <i class="action-icon fa-solid fa-edit"></i> Update
+          </button>
+          @if(jobOffer.isInternal) {
+          <button
+            class="action-btn toggle"
+            (click)="
+              onToggleJobOfferStatus(jobOffer.id, 'CONVERTED_TO_EXTERNAL')
+            "
+          >
+            <i class="action-icon fa-solid fa-exchange-alt"></i> Toggle
+            {{ jobOffer.isInternal ? "External" : "Internal" }}
+          </button>
+          }@else {
+          <button
+            class="action-btn toggle"
+            (click)="
+              onToggleJobOfferStatus(jobOffer.id, 'CONVERTED_TO_INTERNAL')
+            "
+          >
+            <i class="action-icon fa-solid fa-exchange-alt"></i> Toggle
+            {{ jobOffer.isInternal ? "External" : "Internal" }}
+          </button>
+          } @if(jobOffer.status !== "CLOSED") {
+          <button
+            class="action-btn finish-stop"
+            (click)="onToggleJobOfferStatus(jobOffer.id, 'CLOSED')"
+          >
+            <i class="action-icon fa-solid fa-stop-circle"></i>
+            Finish
+          </button>
+          } @else{
+          <button
+            class="action-btn finish-stop"
+            (click)="onToggleJobOfferStatus(jobOffer.id, 'OPEN')"
+          >
+            <i class="action-icon fa-solid fa-stop-circle"></i>
+            Open
+          </button>
+          }
+        </div>
+      </div>
+    </div>
+    } }
+
+    <div class="pagination">
+      <div class="pagination-info">
+        Showing <b>1-{{ pageSize }}</b> of <b>{{ jobOffers.length }}</b> job
+        offers
+      </div>
+      <div class="pagination-controls">
+        <select
+          class="page-size-select"
+          [(ngModel)]="pageSize"
+          (ngModelChange)="onPageSizeChange()"
+        >
+          @for (size of pageSizeOptions; track size) {
+          <option [value]="size">{{ size }} per page</option>
+          }
+        </select>
+        <button
+          class="pagination-btn"
+          [class.disabled]="isPrevDisabled()"
+          (click)="previousPage()"
+        >
+          ◀
+        </button>
+
+        @for (page of visiblePages; track page; let i = $index) { @if(page !==
+        '...') {
+        <button
+          class="pagination-btn"
+          [class.active]="page === pageIndex"
+          (click)="goToPage(+page)"
+        >
+          {{ +page + 1 }}
+        </button>
+        } @else {
+        <button class="pagination-btn" disabled>...</button>
+        } }
+
+        <button
+          class="pagination-btn"
+          [class.disabled]="isNextDisabled()"
+          (click)="nextPage()"
+        >
+          ▶
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

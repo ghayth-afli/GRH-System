@@ -1,7 +1,8 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UserService } from '../../../core/services/user.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-edit-personal-info-modal-form',
@@ -13,17 +14,21 @@ export class EditPersonalInfoModalFormComponent {
   editForm!: FormGroup;
   selectedFile: File | undefined = undefined;
   user = {
-    profilePicture: '',
+    profilePicture: '/assets/images/nopicture.png',
   };
+  private authService = inject(AuthService);
+  userhasNullAttributes = true;
 
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
+
     public dialogRef: MatDialogRef<EditPersonalInfoModalFormComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 
   ngOnInit(): void {
+    this.handleIfUserHasNullAttributes();
     this.user = {
       profilePicture: this.data.imageSrc,
     };
@@ -38,7 +43,7 @@ export class EditPersonalInfoModalFormComponent {
       ],
       phoneNumber2: [
         this.data.phoneNumber2,
-        Validators.pattern(/^\+216[0-9]{8}$/),
+        Validators.pattern(/^\+216[0-9]{8}$/), // Optional field
       ],
     });
   }
@@ -72,6 +77,7 @@ export class EditPersonalInfoModalFormComponent {
         phoneNumber1,
         phoneNumber2,
       } = this.editForm.value;
+
       this.userService
         .updateEmployeeInfo(
           firstName,
@@ -85,10 +91,21 @@ export class EditPersonalInfoModalFormComponent {
         .subscribe({
           next: () => this.dialogRef.close(true),
         });
+    } else {
+      this.editForm.markAllAsTouched();
     }
   }
 
+  private handleIfUserHasNullAttributes(): void {
+    this.userhasNullAttributes = Object.entries(
+      this.authService.authenticatedUser || {}
+    ).some(
+      ([key, value]) =>
+        key !== 'phoneNumber2' && (value === null || value === '')
+    );
+  }
+
   closeModal(): void {
-    this.dialogRef.close(false);
+    this.dialogRef.close(true);
   }
 }

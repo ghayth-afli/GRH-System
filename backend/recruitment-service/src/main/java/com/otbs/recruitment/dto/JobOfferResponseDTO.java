@@ -1,16 +1,29 @@
 package com.otbs.recruitment.dto;
 
+import com.otbs.recruitment.model.EApplicationStatus;
 import com.otbs.recruitment.model.EJobOfferStatus;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-public record JobOfferResponseDTO(
-        Long id,
-        String title,
-        String description,
-        String department,
-        String role,
-        EJobOfferStatus status,
-        Boolean isInternal,
-        LocalDateTime createdAt
-) {}
+@Builder
+@Setter
+@Getter
+public class JobOfferResponseDTO {
+    private Long id;
+    private String title;
+    private String description;
+    private String department;
+    private String responsibilities;
+    private String qualifications;
+    private String role;
+    private boolean isApplied;
+    private Integer numberOfApplications;
+    private EJobOfferStatus status;
+    private EApplicationStatus applicationStatus;
+    private Boolean isInternal;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+}

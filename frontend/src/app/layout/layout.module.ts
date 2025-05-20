@@ -7,9 +7,10 @@ import { LayoutComponent } from './layout.component';
 import { TimeAgoPipe } from '../shared/pipes/time-ago.pipe';
 import { share } from 'rxjs';
 import { SharedModule } from '../shared/shared.module';
+import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
-  declarations: [SidebarComponent, HeaderComponent, LayoutComponent],
+  declarations: [SidebarComponent, HeaderComponent, LayoutComponent, FooterComponent],
   imports: [CommonModule, RouterModule, SharedModule],
   exports: [LayoutComponent],
 })

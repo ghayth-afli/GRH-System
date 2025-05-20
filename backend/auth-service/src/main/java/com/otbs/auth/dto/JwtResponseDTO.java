@@ -1,6 +1,6 @@
 package com.otbs.auth.dto;
 
-import com.otbs.feign.dto.EmployeeResponse;
+import com.otbs.feign.client.employee.dto.EmployeeResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Response containing JWT tokens and user details")

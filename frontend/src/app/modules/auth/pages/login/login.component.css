@@ -1,0 +1,7 @@
+.login-form-group {
+  position: relative;
+}
+
+.login-form-error {
+  min-height: 16px; /* Prevent layout shift */
+}

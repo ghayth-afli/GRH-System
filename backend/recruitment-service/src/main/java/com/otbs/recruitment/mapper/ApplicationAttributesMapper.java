@@ -1,33 +1,24 @@
 package com.otbs.recruitment.mapper;
 
-import com.otbs.recruitment.dto.ApplicationRequestDTO;
 import com.otbs.recruitment.dto.ApplicationResponseDTO;
-import com.otbs.recruitment.model.Application;
-import com.otbs.recruitment.model.EApplicationStatus;
-import com.otbs.recruitment.model.JobOffer;
+import com.otbs.recruitment.model.InternalApplication;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ApplicationAttributesMapper {
 
-    public Application toEntity(ApplicationRequestDTO dto, JobOffer jobOffer) {
-        return Application.builder()
-                .jobOffer(jobOffer)
-                .applicantIdentifier(dto.applicantIdentifier())
-                .applicantType(dto.applicantType())
-                .resume(dto.resume())
-                .coverLetter(dto.coverLetter())
-                .status(EApplicationStatus.PENDING)
+    //internalApplicationToResponseDTO
+    public ApplicationResponseDTO internalApplicationToResponseDTO(InternalApplication entity, String fullName,String email,String phone) {
+        return ApplicationResponseDTO.builder()
+                .id(entity.getId())
+                .candidateId(entity.getId())
+                .FullName(fullName)
+                .isInternal(true)
+                .Email(email)
+                .Phone(phone)
+                .status(entity.getStatus())
+                .score(entity.getMatchResult().getScore())
+                .submissionDate(entity.getCreatedAt())
                 .build();
-    }
-
-    public ApplicationResponseDTO toDto(Application application) {
-        return new ApplicationResponseDTO(
-                application.getId(),
-                application.getJobOffer().getId(),
-                application.getApplicantIdentifier(),
-                application.getApplicantType(),
-                application.getStatus(),
-                application.getCreatedAt(),
-                application.getUpdatedAt()
-        );
     }
 }

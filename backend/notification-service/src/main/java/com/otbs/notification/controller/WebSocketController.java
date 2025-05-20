@@ -1,6 +1,6 @@
 package com.otbs.notification.controller;
 
-import com.otbs.feign.dto.EmployeeResponse;
+import com.otbs.feign.client.employee.dto.EmployeeResponse;
 import com.otbs.notification.dto.NotificationRequestDTO;
 import com.otbs.notification.dto.NotificationResponseDTO;
 import com.otbs.notification.service.NotificationService;

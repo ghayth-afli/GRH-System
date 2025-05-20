@@ -1,7 +1,7 @@
 package com.otbs.recruitment.security;
 
-import com.otbs.feign.client.EmployeeClient;
-import com.otbs.feign.dto.EmployeeResponse;
+import com.otbs.feign.client.employee.EmployeeClient;
+import com.otbs.feign.client.employee.dto.EmployeeResponse;
 import com.otbs.recruitment.util.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

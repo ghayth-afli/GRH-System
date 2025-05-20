@@ -1,0 +1,74 @@
+.snackbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  font-family: "Open Sans", sans-serif;
+  font-size: 14px;
+  color: var(--white);
+  animation: slideIn 0.3s ease;
+}
+
+.snackbar.success {
+  background-color: var(--success);
+}
+
+.snackbar.error {
+  background-color: #d94f00;
+}
+
+.snackbar.warning {
+  background-color: var(--warning);
+}
+
+.snackbar.info {
+  background-color: var(--info);
+}
+
+.snackbar-icon {
+  font-size: 18px;
+}
+
+.snackbar-message {
+  flex: 1;
+}
+
+.snackbar-action {
+  background: none;
+  border: none;
+  color: var(--white);
+  font-family: "Kode Mono", monospace;
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.snackbar-action:hover {
+  opacity: 0.8;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .snackbar {
+    font-size: 12px;
+    padding: 10px 12px;
+  }
+
+  .snackbar-icon {
+    font-size: 16px;
+  }
+
+  .snackbar-action {
+    font-size: 11px;
+  }
+}

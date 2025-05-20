@@ -2,6 +2,13 @@ package com.otbs.recruitment.repository;
 
 import com.otbs.recruitment.model.JobOffer;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface JobOfferRepository extends JpaRepository<JobOffer, Long> {
+import java.util.Optional;
+
+public interface JobOfferRepository extends JpaRepository<JobOffer, Long> , JpaSpecificationExecutor<JobOffer> {
+    //findByIdAndCreatedBy
+    Optional<JobOffer> findByIdAndCreatedBy(Long id, String createdBy);
+
 }
+

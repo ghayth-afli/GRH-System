@@ -1,8 +1,8 @@
 package com.otbs.medVisit.service;
 
 import com.otbs.common.event.Event;
-import com.otbs.feign.client.EmployeeClient;
-import com.otbs.feign.dto.EmployeeResponse;
+import com.otbs.feign.client.employee.EmployeeClient;
+import com.otbs.feign.client.employee.dto.EmployeeResponse;
 import com.otbs.medVisit.dto.AppointmentRequestDTO;
 import com.otbs.medVisit.dto.AppointmentResponseDTO;
 import com.otbs.medVisit.dto.MedicalVisitResponseDTO;
@@ -13,7 +13,6 @@ import com.otbs.medVisit.mapper.AppointmentMapper;
 import com.otbs.medVisit.mapper.MedicalVisitMapper;
 import com.otbs.medVisit.model.Appointment;
 import com.otbs.medVisit.model.EAppointmentStatus;
-import com.otbs.medVisit.model.MedicalVisit;
 import com.otbs.medVisit.repository.AppointmentRepository;
 import com.otbs.medVisit.repository.MedicalVisitRepository;
 import lombok.RequiredArgsConstructor;

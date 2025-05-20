@@ -1,0 +1,79 @@
+/* Add to existing styles.css */
+/* Scoped styles for layout */
+.unauthorized-container {
+  position: relative;
+}
+/* Unauthorized Page */
+.unauthorized-container {
+  max-width: 600px;
+  margin: 48px auto;
+  padding: 32px;
+  background-color: var(--white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  text-align: center;
+}
+
+.unauthorized-icon {
+  font-size: 48px;
+  color: var(--primary-dark);
+  margin-bottom: 16px;
+}
+
+.unauthorized-title {
+  font-family: "Kode Mono", monospace;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin: 0 0 16px;
+}
+
+.unauthorized-message {
+  font-family: "Open Sans", sans-serif;
+  font-size: 16px;
+  color: var(--gray);
+  line-height: 1.5;
+  margin: 0 0 24px;
+}
+
+.unauthorized-action {
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: var(--border-radius);
+  font-family: "Kode Mono", monospace;
+  font-size: 14px;
+  font-weight: 600;
+  background-color: var(--accent);
+  color: var(--white);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.unauthorized-action:hover {
+  background-color: #e65000;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .unauthorized-container {
+    margin: 24px 16px;
+    padding: 24px;
+  }
+
+  .unauthorized-title {
+    font-size: 24px;
+  }
+
+  .unauthorized-message {
+    font-size: 14px;
+  }
+
+  .unauthorized-icon {
+    font-size: 40px;
+  }
+
+  .unauthorized-action {
+    font-size: 12px;
+    padding: 8px 16px;
+  }
+}

@@ -1,7 +1,7 @@
 package com.otbs.auth.service;
 
-import com.otbs.feign.client.EmployeeClient;
-import com.otbs.feign.dto.EmployeeResponse;
+import com.otbs.feign.client.employee.EmployeeClient;
+import com.otbs.feign.client.employee.dto.EmployeeResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

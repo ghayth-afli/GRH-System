@@ -1,0 +1,79 @@
+/* Add to existing styles.css */
+/* Scoped styles for layout */
+.not-found-container {
+  position: relative;
+}
+/* Not Found Page */
+.not-found-container {
+  max-width: 600px;
+  margin: 48px auto;
+  padding: 32px;
+  background-color: var(--white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  text-align: center;
+}
+
+.not-found-icon {
+  font-size: 48px;
+  color: var(--primary-dark);
+  margin-bottom: 16px;
+}
+
+.not-found-title {
+  font-family: "Kode Mono", monospace;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin: 0 0 16px;
+}
+
+.not-found-message {
+  font-family: "Open Sans", sans-serif;
+  font-size: 16px;
+  color: var(--gray);
+  line-height: 1.5;
+  margin: 0 0 24px;
+}
+
+.not-found-action {
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: var(--border-radius);
+  font-family: "Kode Mono", monospace;
+  font-size: 14px;
+  font-weight: 600;
+  background-color: var(--accent);
+  color: var(--white);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.not-found-action:hover {
+  background-color: #e65000;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .not-found-container {
+    margin: 24px 16px;
+    padding: 24px;
+  }
+
+  .not-found-title {
+    font-size: 24px;
+  }
+
+  .not-found-message {
+    font-size: 14px;
+  }
+
+  .not-found-icon {
+    font-size: 40px;
+  }
+
+  .not-found-action {
+    font-size: 12px;
+    padding: 8px 16px;
+  }
+}
