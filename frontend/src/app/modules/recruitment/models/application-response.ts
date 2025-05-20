@@ -14,6 +14,7 @@ export interface ApplicationDetailsResponseDTO {
   applicationId: number;
   resume: Resume;
   matchResult: MatchResult;
+  attachment: Blob | null;
 }
 
 export interface Resume {

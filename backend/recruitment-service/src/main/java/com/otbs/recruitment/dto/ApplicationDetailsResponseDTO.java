@@ -8,6 +8,7 @@ import lombok.Builder;
 public record ApplicationDetailsResponseDTO(
         Long applicationId,
         CandidateResponseDTO resume,
-        MatchResult matchResult
+        MatchResult matchResult,
+        byte[] attachment
 ) {
 }

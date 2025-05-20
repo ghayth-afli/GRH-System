@@ -6,14 +6,50 @@
   <component name="ChangeListManager">
     <list default="true" id="8831ef2c-5863-4771-acbe-37c7b2e108e5" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/resumeMatcher/dto/MatchRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/resumeMatcher/dto/MatchRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/resumeMatcher/dto/ResumeRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/resumeMatcher/dto/ResumeRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/controller/InternalApplicationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/controller/InternalApplicationController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/model/EApplicationStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/model/EApplicationStatus.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/repository/InternalApplicationRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/repository/InternalApplicationRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/service/ApplicationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/service/ApplicationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/LeaveApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/LeaveApplication.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/config/OpenApiConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/config/OpenApiConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/config/SchedulingConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/config/SchedulingConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/config/SecurityConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/config/SecurityConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/controller/LeaveController.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/controller/LeaveController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/dto/LeaveRequestDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/dto/LeaveRequestDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/dto/LeaveResponseDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/dto/LeaveResponseDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/dto/MessageResponseDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/dto/MessageResponseDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/exception/AttachmentException.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/exception/AttachmentException.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/exception/DateRangeException.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/exception/DateRangeException.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/exception/FileUploadException.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/exception/FileUploadException.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/exception/GlobalExceptionHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/exception/GlobalExceptionHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/exception/LeaveBalanceException.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/exception/LeaveBalanceException.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/exception/LeaveException.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/exception/LeaveException.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/exception/MissingTimeForAuthorizationException.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/exception/MissingTimeForAuthorizationException.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/exception/TimeRangeException.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/exception/TimeRangeException.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/exception/UserException.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/exception/UserException.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/mapper/LeaveAttributesMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/mapper/LeaveAttributesMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/model/ELeaveType.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/model/ELeaveType.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/model/EStatus.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/model/EStatus.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/model/Leave$LeaveBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/model/Leave$LeaveBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/model/Leave.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/model/Leave.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/model/LeaveBalance.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/model/LeaveBalance.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/repository/LeaveBalanceRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/repository/LeaveBalanceRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/repository/LeaveRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/repository/LeaveRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/security/AuthEntryPointJwt.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/security/AuthEntryPointJwt.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/security/JwtAuthFilter.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/security/JwtAuthFilter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/service/LeaveNotificationEventService.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/service/LeaveNotificationEventService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/service/LeaveNotificationService.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/service/LeaveNotificationService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/service/LeaveService.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/service/LeaveService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/service/LeaveServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/service/LeaveServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/util/JwtUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/util/JwtUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/RecruitmentApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/RecruitmentApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/dto/ApplicationDetailsResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/dto/ApplicationDetailsResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/exception/FileUploadException.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/exception/FileUploadException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/exception/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/model/InternalApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/model/InternalApplication.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/service/InternalApplicationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/service/InternalApplicationServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/service/JobOfferService.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/service/JobOfferService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/service/JobOfferServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/service/JobOfferServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/service/RecruitmentNotificationEventService.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/service/JobOfferServiceImpl$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/service/JobOfferServiceImpl$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/service/JobOfferServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/service/JobOfferServiceImpl.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,8 +62,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Class" />
         <option value="Record" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -53,37 +89,40 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Spring Boot.ApiGWApplication.executor": "Run",
-    "Spring Boot.AuthApplication.executor": "Run",
-    "Spring Boot.CandidateApplication.executor": "Run",
-    "Spring Boot.EmployeeApplication.executor": "Run",
-    "Spring Boot.EurekaServerApplication.executor": "Run",
-    "Spring Boot.NotificationApplication.executor": "Run",
-    "Spring Boot.RecruitmentApplication.executor": "Run",
-    "git-widget-placeholder": "recruitment-service-new-ui-styles",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/Tekup/internship/GRH-System/backend/feign-clients/src/main/java/com/otbs/feign/client/candidate/dto",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "run.configurations.included.in.services": "true",
-    "settings.editor.selected.configurable": "reference.projectsettings.compiler.javacompiler",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Spring Boot.ApiGWApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.AuthApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.CandidateApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.EmployeeApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.EurekaServerApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.LeaveApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.MedVisitApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.NotificationApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.RecruitmentApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.TrainingApplication.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;recruitment-service-new-ui-styles&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Tekup/internship/GRH-System/backend/feign-clients/src/main/java/com/otbs/feign/client/candidate/dto&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.javacompiler&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\Tekup\internship\GRH-System\backend\feign-clients\src\main\java\com\otbs\feign\client\candidate\dto" />
@@ -436,6 +475,8 @@
       <workItem from="1747511550092" duration="8642000" />
       <workItem from="1747544477196" duration="2994000" />
       <workItem from="1747609875493" duration="7679000" />
+      <workItem from="1747673234715" duration="3901000" />
+      <workItem from="1747702004839" duration="8036000" />
     </task>
     <servers />
   </component>

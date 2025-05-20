@@ -173,7 +173,71 @@ export class ApplicationDetailsPageComponent implements OnInit, AfterViewInit {
   }
 
   downloadResume() {
-    // Implement resume download functionality
-    console.log('Download resume clicked');
+    if (this.applicationDetails?.attachment) {
+      const filename = `application_${this.applicationDetails.applicationId}`;
+      this.downloadAttachment(this.applicationDetails.attachment, filename);
+    }
+  }
+
+  downloadAttachment(attachment: Blob | any, filename: string): void {
+    let blob: Blob;
+
+    if (attachment instanceof Blob) {
+      blob = attachment;
+    } else if (typeof attachment === 'string') {
+      // Handle if it's a base64 string
+      try {
+        // Remove potential data URL prefix
+        const base64 = attachment.replace(/^data:application\/pdf;base64,/, '');
+        const byteCharacters = atob(base64);
+        const byteArrays = [];
+
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteArrays.push(byteCharacters.charCodeAt(i));
+        }
+
+        blob = new Blob([new Uint8Array(byteArrays)], {
+          type: 'application/pdf',
+        });
+      } catch (e) {
+        console.error('Failed to convert string to Blob:', e);
+        return;
+      }
+    } else if (attachment && typeof attachment === 'object') {
+      // Handle if it's a serialized object or ArrayBuffer
+      try {
+        // If it has a data property (common in API responses)
+        if (attachment.data && Array.isArray(attachment.data)) {
+          blob = new Blob([new Uint8Array(attachment.data)], {
+            type: 'application/pdf',
+          });
+        } else {
+          // Try to stringify and create a text blob as fallback
+          blob = new Blob([JSON.stringify(attachment)], {
+            type: 'application/json',
+          });
+        }
+      } catch (e) {
+        console.error('Failed to convert object to Blob:', e);
+        return;
+      }
+    } else {
+      console.error('Attachment is not in a supported format');
+      return;
+    }
+
+    // Create URL and trigger download
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    document.body.appendChild(a);
+    a.href = url;
+    a.download = `${filename}.pdf`;
+    a.click();
+
+    // Clean up
+    setTimeout(() => {
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    }, 0);
   }
 }

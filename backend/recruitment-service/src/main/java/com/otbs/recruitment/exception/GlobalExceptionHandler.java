@@ -15,6 +15,15 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler({JobOfferException.class})
+    public ResponseEntity<?> handleJobOfferNotFound(JobOfferException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponseDTO(e.getMessage()));
+    }
+    @ExceptionHandler({ApplicationException.class})
+    public ResponseEntity<?> handleApplicationNotFound(ApplicationException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponseDTO(e.getMessage()));
+    }
+
 
 
     @ExceptionHandler({UserException.class})

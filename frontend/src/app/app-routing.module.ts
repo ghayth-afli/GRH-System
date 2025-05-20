@@ -5,9 +5,13 @@ import { AuthRedirectGuard } from './core/guards/auth-redirect.guard';
 import { LayoutComponent } from './layout/layout.component';
 import { RoleGuard } from './core/guards/role.guard';
 import { LeaveBalanceResolver } from './modules/leave/resolvers/leave-balance.resolver';
+import { UnauthorizedComponent } from './core/pages/unauthorized/unauthorized.component';
+import { NotFoundComponent } from './core/pages/not-found/not-found.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '', pathMatch: 'full' },
+  { path: 'unauthorized', component: UnauthorizedComponent },
+  { path: 'not-found', component: NotFoundComponent },
   {
     path: 'auth',
     loadChildren: () =>
@@ -62,10 +66,9 @@ const routes: Routes = [
             (m) => m.RecruitmentModule
           ),
       },
-      { path: '', redirectTo: 'home', pathMatch: 'full' },
     ],
   },
-  { path: '**', redirectTo: 'home' },
+  { path: '**', redirectTo: '/not-found' },
 ];
 
 @NgModule({

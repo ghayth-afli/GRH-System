@@ -1,7 +1,6 @@
 package com.otbs.recruitment.model;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -15,6 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = "attachment")
 public class InternalApplication {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,14 +29,18 @@ public class InternalApplication {
     private JobOffer jobOffer;
 
     @OneToOne
-    @JoinColumn(name = "match_result_id", referencedColumnName = "id")
+    @JoinColumn(name = "match_result_id", referencedColumnName = "id", nullable = true)
     private MatchResult matchResult;
 
-    @Column(name = "candidate_id", nullable = false, length = 100)
+    @Column(name = "candidate_id", nullable = true, length = 100)
     private Long candidateId;
 
     @Column(name = "employee_id", nullable = false, length = 100)
     private String employeeId;
+
+    @Lob
+    @Column(name = "attachment")
+    private byte[] attachment;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false, nullable = false)

@@ -3,26 +3,28 @@ package com.otbs.recruitment.service;
 import com.otbs.feign.client.employee.EmployeeClient;
 import com.otbs.recruitment.dto.JobOfferRequestDTO;
 import com.otbs.recruitment.dto.JobOfferResponseDTO;
+import com.otbs.recruitment.exception.JobOfferException;
 import com.otbs.recruitment.mapper.JobOfferAttributesMapper;
 import com.otbs.recruitment.model.EApplicationStatus;
 import com.otbs.recruitment.model.EJobOfferStatus;
 import com.otbs.recruitment.model.InternalApplication;
 import com.otbs.recruitment.repository.JobOfferRepository;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class JobOfferServiceImpl implements JobOfferService {
 
     private final JobOfferRepository jobOfferRepository;
     private final JobOfferAttributesMapper jobOfferAttributesMapper;
     private final EmployeeClient employeeClient;
+    private final ApplicationService applicationService;
 
     @Override
     public void createJobOffer(JobOfferRequestDTO jobOfferRequestDTO) {
@@ -34,7 +36,7 @@ public class JobOfferServiceImpl implements JobOfferService {
     @Override
     public void updateJobOffer(Long id, JobOfferRequestDTO jobOfferRequestDTO) {
         var jobOffer = jobOfferRepository.findByIdAndCreatedBy(id, getCurrentUserId())
-                .orElseThrow(() -> new RuntimeException("Job offer not found or not created by the current user"));
+                .orElseThrow(() -> new JobOfferException("Job offer not found or not created by the current user"));
 
         jobOffer.setTitle(jobOfferRequestDTO.title());
         jobOffer.setDescription(jobOfferRequestDTO.description());
@@ -51,32 +53,40 @@ public class JobOfferServiceImpl implements JobOfferService {
     @Override
     public void deleteJobOffer(Long id) {
         var jobOffer = jobOfferRepository.findByIdAndCreatedBy(id, getCurrentUserId())
-                .orElseThrow(() -> new RuntimeException("Job offer not found or not created by the current user"));
+                .orElseThrow(() -> new JobOfferException("Job offer not found or not created by the current user"));
         jobOfferRepository.delete(jobOffer);
     }
 
-@Override
-public JobOfferResponseDTO getJobOfferById(Long id) {
-    var jobOffer = jobOfferRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Job offer not found"));
-    boolean isApplied = jobOffer.getInternalApplications().stream()
-            .anyMatch(app -> app.getEmployeeId().equals(getCurrentUserId()));
-    Integer numberOfApplications = getCurrentUserRole().equals("HR")
-            ? jobOffer.getInternalApplications().size()
-            : null;
-    EApplicationStatus applicationStatus = !getCurrentUserRole().equals("HR")
-            ? jobOffer.getInternalApplications().stream()
-            .filter(app -> app.getEmployeeId().equals(getCurrentUserId()))
-            .map(InternalApplication::getStatus)
-            .findFirst()
-            .orElse(null)
-            : null;
-    var responseDTO = jobOfferAttributesMapper.toResponseDTO(jobOffer);
-    responseDTO.setNumberOfApplications(numberOfApplications);
-    responseDTO.setApplied(isApplied);
-    responseDTO.setApplicationStatus(applicationStatus);
-    return responseDTO;
-}
+    @Override
+    public JobOfferResponseDTO getJobOfferById(Long id) {
+        var jobOffer = jobOfferRepository.findById(id)
+                .orElseThrow(() -> new JobOfferException("Job offer not found"));
+
+        String currentUserId = getCurrentUserId();
+        String currentUserRole = getCurrentUserRole();
+
+        boolean isApplied = jobOffer.getInternalApplications().stream()
+                .anyMatch(app -> app.getEmployeeId().equals(currentUserId));
+
+        Integer numberOfApplications = "HR".equals(currentUserRole)
+                ? jobOffer.getInternalApplications().size()
+                : null;
+
+        EApplicationStatus applicationStatus = !"HR".equals(currentUserRole)
+                ? jobOffer.getInternalApplications().stream()
+                .filter(app -> app.getEmployeeId().equals(currentUserId))
+                .map(InternalApplication::getStatus)
+                .findFirst()
+                .orElse(null)
+                : null;
+
+        var responseDTO = jobOfferAttributesMapper.toResponseDTO(jobOffer);
+        responseDTO.setNumberOfApplications(numberOfApplications);
+        responseDTO.setApplied(isApplied);
+        responseDTO.setApplicationStatus(applicationStatus);
+
+        return responseDTO;
+    }
 
     @Override
     public List<JobOfferResponseDTO> getAllJobOffers() {
@@ -104,13 +114,20 @@ public JobOfferResponseDTO getJobOfferById(Long id) {
     }
 
     @Override
-    public JobOfferResponseDTO toggleStatus(Long id, EJobOfferStatus status) {
+    public void toggleStatus(Long id, EJobOfferStatus status) {
         var jobOffer = jobOfferRepository.findByIdAndCreatedBy(id, getCurrentUserId())
-                .orElseThrow(() -> new RuntimeException("Job offer not found or not created by the current user"));
+                .orElseThrow(() -> new JobOfferException("Job offer not found or not created by the current user"));
 
         switch (status) {
             case OPEN -> jobOffer.setStatus(EJobOfferStatus.OPEN);
-            case CLOSED -> jobOffer.setStatus(EJobOfferStatus.CLOSED);
+            case CLOSED -> {
+                jobOffer.setStatus(EJobOfferStatus.CLOSED);
+                jobOffer.getInternalApplications().forEach(application -> {
+                    if(application.getStatus().equals(EApplicationStatus.PENDING)){
+                        applicationService.updateApplicationStatus(application.getId(), EApplicationStatus.REJECTED);
+                    }
+                });
+            }
             case CONVERTED_TO_EXTERNAL -> {
                 jobOffer.setIsInternal(false);
             }
@@ -120,7 +137,7 @@ public JobOfferResponseDTO getJobOfferById(Long id) {
         }
 
         jobOfferRepository.save(jobOffer);
-        return jobOfferAttributesMapper.toResponseDTO(jobOffer);
+        jobOfferAttributesMapper.toResponseDTO(jobOffer);
     }
 
     private String getCurrentUserId() {
@@ -129,53 +146,4 @@ public JobOfferResponseDTO getJobOfferById(Long id) {
     private String getCurrentUserRole() {
         return employeeClient.getEmployeeByDn(getCurrentUserId()).role();
     }
-
-//    @Override
-//    public Page<JobOfferResponseDTO> getAllJobOffers(
-//            String title,
-//            String department,
-//            String role,
-//            Boolean isInternal,
-//            String status,
-//            Pageable pageable) {
-//
-//        // Create a specification for dynamic filtering
-//        Specification<JobOffer> spec = Specification.where(null);
-//
-//        if (title != null && !title.isEmpty()) {
-//            spec = spec.and((root, query, criteriaBuilder) ->
-//                    criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), "%" + title.toLowerCase() + "%"));
-//        }
-//
-//        if (department != null && !department.isEmpty()) {
-//            spec = spec.and((root, query, criteriaBuilder) ->
-//                    criteriaBuilder.like(criteriaBuilder.lower(root.get("department")), "%" + department.toLowerCase() + "%"));
-//        }
-//
-//        if (role != null && !role.isEmpty()) {
-//            spec = spec.and((root, query, criteriaBuilder) ->
-//                    criteriaBuilder.like(criteriaBuilder.lower(root.get("role")), "%" + role.toLowerCase() + "%"));
-//        }
-//
-//        if (isInternal != null) {
-//            spec = spec.and((root, query, criteriaBuilder) ->
-//                    criteriaBuilder.equal(root.get("isInternal"), isInternal));
-//        }
-//
-//        if (status != null && !status.isEmpty()) {
-//            spec = spec.and((root, query, criteriaBuilder) ->
-//                    criteriaBuilder.equal(criteriaBuilder.lower(root.get("status")), status.toLowerCase()));
-//        }
-//
-//        return jobOfferRepository.findAll(spec, pageable)
-//                .map(jobOfferAttributesMapper::toResponseDTO);
-//    }
-
-//    @Override
-//    public Page<JobOfferResponseDTO> getAllJobOffers(Pageable pageable) {
-//        return jobOfferRepository.findAll(pageable)
-//                .map(jobOfferAttributesMapper::toResponseDTO);
-//    }
-
-
 }
