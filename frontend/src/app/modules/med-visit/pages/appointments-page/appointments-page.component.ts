@@ -18,179 +18,90 @@ import { NotificationData } from '../../../../core/models/NotificationData';
   styleUrl: './appointments-page.component.css',
 })
 export class AppointmentsPageComponent {
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  appointmentService = inject(AppointmentService);
-  route = inject(ActivatedRoute);
-  medicalVisitId: string | null = null;
-  dataSource!: MatTableDataSource<Appointment>;
-  pageSize = 10;
-  pageSizeOptions = [10, 50, 100];
-  displayedColumns = [
-    'id',
-    'employeeFullName',
-    'employeeEmail',
-    'timeSlot',
-    'status',
+  appointments: Appointment[] = [
+    {
+      id: 101,
+      medicalVisitId: 789,
+      doctorName: 'Dr. Emily Carter',
+      timeSlot: new Date('2025-09-15T14:00:00'),
+      status: AppointmentStatus.PLANIFIE,
+      employeeFullName: 'John Doe',
+      employeeEmail: 'john.doe@example.com',
+    },
   ];
-  appointments: Appointment[] = [];
 
-  ngOnInit(): void {
-    this.fetchRouteParams();
-    this.loadAppointments();
-    this.initializeDataSource();
-    this.subscribeToEventNotifications();
+  filteredAppointments: Appointment[] = [];
+  pagedAppointments: Appointment[] = [];
+  pageSize = 5;
+  pageSizeOptions = [5, 10, 25, 100];
+  currentPage = 1;
+  totalPages = 1;
+
+  employeeNameFilter = '';
+  statusFilter = 'all';
+
+  constructor(private route: ActivatedRoute) {}
+
+  ngOnInit() {
+    const visitId = Number(this.route.snapshot.paramMap.get('id'));
+    this.filteredAppointments = this.appointments.filter(
+      (a) => a.medicalVisitId === visitId
+    );
+    this.applyFilters();
   }
 
-  private sseService = inject(SseService<NotificationData<Appointment>>);
-  private newAppointmentSubscription: Subscription | null = null;
-  private updateAppointmentSubscription: Subscription | null = null;
-  ngOnDestroy(): void {
-    // Unsubscribe from all subscriptions
-    if (this.newAppointmentSubscription) {
-      this.newAppointmentSubscription.unsubscribe();
-    }
-    if (this.updateAppointmentSubscription) {
-      this.updateAppointmentSubscription.unsubscribe();
-    }
-    // Close the SSE connection
-    this.sseService.disconnect();
-  }
-  subscribeToEventNotifications(): void {
-    this.subscribeToAppointmentEvent();
-    this.subscribeToUpdatedAppointmentEvent();
-  }
-
-  //updatedLeaveRequestEvent
-  private subscribeToAppointmentEvent(): void {
-    this.newAppointmentSubscription = this.sseService
-      .connect('UPDATED_MEDICAL_VISIT')
-      .subscribe({
-        next: (Event: NotificationData<Appointment>) => {
-          this.loadAppointments();
-        },
-      });
-  }
-
-  private subscribeToUpdatedAppointmentEvent(): void {
-    this.updateAppointmentSubscription = this.sseService
-      .connect('UPDATED_MEDICAL_VISIT')
-      .subscribe({
-        next: (Event: NotificationData<Appointment>) => {
-          this.loadAppointments();
-        },
-      });
-  }
-
-  exportCsv(): void {
-    const csvData = this.mapAppointmentsToCsvData();
-    const csvContent = this.generateCsvContent(csvData);
-    this.downloadCsv(csvContent);
-  }
-
-  exportPdf(): void {
-    const doc = new jsPDF();
-    doc.text('Appointments Report', 14, 16);
-    autoTable(doc, {
-      head: [
-        [
-          'ID',
-          'Doctor Name',
-          'Time Slot',
-          'Status',
-          'Employee Full Name',
-          'Employee Email',
-        ],
-      ],
-      body: this.mapAppointmentsToTableData(),
+  applyFilters() {
+    let filtered = this.appointments.filter((a) => {
+      const matchesName = this.employeeNameFilter
+        ? a.employeeFullName
+            .toLowerCase()
+            .includes(this.employeeNameFilter.toLowerCase())
+        : true;
+      const matchesStatus =
+        this.statusFilter !== 'all' ? a.status === this.statusFilter : true;
+      return matchesName && matchesStatus;
     });
-    doc.save('appointments-report.pdf');
+
+    // Ensure we still filter by visitId
+    const visitId = Number(this.route.snapshot.paramMap.get('id'));
+    filtered = filtered.filter((a) => a.medicalVisitId === visitId);
+
+    this.filteredAppointments = filtered;
+    this.updatePagination();
   }
 
-  filter($event: KeyboardEvent): void {
-    const filterValue = ($event.target as HTMLInputElement).value
-      .trim()
-      .toLowerCase();
-    this.dataSource.filter = filterValue;
-  }
-
-  private fetchRouteParams(): void {
-    this.route.paramMap.subscribe({
-      next: (params) => {
-        this.medicalVisitId = params.get('id');
-        console.log('Medical Visit ID:', this.medicalVisitId);
-      },
-      error: (error) => {
-        console.error('Error fetching route parameters:', error);
-      },
-    });
-  }
-
-  private loadAppointments(): void {
-    if (!this.medicalVisitId) return;
-
-    this.appointmentService
-      .getAppointmentsByMedicalVisitId(this.medicalVisitId)
-      .subscribe({
-        next: (appointments) => {
-          this.appointments = appointments;
-          this.updateDataSource();
-        },
-        error: (error) => {
-          console.error('Error fetching appointments:', error);
-        },
-      });
-  }
-
-  private initializeDataSource(): void {
-    this.dataSource = new MatTableDataSource(this.appointments);
-    this.dataSource.paginator = this.paginator;
-  }
-
-  private updateDataSource(): void {
-    this.dataSource.data = this.appointments;
-  }
-
-  private mapAppointmentsToTableData(): any[] {
-    return this.appointments.map((appointment) => [
-      appointment.id,
-      appointment.doctorName,
-      appointment.timeSlot.toLocaleString(),
-      appointment.status,
-      appointment.employeeFullName,
-      appointment.employeeEmail,
-    ]);
-  }
-
-  private mapAppointmentsToCsvData(): any[] {
-    return this.appointments.map((appointment) => ({
-      ID: appointment.id,
-      DoctorName: appointment.doctorName,
-      TimeSlot: appointment.timeSlot.toLocaleString(),
-      Status: appointment.status,
-      EmployeeFullName: appointment.employeeFullName,
-      EmployeeEmail: appointment.employeeEmail,
-    }));
-  }
-
-  private generateCsvContent(csvData: any[]): string {
-    return (
-      'data:text/csv;charset=utf-8,' +
-      Object.keys(csvData[0]).join(',') +
-      '\n' +
-      csvData
-        .map((row) => Object.values(row).join(','))
-        .join('\n')
-        .replace(/,/g, ';')
+  updatePagination() {
+    this.totalPages = Math.ceil(
+      this.filteredAppointments.length / this.pageSize
+    );
+    this.currentPage = Math.min(this.currentPage, this.totalPages || 1);
+    const start = (this.currentPage - 1) * this.pageSize;
+    this.pagedAppointments = this.filteredAppointments.slice(
+      start,
+      start + this.pageSize
     );
   }
 
-  private downloadCsv(csvContent: string): void {
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', 'appointments-report.csv');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  changePage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePagination();
+    }
+  }
+
+  getPageNumbers(): number[] {
+    const pages: number[] = [];
+    const maxPages = 5;
+    let startPage = Math.max(1, this.currentPage - Math.floor(maxPages / 2));
+    let endPage = Math.min(this.totalPages, startPage + maxPages - 1);
+
+    if (endPage - startPage + 1 < maxPages) {
+      startPage = Math.max(1, endPage - maxPages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+    return pages;
   }
 }

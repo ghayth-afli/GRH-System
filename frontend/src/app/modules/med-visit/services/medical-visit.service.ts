@@ -30,7 +30,7 @@ export class MedicalVisitService {
 
   updateMedicalVisit(
     id: number,
-    medicalVisit: Partial<MedicalVisit>
+    medicalVisit: MedicalVisit
   ): Observable<{ message: string }> {
     return this.http.put<{ message: string }>(
       `${this.apiUrl}/${id}`,

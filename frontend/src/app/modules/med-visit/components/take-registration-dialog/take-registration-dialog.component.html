@@ -1,0 +1,51 @@
+<div class="take-appointment-dialog">
+  <h2 class="dialog-title">Take Appointment</h2>
+  <form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="timeSlot">Time Slot *</label>
+      <select
+        id="timeSlot"
+        formControlName="timeSlot"
+        aria-label="Select time slot"
+        [attr.aria-describedby]="
+          appointmentForm.get('timeSlot')!.errors ? 'timeSlot-error' : null
+        "
+      >
+        <option value="" disabled>Select a time slot</option>
+        <option *ngFor="let slot of timeSlots" [value]="slot">
+          {{ slot }}
+        </option>
+      </select>
+      <span
+        *ngIf="
+          appointmentForm.get('timeSlot')?.errors &&
+          (appointmentForm.get('timeSlot')?.touched ||
+            appointmentForm.get('timeSlot')?.dirty)
+        "
+        class="form-error"
+        id="timeSlot-error"
+      >
+        Time Slot is required
+      </span>
+    </div>
+
+    <div class="dialog-actions">
+      <button
+        type="button"
+        class="dialog-btn cancel"
+        (click)="onCancel()"
+        aria-label="Cancel"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="dialog-btn save"
+        [disabled]="appointmentForm.invalid"
+        aria-label="Book appointment"
+      >
+        Book
+      </button>
+    </div>
+  </form>
+</div>

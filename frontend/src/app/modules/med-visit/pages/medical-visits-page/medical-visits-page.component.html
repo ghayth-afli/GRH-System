@@ -1,144 +1,152 @@
-<div class="component-container">
-  <div class="component-header">
-    <div class="component-title"><h3>Medical Visit</h3></div>
-    @if(authService.hasRole('HR')){
-    <div class="component-header-actions">
-      <div class="action-button pdf-export">
-        <button class="action-btn" (click)="exportPdf()">
-          <i class="icofont-file-pdf me-2 fs-6"></i>
-          Export PDF
-        </button>
+<div class="visits-page">
+  <div class="visits-actions">
+    <button
+      class="visit-btn create"
+      (click)="openCreateDialog()"
+      aria-label="Create medical visit"
+    >
+      <i class="fa-solid fa-plus"></i> Create
+    </button>
+    @if(displayedVisits) {
+    <button
+      class="visit-btn export"
+      (click)="export('pdf')"
+      aria-label="Export to PDF"
+    >
+      <i class="fa-solid fa-file-pdf"></i> Export PDF
+    </button>
+    <button
+      class="visit-btn export"
+      (click)="export('excel')"
+      aria-label="Export to Excel"
+    >
+      <i class="fa-solid fa-file-excel"></i> Export Excel
+    </button>
+    }
+  </div>
+
+  <div class="filter-section">
+    <div class="filter-header">
+      <h2 class="filter-title">Filters</h2>
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search by doctor name"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchTermChange()"
+        />
       </div>
-      <div class="action-button excel-export">
-        <button class="action-btn" (click)="exportcsv()">
-          <i class="icofont-file-excel me-2 fs-6"></i>
-          Export Excel
-        </button>
-      </div>
-      <div class="action-button item-add">
-        <button class="action-btn" (click)="addVisit()">
-          <i class="icofont-plus-circle me-2 fs-6"></i>
-          Add Medical Visit
-        </button>
+    </div>
+    @if(authService.hasRole("HR")) {
+    <div class="filter-controls">
+      <div class="filter-group">
+        <label class="filter-label">Visit Date:</label>
+        <input
+          type="date"
+          class="filter-date"
+          [(ngModel)]="visitDateFilter"
+          (ngModelChange)="onVisitDateChange()"
+          aria-label="Filter by visit date"
+        />
       </div>
     </div>
     }
   </div>
-  <div class="component-body">
-    <div class="data-table-container">
-      <mat-form-field style="float: right; margin-right: 5%">
-        <mat-label>Search: </mat-label>
-        <input matInput (keyup)="filter($event)" type="search" />
-      </mat-form-field>
-      <table mat-table [dataSource]="dataSource">
-        <ng-container matColumnDef="doctorName">
-          <th mat-header-cell *matHeaderCellDef>Doctor</th>
-          <td class="highlight-cell" mat-cell *matCellDef="let element">
-            {{ element.doctorName }}
-          </td>
-        </ng-container>
 
-        <ng-container matColumnDef="visitDate">
-          <th mat-header-cell *matHeaderCellDef>Visit Date</th>
-          <td mat-cell *matCellDef="let element">
-            {{ element.visitDate | date : "dd/MM/yyyy" }}
-          </td>
-        </ng-container>
-        @if(authService.hasRole('HR')){
-        <ng-container matColumnDef="startTime">
-          <th mat-header-cell *matHeaderCellDef>From</th>
-          <td mat-cell *matCellDef="let element">
-            {{ element.startTime }}
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="endTime">
-          <th mat-header-cell *matHeaderCellDef>To</th>
-          <td mat-cell *matCellDef="let element">
-            {{ element.endTime }}
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="numberOfAppointments">
-          <th mat-header-cell *matHeaderCellDef>Appointments</th>
-          <td mat-cell *matCellDef="let element">
-            <a routerLink="{{ element.id }}/appointments/">
-              <button mat-icon-button class="badge-button" color="primary">
-                <mat-icon><i class="icofont-ui-user-group"></i></mat-icon>
-                <span class="badge-count">
-                  {{ element.numberOfAppointments }}
-                </span>
-              </button>
-            </a>
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>Actions</th>
-          <td mat-cell *matCellDef="let element">
-            <button
-              mat-icon-button
-              class="edit-control"
-              color="primary"
-              (click)="editVisit(element)"
-            >
-              <mat-icon><i class="icofont-edit"></i></mat-icon>
-            </button>
-            <button
-              mat-icon-button
-              color="warn"
-              (click)="deleteVisit(element)"
-              class="delete-control"
-            >
-              <mat-icon><i class="icofont-ui-delete"></i></mat-icon>
-            </button>
-          </td>
-        </ng-container>
-        }
-        <ng-container matColumnDef="choosenSlot">
-          <th mat-header-cell *matHeaderCellDef>Choosen Slot</th>
-          <td mat-cell *matCellDef="let element">
-            {{
-              element.choosenSlot
-                ? (element.choosenSlot | date : "HH:mm")
-                : "--:--"
-            }}
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="TakeAppointment">
-          <th mat-header-cell *matHeaderCellDef>Take Appointment</th>
-          <td mat-cell *matCellDef="let element">
-            @if(element.choosenSlot){
-            <button
-              mat-icon-button
-              class="edit-control-mono ban"
-              (click)="cancelAppointment(element)"
-            >
-              <mat-icon><i class="icofont-ban"></i></mat-icon>
-            </button>
-            } @else{
-            <button
-              mat-icon-button
-              class="edit-control-mono"
-              (click)="makeAppointment(element)"
-            >
-              <mat-icon><i class="icofont-check"></i></mat-icon>
-            </button>
-            }
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr
-          mat-row
-          *matRowDef="let row; columns: displayedColumns"
-          class="data-table-body-row"
-        ></tr>
-      </table>
-
-      <mat-paginator
-        [pageSizeOptions]="pageSizeOptions"
-        [showFirstLastButtons]="true"
-        [pageSize]="pageSize"
+  <div class="no-data" *ngIf="!displayedVisits.length" aria-live="polite">
+    No medical visits found.
+  </div>
+  <div class="visit-card" *ngFor="let visit of displayedVisits">
+    <div class="visit-info">
+      <h3 class="visit-title">{{ visit.doctorName }}</h3>
+      <div class="visit-meta">
+        <span><strong>ID:</strong> {{ visit.id }}</span>
+        <span
+          ><strong>Visit Date:</strong>
+          {{ visit.visitDate | date : "dd/MM/yyyy" }}</span
+        >
+        <span><strong>Start:</strong> {{ visit.startTime }}</span>
+        <span><strong>End:</strong> {{ visit.endTime }}</span>
+      </div>
+    </div>
+    <div class="visit-actions">
+      <button
+        class="action-btn edit"
+        (click)="openEditDialog(visit)"
+        aria-label="Edit medical visit"
       >
-      </mat-paginator>
+        <i class="fa-solid fa-edit"></i> Edit
+      </button>
+      <button
+        class="action-btn delete"
+        (click)="openDeleteConfirmation(visit.id)"
+        aria-label="Delete medical visit"
+      >
+        <i class="fa-solid fa-trash"></i> Delete
+      </button>
+      <a
+        class="action-btn appointments"
+        [routerLink]="['/medical-visits', visit.id, 'appointments']"
+        aria-label="View appointments"
+      >
+        <i class="fa-solid fa-calendar-check"></i> Appointments ({{
+          visit.numberOfAppointments
+        }})
+      </a>
+      <button
+        class="action-btn take-appointment"
+        (click)="openTakeAppointmentDialog(visit)"
+        aria-label="Take appointment"
+      >
+        <i class="fa-solid fa-clock"></i> Take Appointment
+      </button>
+    </div>
+  </div>
+
+  <div class="pagination">
+    <div class="pagination-info">
+      Showing <b>1-{{ pageSize }}</b> of <b>{{ visits.length }}</b> visits
+    </div>
+    <div class="pagination-controls">
+      <select
+        class="page-size-select"
+        [(ngModel)]="pageSize"
+        (ngModelChange)="onPageSizeChange()"
+      >
+        @for (size of pageSizeOptions; track size) {
+        <option [value]="size">{{ size }} per page</option>
+        }
+      </select>
+      <button
+        class="pagination-btn"
+        [class.disabled]="isPrevDisabled()"
+        (click)="previousPage()"
+      >
+        ◀
+      </button>
+
+      @for (page of visiblePages; track page; let i = $index) { @if(page !==
+      '...') {
+      <button
+        class="pagination-btn"
+        [class.active]="page === pageIndex"
+        (click)="goToPage(+page)"
+      >
+        {{ +page + 1 }}
+      </button>
+      } @else {
+      <button class="pagination-btn" disabled>...</button>
+      } }
+
+      <button
+        class="pagination-btn"
+        [class.disabled]="isNextDisabled()"
+        (click)="nextPage()"
+      >
+        ▶
+      </button>
     </div>
   </div>
 </div>

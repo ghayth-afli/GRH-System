@@ -41,8 +41,8 @@
   </div>
 
   <div class="list-view">
-    <div class="no-trainings" *ngIf="!displayedTrainings.length">
-      There are currently no trainings listed.
+    <div class="no-data" *ngIf="!displayedTrainings.length" aria-live="polite">
+      No trainings found.
     </div>
     <div class="training-card" *ngFor="let training of displayedTrainings">
       <div

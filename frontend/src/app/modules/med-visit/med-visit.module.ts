@@ -12,17 +12,23 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MedicalVisitFormModalComponent } from './components/medical-visit-form-modal/medical-visit-form-modal.component';
-import { AppointmentModalComponent } from './components/appointment-modal/appointment-modal.component';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
+import { CreateEditMedicalVisitComponent } from './components/create-edit-medical-visit/create-edit-medical-visit.component';
+import { TakeRegistrationDialogComponent } from './components/take-registration-dialog/take-registration-dialog.component';
 
 @NgModule({
   declarations: [
     MedicalVisitsPageComponent,
     AppointmentsPageComponent,
-    MedicalVisitFormModalComponent,
-    AppointmentModalComponent,
+    CreateEditMedicalVisitComponent,
+    TakeRegistrationDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -36,11 +42,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     FormsModule,
     ReactiveFormsModule,
     MatProgressSpinnerModule,
-    ToastrModule.forRoot({
-      positionClass: 'toast-top-right',
-      timeOut: 3000,
-      //preventDuplicates: true,
-    }),
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatSelectModule,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
