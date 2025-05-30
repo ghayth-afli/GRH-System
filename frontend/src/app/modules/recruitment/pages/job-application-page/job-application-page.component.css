@@ -5,5 +5,5 @@
 
 .form-error,
 .file-selected {
-  min-height: 16px; /* Reserve space to prevent layout shift */
+  min-height: 16px;
 }

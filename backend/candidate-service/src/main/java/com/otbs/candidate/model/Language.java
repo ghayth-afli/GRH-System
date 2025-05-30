@@ -17,11 +17,9 @@ public class Language {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String language;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private EProficiency proficiency;
 
     @ManyToOne(fetch = FetchType.LAZY)

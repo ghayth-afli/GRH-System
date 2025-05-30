@@ -122,7 +122,7 @@ public class TrainingController {
     @ApiResponse(responseCode = "404", description = "Training session not found")
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('HR') or hasAuthority('Manager')")
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('Manager') or hasAuthority('Employee')")
     public ResponseEntity<TrainingResponseDTO> getTrainingById(
             @Parameter(description = "ID of the training session", example = "1")
             @PathVariable("id") Long id

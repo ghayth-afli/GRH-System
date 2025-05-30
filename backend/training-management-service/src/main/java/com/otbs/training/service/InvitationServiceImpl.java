@@ -42,14 +42,14 @@ public class InvitationServiceImpl implements InvitationService {
                 .ifPresentOrElse(invitation -> {
                     invitation.setStatus(EStatus.CONFIRMED);
                     invitationRepository.save(invitation);
-
+                    log.info("Invitation with ID {} confirmed for employee {}", invitationId, employeeId);
                     // Asynchronously fetch employee details and send notification
                     fetchEmployeeAndNotifyAsync(employeeId, invitationId);
                 }, () -> {
                     throw new InvitationException("Invitation not found for confirmation");
                 });
-        sendAsyncEventNotifications(invitationRepository.findById(invitationId)
-                .orElseThrow(() -> new InvitationException("Invitation not found")), "CONFIRMED_INVITATION");
+//        sendAsyncEventNotifications(invitationRepository.findById(invitationId)
+//                .orElseThrow(() -> new InvitationException("Invitation not found")), "CONFIRMED_INVITATION");
     }
 
     @Override
@@ -60,6 +60,15 @@ public class InvitationServiceImpl implements InvitationService {
                 .map(invitationMapper::toResponseDTO)
                 .toList();
     }
+
+    @Override
+    public List<InvitationResponseDTO> getAllInvitationsByTrainingId(Long trainingId) {
+        return invitationRepository.findAllByTrainingId(trainingId)
+                .stream()
+                .map(invitationMapper::toResponseDTO)
+                .toList();
+    }
+
 
     private String getCurrentUserId() {
         return SecurityContextHolder.getContext().getAuthentication().getName();

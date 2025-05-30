@@ -18,7 +18,6 @@ public class Education {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String degree;
     @JsonProperty("end_date")
     private String endDate;
@@ -26,10 +25,8 @@ public class Education {
     @JsonProperty("field_of_study")
     private String fieldOfStudy;
 
-    @Column(nullable = false)
     private String institution;
 
-    @Column(nullable = false)
     private String location;
     @JsonProperty("start_date")
     private String startDate;

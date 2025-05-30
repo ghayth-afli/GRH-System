@@ -17,21 +17,17 @@
         placeholder="e.g., Senior Java Developer"
         [attr.aria-describedby]="'title-error-required title-error-maxlength'"
       />
-      <div
-        class="form-error"
-        id="title-error-required"
-        *ngIf="(title.touched || submitted) && title.errors?.['required']"
-      >
+      @if ((title.touched || submitted) && title.errors?.['required']) {
+      <div class="form-error" id="title-error-required">
         Job Title is required
       </div>
-      <div
-        class="form-error"
-        id="title-error-maxlength"
-        *ngIf="(title.touched || submitted) && title.errors?.['maxlength']"
-      >
+      } @if ((title.touched || submitted) && title.errors?.['maxlength']) {
+      <div class="form-error" id="title-error-maxlength">
         Job Title cannot exceed 200 characters
       </div>
+      }
     </div>
+
     <div class="form-group">
       <label for="description" class="form-label">Description *</label>
       <textarea
@@ -47,21 +43,19 @@
           'description-error-required description-error-maxlength'
         "
       ></textarea>
-      <div
-        class="form-error"
-        id="description-error-required"
-        *ngIf="(description.touched || submitted) && description.errors?.['required']"
-      >
+      @if ((description.touched || submitted) &&
+      description.errors?.['required']) {
+      <div class="form-error" id="description-error-required">
         Description is required
       </div>
-      <div
-        class="form-error"
-        id="description-error-maxlength"
-        *ngIf="(description.touched || submitted) && description.errors?.['maxlength']"
-      >
+      } @if ((description.touched || submitted) &&
+      description.errors?.['maxlength']) {
+      <div class="form-error" id="description-error-maxlength">
         Description cannot exceed 2000 characters
       </div>
+      }
     </div>
+
     <div class="form-group">
       <label for="department" class="form-label">Department *</label>
       <select
@@ -81,14 +75,14 @@
         <option value="it">IT</option>
         <option value="commercial">Commercial</option>
       </select>
-      <div
-        class="form-error"
-        id="department-error-required"
-        *ngIf="(department.touched || submitted) && department.errors?.['required']"
-      >
+      @if ((department.touched || submitted) && department.errors?.['required'])
+      {
+      <div class="form-error" id="department-error-required">
         Department is required
       </div>
+      }
     </div>
+
     <div class="form-group">
       <label for="responsibilities" class="form-label"
         >Responsibilities *</label
@@ -106,21 +100,19 @@
           'responsibilities-error-required responsibilities-error-maxlength'
         "
       ></textarea>
-      <div
-        class="form-error"
-        id="responsibilities-error-required"
-        *ngIf="(responsibilities.touched || submitted) && responsibilities.errors?.['required']"
-      >
+      @if ((responsibilities.touched || submitted) &&
+      responsibilities.errors?.['required']) {
+      <div class="form-error" id="responsibilities-error-required">
         Responsibilities are required
       </div>
-      <div
-        class="form-error"
-        id="responsibilities-error-maxlength"
-        *ngIf="(responsibilities.touched || submitted) && responsibilities.errors?.['maxlength']"
-      >
+      } @if ((responsibilities.touched || submitted) &&
+      responsibilities.errors?.['maxlength']) {
+      <div class="form-error" id="responsibilities-error-maxlength">
         Responsibilities cannot exceed 2000 characters
       </div>
+      }
     </div>
+
     <div class="form-group">
       <label for="qualifications" class="form-label">Qualifications *</label>
       <textarea
@@ -136,21 +128,19 @@
           'qualifications-error-required qualifications-error-maxlength'
         "
       ></textarea>
-      <div
-        class="form-error"
-        id="qualifications-error-required"
-        *ngIf="(qualifications.touched || submitted) && qualifications.errors?.['required']"
-      >
+      @if ((qualifications.touched || submitted) &&
+      qualifications.errors?.['required']) {
+      <div class="form-error" id="qualifications-error-required">
         Qualifications are required
       </div>
-      <div
-        class="form-error"
-        id="qualifications-error-maxlength"
-        *ngIf="(qualifications.touched || submitted) && qualifications.errors?.['maxlength']"
-      >
+      } @if ((qualifications.touched || submitted) &&
+      qualifications.errors?.['maxlength']) {
+      <div class="form-error" id="qualifications-error-maxlength">
         Qualifications cannot exceed 2000 characters
       </div>
+      }
     </div>
+
     <div class="form-group">
       <label for="role" class="form-label">Role *</label>
       <input
@@ -165,21 +155,15 @@
         placeholder="e.g., Backend Developer"
         [attr.aria-describedby]="'role-error-required role-error-maxlength'"
       />
-      <div
-        class="form-error"
-        id="role-error-required"
-        *ngIf="(role.touched || submitted) && role.errors?.['required']"
-      >
-        Role is required
-      </div>
-      <div
-        class="form-error"
-        id="role-error-maxlength"
-        *ngIf="(role.touched || submitted) && role.errors?.['maxlength']"
-      >
+      @if ((role.touched || submitted) && role.errors?.['required']) {
+      <div class="form-error" id="role-error-required">Role is required</div>
+      } @if ((role.touched || submitted) && role.errors?.['maxlength']) {
+      <div class="form-error" id="role-error-maxlength">
         Role cannot exceed 100 characters
       </div>
+      }
     </div>
+
     <div class="form-group">
       <div class="form-checkbox">
         <input
@@ -194,6 +178,7 @@
         >
       </div>
     </div>
+
     <div class="form-actions">
       <button
         type="button"

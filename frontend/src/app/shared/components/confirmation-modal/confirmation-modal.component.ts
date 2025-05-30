@@ -19,7 +19,7 @@ export class ConfirmationModalComponent {
   ) {}
 
   onConfirm() {
-    console.log(this.data); // ✅ Now it will correctly log the passed data
+    console.log(this.data);
     this.dialogRef.close({ confirmed: true });
   }
 

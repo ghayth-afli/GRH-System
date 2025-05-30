@@ -16,7 +16,6 @@ public class CandidateInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String email;
 
     private String linkedin;
@@ -25,7 +24,6 @@ public class CandidateInfo {
     @JoinColumn(name = "location_id")
     private Location location;
 
-    @Column(nullable = false)
     private String name;
 
     private String phone;

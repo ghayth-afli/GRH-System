@@ -10,4 +10,5 @@ public interface InvitationRepository  extends JpaRepository<Invitation, Long> {
 
     Optional<Invitation> findByEmployeeIdAndTrainingId(String employeeId, Long trainingId);
     List<Invitation> findByEmployeeId(String employeeId);
+    List<Invitation> findAllByTrainingId(Long training_id);
 }

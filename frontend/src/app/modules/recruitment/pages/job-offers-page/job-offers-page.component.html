@@ -66,6 +66,9 @@
   </div>
 
   <div class="list-view">
+    <div class="no-job-offers" *ngIf="!displayedJobOffers.length">
+      There are currently no job offers listed.
+    </div>
     @for (jobOffer of displayedJobOffers; track jobOffer.id) {
     @if((!authService.hasRole("HR"))&&(jobOffer.status !==
     "CLOSED")&&(jobOffer.isInternal)) {

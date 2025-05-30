@@ -26,20 +26,17 @@ public class TrainingMapper {
     }
 
     public TrainingResponseDTO toResponseDTO(Training training) {
-        return new TrainingResponseDTO(
-                training.getId(),
-                training.getTitle(),
-                training.getDescription(),
-                training.getDepartment(),
-                training.getStartDate(),
-                training.getEndDate(),
-                training.getCreatedBy(),
-                Optional.ofNullable(training.getInvitations())
-                        .orElse(List.of())
-                        .stream()
-                        .map(invitationMapper::toResponseDTO)
-                        .toList(),
-                training.getCreatedAt()
-        );
+        return TrainingResponseDTO.builder()
+                .id(training.getId())
+                .title(training.getTitle())
+                .description(training.getDescription())
+                .department(training.getDepartment())
+                .startDate(training.getStartDate())
+                .endDate(training.getEndDate())
+                .createdBy(Optional.ofNullable(training.getCreatedBy()).orElse("System"))
+                .createdAt(training.getCreatedAt())
+                .isConfirmed(null)
+                .totalInvitations((long) training.getInvitations().size())
+                .build();
     }
 }

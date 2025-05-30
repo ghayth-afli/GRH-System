@@ -98,7 +98,16 @@ public class TrainingServiceImpl implements TrainingService {
             return trainingMapper.toResponseDTO(findTrainingForManager(userId, trainingId));
         } else if (EMPLOYEE_ROLE.equals(user.role())) {
             return trainingRepository.findByIdAndInvitations_EmployeeId(trainingId, userId).stream()
-                    .map(trainingMapper::toResponseDTO)
+                    .map(
+                            training -> {
+                                TrainingResponseDTO responseDTO = trainingMapper.toResponseDTO(training);
+                                responseDTO.setIsConfirmed(
+                                        training.getInvitations().stream()
+                                                .anyMatch(invitation -> invitation.getEmployeeId().equals(userId) && invitation.getStatus() == EStatus.CONFIRMED)
+                                );
+                                return responseDTO;
+                            }
+                    )
                     .findFirst()
                     .orElseThrow(() -> new TrainingException("Training not found or not authorized"));
         }
@@ -124,7 +133,14 @@ public class TrainingServiceImpl implements TrainingService {
                     .peek(training -> training.setInvitations(training.getInvitations().stream()
                             .filter(invitation -> invitation.getEmployeeId().equals(userId))
                             .toList()))
-                    .map(trainingMapper::toResponseDTO)
+                    .map(training -> {
+                        TrainingResponseDTO responseDTO = trainingMapper.toResponseDTO(training);
+                        responseDTO.setIsConfirmed(
+                                training.getInvitations().stream()
+                                        .anyMatch(invitation -> invitation.getEmployeeId().equals(userId) && invitation.getStatus() == EStatus.CONFIRMED)
+                        );
+                        return responseDTO;
+                    })
                     .toList();
         }
 
@@ -208,9 +224,9 @@ public class TrainingServiceImpl implements TrainingService {
     @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void sendAsyncEventNotifications(Training training, String eventType) {
-        TrainingResponseDTO medicalVisitResponseDTO = trainingMapper.toResponseDTO(training);
+        TrainingResponseDTO trainingResponseDTO = trainingMapper.toResponseDTO(training);
         Map<String, Object> payload = new HashMap<>();
-        payload.put("training", medicalVisitResponseDTO);
+        payload.put("training", trainingResponseDTO);
         CompletableFuture<Void> eventNotification = CompletableFuture.runAsync(() ->
                 notificationEventService.sendEventNotification(
                         new Event(
