@@ -1,1 +1,172 @@
-<app-leave-requests-data-table></app-leave-requests-data-table>
+<div class="leave-requests-page">
+  <div class="filter-section">
+    <div class="filter-header">
+      <h2 class="filter-title">Leave Requests</h2>
+      <div class="search-box">
+        <span class="search-icon"><i class="fa-solid fa-search"></i></span>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchTermChange()"
+          class="search-input"
+          placeholder="Search by employee name..."
+          aria-label="Search by employee name"
+        />
+      </div>
+    </div>
+    <div class="filter-controls">
+      <div class="filter-group">
+        <label class="filter-label">Status:</label>
+        <select
+          class="filter-select"
+          [(ngModel)]="statusFilter"
+          (ngModelChange)="onStatusFilterChange()"
+          aria-label="Filter by status"
+        >
+          <option value="all" [selected]="statusFilter === 'all'">
+            <i class="fa-solid fa-filter"></i>All Statuses
+          </option>
+          <option value="EN_ATTENTE">Pending</option>
+          <option value="APPROUVÉE">Approved</option>
+          <option value="REFUSÉE">Rejected</option>
+        </select>
+      </div>
+      <!-- <div class="filter-group">
+        <label class="filter-label">From:</label>
+        <input
+          type="date"
+          class="filter-date"
+          [(ngModel)]="fromDateFilter"
+          (ngModelChange)="onStartDateFilterChange()"
+          aria-label="Filter by start date"
+        />
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">To:</label>
+        <input
+          type="date"
+          class="filter-date"
+          [(ngModel)]="toDateFilter"
+          (ngModelChange)="onEndDateFilterChange()"
+          aria-label="Filter by end date"
+        />
+      </div> -->
+    </div>
+  </div>
+
+  <div class="loading" *ngIf="loading" aria-live="polite">
+    Loading leave requests...
+  </div>
+  <div
+    class="no-requests"
+    *ngIf="!loading && !requests.length"
+    aria-live="polite"
+  >
+    No leave requests found.
+  </div>
+  <div class="leave-request-card" *ngFor="let request of displayedRequests">
+    <div class="leave-request-info">
+      <h3 class="leave-request-name">{{ request.Name }}</h3>
+      <div class="leave-request-meta">
+        <span><strong>Department:</strong> {{ request.Department }}</span>
+        <span
+          ><strong>Start:</strong>
+          {{ request.startDate | date : "MMM d, yyyy" }}</span
+        >
+        <span
+          ><strong>End:</strong>
+          {{ request.endDate | date : "MMM d, yyyy" }}</span
+        >
+        <span
+          ><strong>Duration:</strong>
+          {{ calculateDuration(request.startDate, request.endDate) }}</span
+        >
+        <span
+          ><strong>Type:</strong> {{ mapLeaveType(request.leaveType) }}</span
+        >
+      </div>
+    </div>
+    <div class="leave-request-actions">
+      <span
+        class="leave-request-status"
+        [ngClass]="mapStatus(request.status).toLowerCase()"
+      >
+        {{ mapStatus(request.status) }}
+      </span>
+      <button
+        class="action-btn attachments"
+        (click)="viewAttachments(request)"
+        aria-label="View attachments"
+        *ngIf="
+          request.leaveType === 'MALADIE' ||
+          request.leaveType === 'MATERNITÉ' ||
+          request.leaveType === 'PATERNITÉ' ||
+          request.leaveType === 'DÉCÈS'
+        "
+      >
+        <i class="fa-solid fa-paperclip"></i> Attachments
+      </button>
+      <button
+        class="action-btn approve"
+        *ngIf="request.status === 'EN_ATTENTE'"
+        (click)="openApproveConfirmation(request.id)"
+        aria-label="Approve leave request"
+      >
+        <i class="fa-solid fa-check"></i> Approve
+      </button>
+      <button
+        class="action-btn reject"
+        *ngIf="request.status === 'EN_ATTENTE'"
+        (click)="openRejectConfirmation(request.id)"
+        aria-label="Reject leave request"
+      >
+        <i class="fa-solid fa-times"></i> Reject
+      </button>
+    </div>
+  </div>
+
+  <div class="pagination">
+    <div class="pagination-info">
+      Showing <b>1-{{ pageSize }}</b> of <b>{{ requests.length }}</b> requests
+    </div>
+    <div class="pagination-controls">
+      <select
+        class="page-size-select"
+        [(ngModel)]="pageSize"
+        (ngModelChange)="onPageSizeChange()"
+      >
+        @for (size of pageSizeOptions; track size) {
+        <option [value]="size">{{ size }} per page</option>
+        }
+      </select>
+      <button
+        class="pagination-btn"
+        [class.disabled]="isPrevDisabled()"
+        (click)="previousPage()"
+      >
+        ◀
+      </button>
+
+      @for (page of visiblePages; track page; let i = $index) { @if(page !==
+      '...') {
+      <button
+        class="pagination-btn"
+        [class.active]="page === pageIndex"
+        (click)="goToPage(+page)"
+      >
+        {{ +page + 1 }}
+      </button>
+      } @else {
+      <button class="pagination-btn" disabled>...</button>
+      } }
+
+      <button
+        class="pagination-btn"
+        [class.disabled]="isNextDisabled()"
+        (click)="nextPage()"
+      >
+        ▶
+      </button>
+    </div>
+  </div>
+</div>

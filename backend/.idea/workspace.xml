@@ -6,13 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="8831ef2c-5863-4771-acbe-37c7b2e108e5" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/med-visit-service/src/main/java/com/otbs/medVisit/controller/AppointmentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/med-visit-service/src/main/java/com/otbs/medVisit/controller/AppointmentController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/med-visit-service/src/main/java/com/otbs/medVisit/dto/MedicalVisitResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/med-visit-service/src/main/java/com/otbs/medVisit/dto/MedicalVisitResponseDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/med-visit-service/src/main/java/com/otbs/medVisit/mapper/MedicalVisitMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/med-visit-service/src/main/java/com/otbs/medVisit/mapper/MedicalVisitMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/med-visit-service/src/main/java/com/otbs/medVisit/repository/AppointmentRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/med-visit-service/src/main/java/com/otbs/medVisit/repository/AppointmentRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/med-visit-service/src/main/java/com/otbs/medVisit/service/AppointmentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/med-visit-service/src/main/java/com/otbs/medVisit/service/AppointmentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/med-visit-service/src/main/java/com/otbs/medVisit/service/AppointmentServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/med-visit-service/src/main/java/com/otbs/medVisit/service/AppointmentServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/med-visit-service/src/main/java/com/otbs/medVisit/service/MedicalVisitServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/med-visit-service/src/main/java/com/otbs/medVisit/service/MedicalVisitServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/src/app/modules/med-visit/components/take-registration-dialog/take-registration-dialog.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/modules/med-visit/components/take-registration-dialog/take-registration-dialog.component.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -450,7 +443,7 @@
       <workItem from="1748505374030" duration="7224000" />
       <workItem from="1748524970161" duration="1277000" />
       <workItem from="1748590931877" duration="2977000" />
-      <workItem from="1748681621886" duration="5917000" />
+      <workItem from="1748681621886" duration="7369000" />
     </task>
     <servers />
   </component>

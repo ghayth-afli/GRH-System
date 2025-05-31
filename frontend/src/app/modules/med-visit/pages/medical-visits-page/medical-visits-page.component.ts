@@ -256,16 +256,10 @@ export class MedicalVisitsPageComponent {
       },
     });
 
-    dialogRef.afterClosed().subscribe({
-      next: (confirmed) => {
-        if (confirmed) {
-          this.deleteVisit(id);
-        }
-      },
-      error: (error) => {
-        console.error('Error in confirmation dialog:', error);
-        this.launchSnackbar('Failed to confirm deletion', 'error');
-      },
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.confirmed) {
+        this.deleteVisit(id);
+      }
     });
   }
 
