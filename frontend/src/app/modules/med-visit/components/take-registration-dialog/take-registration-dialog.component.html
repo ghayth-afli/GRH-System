@@ -10,9 +10,9 @@
         required
         aria-label="Select time slot"
         [attr.aria-describedby]="
-          takeSlotForm.controls['timeSlot'].invalid &&
-          (takeSlotForm.controls['timeSlot'].touched ||
-            takeSlotForm.controls['timeSlot'].dirty)
+          takeSlotForm.controls['timeSlot']?.invalid &&
+          (takeSlotForm.controls['timeSlot']?.touched ||
+            takeSlotForm.controls['timeSlot']?.dirty)
             ? 'timeSlot-error'
             : null
         "
