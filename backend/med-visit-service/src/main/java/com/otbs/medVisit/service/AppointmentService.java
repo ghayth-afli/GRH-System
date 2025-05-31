@@ -11,8 +11,10 @@ public interface AppointmentService {
     void updateAppointment(AppointmentRequestDTO appointment, Long id);
 
     void deleteAppointment(Long id);
+    void cancelAppointment(Long id);
     AppointmentResponseDTO getAppointmentById(Long id);
     List<AppointmentResponseDTO> getAllAppointments();
     List<AppointmentResponseDTO> getAppointmentsByPatientId(String patientId);
     List<AppointmentResponseDTO> getAppointmentsByMedVisitId(String medVisitId);
+
 }

@@ -4,12 +4,16 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { AppointmentStatus } from '../../models/appointment-status';
 import { AppointmentService } from '../../services/appointment.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Subscription } from 'rxjs';
 import { SseService } from '../../../../core/services/sse.service';
 import { NotificationData } from '../../../../core/models/NotificationData';
+import { AuthService } from '../../../../core/services/auth.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { CustomSnackbarComponent } from '../../../../shared/components/custom-snackbar/custom-snackbar.component';
 
 @Component({
   selector: 'app-appointments-page',
@@ -18,90 +22,251 @@ import { NotificationData } from '../../../../core/models/NotificationData';
   styleUrl: './appointments-page.component.css',
 })
 export class AppointmentsPageComponent {
-  appointments: Appointment[] = [
-    {
-      id: 101,
-      medicalVisitId: 789,
-      doctorName: 'Dr. Emily Carter',
-      timeSlot: new Date('2025-09-15T14:00:00'),
-      status: AppointmentStatus.PLANIFIE,
-      employeeFullName: 'John Doe',
-      employeeEmail: 'john.doe@example.com',
-    },
-  ];
-
-  filteredAppointments: Appointment[] = [];
-  pagedAppointments: Appointment[] = [];
-  pageSize = 5;
+  // Pagination
+  pageSize = 10;
+  pageIndex = 0;
   pageSizeOptions = [5, 10, 25, 100];
-  currentPage = 1;
-  totalPages = 1;
+  totalItems = 0;
+  totalPages = 0;
+  pages: number[] = [];
+  visiblePages: (number | string)[] = [];
 
-  employeeNameFilter = '';
-  statusFilter = 'all';
+  // Filter properties
+  searchTerm: string = '';
+  statusFilter = '';
 
-  constructor(private route: ActivatedRoute) {}
+  // Data properties
+  appointments: Appointment[] = [];
+  displayedAppointments: Appointment[] = [];
+
+  // Inject services
+  authService = inject(AuthService);
+  private appointmentService = inject(AppointmentService);
+  private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   ngOnInit() {
-    const visitId = Number(this.route.snapshot.paramMap.get('id'));
-    this.filteredAppointments = this.appointments.filter(
-      (a) => a.medicalVisitId === visitId
-    );
+    this.route.queryParamMap.subscribe((params) => {
+      const pageSize = params.get('pageSize');
+      if (pageSize) {
+        this.pageSize = parseInt(pageSize, 10);
+      }
+      this.loadAppointments();
+    });
+  }
+
+  onStatusFilterChange() {
+    this.pageIndex = 0;
     this.applyFilters();
   }
 
-  applyFilters() {
-    let filtered = this.appointments.filter((a) => {
-      const matchesName = this.employeeNameFilter
-        ? a.employeeFullName
-            .toLowerCase()
-            .includes(this.employeeNameFilter.toLowerCase())
-        : true;
-      const matchesStatus =
-        this.statusFilter !== 'all' ? a.status === this.statusFilter : true;
-      return matchesName && matchesStatus;
+  onPageSizeChange() {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        pageSize: this.pageSize,
+      },
+      queryParamsHandling: 'merge',
     });
-
-    // Ensure we still filter by visitId
-    const visitId = Number(this.route.snapshot.paramMap.get('id'));
-    filtered = filtered.filter((a) => a.medicalVisitId === visitId);
-
-    this.filteredAppointments = filtered;
-    this.updatePagination();
   }
 
-  updatePagination() {
-    this.totalPages = Math.ceil(
-      this.filteredAppointments.length / this.pageSize
+  onSearchTermChange() {
+    this.pageIndex = 0;
+    this.applyFilters();
+  }
+
+  goToPage(page: number): void {
+    if (page >= 0 && page < this.totalPages && page !== this.pageIndex) {
+      this.pageIndex = page;
+      this.updateVisiblePages();
+      this.updateDisplayedAppointments(this.appointments);
+    }
+  }
+
+  previousPage(): void {
+    if (this.pageIndex > 0) {
+      this.pageIndex--;
+      this.updateVisiblePages();
+      this.updateDisplayedAppointments(this.appointments);
+    }
+  }
+
+  nextPage(): void {
+    if (this.pageIndex < this.totalPages - 1) {
+      this.pageIndex++;
+      this.updateVisiblePages();
+      this.updateDisplayedAppointments(this.appointments);
+    }
+  }
+
+  changePageSize(size: number): void {
+    this.pageSize = size;
+    this.pageIndex = 0;
+    this.onPageSizeChange();
+  }
+
+  isPrevDisabled(): boolean {
+    return this.pageIndex === 0;
+  }
+
+  isNextDisabled(): boolean {
+    return this.pageIndex === this.totalPages - 1 || this.totalPages === 0;
+  }
+
+  export(type: 'pdf' | 'csv') {
+    if (type === 'pdf') {
+      const doc = new jsPDF();
+      doc.setFontSize(16);
+      doc.text('Medical Visits Report', 10, 10);
+      doc.setFontSize(12);
+
+      const tableData = this.displayedAppointments.map((appointment) => [
+        appointment.id,
+        appointment.doctorName,
+        new Date(appointment.timeSlot).toLocaleDateString(),
+        appointment.employeeFullName,
+        AppointmentStatus[appointment.status],
+      ]);
+
+      autoTable(doc, {
+        head: [['ID', 'Doctor Name', 'Visit Date', 'Patient Name', 'Status']],
+        body: tableData,
+      });
+
+      doc.save('medical_visits_report.pdf');
+    } else if (type === 'csv') {
+      const csvContent =
+        'data:text/csv;charset=utf-8,' +
+        this.displayedAppointments
+          .map(
+            (appointment) =>
+              `${appointment.id},${appointment.doctorName},${appointment.employeeFullName},${appointment.timeSlot},${appointment.status}`
+          )
+          .join('\n');
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', 'medical_visits_report.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      this.launchSnackbar('Invalid export type', 'error');
+    }
+  }
+
+  private loadAppointments() {
+    const id = this.route.snapshot.params['id'];
+    this.appointmentService.getAppointmentsByMedicalVisitId(id).subscribe({
+      next: (appointments: Appointment[]) => {
+        this.appointments = appointments;
+        this.totalItems = appointments.length;
+        this.applyFilters();
+      },
+      error: (error) => {
+        console.error('Error loading appointments:', error);
+        this.launchSnackbar('Failed to load appointments', 'error');
+      },
+    });
+  }
+
+  private launchSnackbar(message: string, type: 'success' | 'error') {
+    this.snackBar.openFromComponent(CustomSnackbarComponent, {
+      data: {
+        message: message,
+        type: type,
+      },
+      duration: 5000,
+      panelClass: ['custom-snackbar'],
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+    });
+  }
+
+  private applyFilters() {
+    let filteredAppointments = [...this.appointments];
+
+    if (this.searchTerm) {
+      filteredAppointments = filteredAppointments.filter((visit) =>
+        visit.employeeFullName
+          .toLowerCase()
+          .includes(this.searchTerm.toLowerCase())
+      );
+    }
+
+    if (this.statusFilter) {
+      filteredAppointments = filteredAppointments.filter(
+        (visit) => visit.status === this.statusFilter
+      );
+    }
+
+    filteredAppointments = filteredAppointments.sort(
+      (a, b) => new Date(a.timeSlot).getTime() - new Date(b.timeSlot).getTime()
     );
-    this.currentPage = Math.min(this.currentPage, this.totalPages || 1);
-    const start = (this.currentPage - 1) * this.pageSize;
-    this.pagedAppointments = this.filteredAppointments.slice(
-      start,
-      start + this.pageSize
-    );
+
+    this.totalItems = filteredAppointments.length;
+    this.calculatePagination();
+
+    if (this.pageIndex >= this.totalPages && this.totalPages > 0) {
+      this.pageIndex = this.totalPages - 1;
+    } else if (this.totalPages === 0) {
+      this.pageIndex = 0;
+    }
+
+    this.updateDisplayedAppointments(filteredAppointments);
   }
 
-  changePage(page: number) {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-      this.updatePagination();
-    }
+  private updateDisplayedAppointments(sourceList: Appointment[]): void {
+    const startIndex = this.pageIndex * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.displayedAppointments = sourceList.slice(startIndex, endIndex);
   }
 
-  getPageNumbers(): number[] {
-    const pages: number[] = [];
-    const maxPages = 5;
-    let startPage = Math.max(1, this.currentPage - Math.floor(maxPages / 2));
-    let endPage = Math.min(this.totalPages, startPage + maxPages - 1);
+  private calculatePagination(): void {
+    this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+    if (this.totalPages === 0) {
+      this.pages = [];
+    } else {
+      this.pages = Array.from({ length: this.totalPages }, (_, i) => i);
+    }
+    this.updateVisiblePages();
+  }
 
-    if (endPage - startPage + 1 < maxPages) {
-      startPage = Math.max(1, endPage - maxPages + 1);
+  private updateVisiblePages(): void {
+    this.visiblePages = [];
+    if (this.totalPages <= 0) {
+      return;
     }
 
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(i);
+    if (this.totalPages <= 7) {
+      this.visiblePages = this.pages;
+    } else {
+      this.visiblePages.push(0);
+      const currentPageIndex = this.pageIndex;
+
+      let startPage = Math.max(1, currentPageIndex - 1);
+      let endPage = Math.min(this.totalPages - 2, currentPageIndex + 1);
+
+      if (currentPageIndex < 3) {
+        endPage = Math.min(this.totalPages - 2, 3);
+      }
+      if (currentPageIndex > this.totalPages - 4) {
+        startPage = Math.max(1, this.totalPages - 4);
+      }
+
+      if (startPage > 1) {
+        this.visiblePages.push('...');
+      }
+      for (let i = startPage; i <= endPage; i++) {
+        this.visiblePages.push(i);
+      }
+      if (endPage < this.totalPages - 2) {
+        this.visiblePages.push('...');
+      }
+      this.visiblePages.push(this.totalPages - 1);
     }
-    return pages;
   }
 }

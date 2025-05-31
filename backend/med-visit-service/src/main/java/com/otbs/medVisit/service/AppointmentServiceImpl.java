@@ -60,7 +60,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         // Validate medical visit
         MedicalVisitResponseDTO medicalVisit = medicalVisitService.getMedicalVisit(appointment.medicalVisitId());
-        if (medicalVisit.visitDate().isBefore(LocalDate.now())) {
+        if (medicalVisit.getVisitDate().isBefore(LocalDate.now())) {
             throw new MedicalVisitException("Medical visit is not available");
         }
 
@@ -135,6 +135,18 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
+    public void cancelAppointment(Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        Appointment appointment = appointmentRepository.findByMedicalVisitIdAndEmployeeId(id, authentication.getName())
+                .orElseThrow(() -> new AppointmentException("Appointment not found"));
+
+        appointmentRepository.deleteById(appointment.getId());
+        sendNotificationAsync(appointment.getEmployeeId(), "Appointment cancelled",
+                "Your appointment has been cancelled for " + appointment.getTimeSlot());
+    }
+
+    @Override
     public AppointmentResponseDTO getAppointmentById(Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         validateAppointmentAccess(id, authentication);
@@ -173,8 +185,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     private void validateTimeSlot(AppointmentRequestDTO appointmentRequestDTO, MedicalVisitResponseDTO medicalVisit) {
         LocalDateTime timeSlot = appointmentRequestDTO.timeSlot();
-        LocalDateTime start = LocalDateTime.of(medicalVisit.visitDate(), medicalVisit.startTime());
-        LocalDateTime end = LocalDateTime.of(medicalVisit.visitDate(), medicalVisit.endTime());
+        LocalDateTime start = LocalDateTime.of(medicalVisit.getVisitDate(), medicalVisit.getStartTime());
+        LocalDateTime end = LocalDateTime.of(medicalVisit.getVisitDate(), medicalVisit.getEndTime());
 
         if (timeSlot.isBefore(start) || timeSlot.isAfter(end) || timeSlot.getMinute() % 30 != 0) {
             throw new TimeSlotNotAvailableException("Time slot should be between MedicalVisit start and end time for every 30 minutes");
@@ -246,7 +258,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 notificationEventService.sendEventNotification(
                         new Event(
                                 eventType,
-                                medVisit.id().toString(),
+                                medVisit.getId().toString(),
                                 "MEDICAL_VISIT",
                                 payload
                         )
@@ -256,9 +268,9 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .whenComplete((_, throwable) -> {
                     if (throwable != null) {
                         log.error("Failed to send event notifications for medical visit ID {}: {}",
-                                medVisit.id(), throwable.getMessage());
+                                medVisit.getId(), throwable.getMessage());
                     } else {
-                        log.debug("Event notifications sent successfully for medical visit ID {}", medVisit.id());
+                        log.debug("Event notifications sent successfully for medical visit ID {}", medVisit.getId());
                     }
                 });
     }

@@ -11,6 +11,7 @@ import com.otbs.medVisit.repository.MedicalVisitRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -92,14 +93,30 @@ public class MedicalVisitServiceImpl implements MedicalVisitService {
     @Override
     public MedicalVisitResponseDTO getMedicalVisit(Long id) {
         return medicalVisitRepository.findById(id)
-                .map(medicalVisitMapper::toDto)
+                .map(
+                        medicalVisit -> {
+                            MedicalVisitResponseDTO medicalVisitResponseDTO = medicalVisitMapper.toDto(medicalVisit);
+                            final boolean didIBookVisit = medicalVisit.getAppointments().stream()
+                                    .anyMatch(appointment -> appointment.getEmployeeId().equals(getCurrentUserDn()));
+                            medicalVisitResponseDTO.setDidIBookVisit(didIBookVisit);
+                            return medicalVisitResponseDTO;
+                        }
+                )
                 .orElseThrow(() -> new MedicalVisitException("Medical visit not found"));
     }
 
     @Override
     public List<MedicalVisitResponseDTO> getMedicalVisits() {
         return medicalVisitRepository.findAll().stream()
-                .map(medicalVisitMapper::toDto)
+                .map(
+                        medicalVisit -> {
+                            MedicalVisitResponseDTO medicalVisitResponseDTO =medicalVisitMapper.toDto(medicalVisit);
+                                    final boolean didIBookVisit = medicalVisit.getAppointments().stream()
+                                            .anyMatch(appointment -> appointment.getEmployeeId().equals(getCurrentUserDn()));
+                            medicalVisitResponseDTO.setDidIBookVisit(didIBookVisit);
+                            return medicalVisitResponseDTO;
+                        }
+                )
                 .toList();
     }
 
@@ -170,5 +187,9 @@ public class MedicalVisitServiceImpl implements MedicalVisitService {
                     log.error("Failed to fetch employees for notification: {}", throwable.getMessage());
                     return null;
                 });
+    }
+
+    private String getCurrentUserDn() {
+        return (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

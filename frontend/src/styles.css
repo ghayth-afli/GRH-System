@@ -2225,9 +2225,16 @@ a {
 }
 
 .visit-btn.export {
-  background-color: var(--info);
   color: var(--white);
   border: none;
+}
+
+.export-pdf {
+  background-color: #007bff;
+}
+
+.export-csv {
+  background-color: #28a745;
 }
 
 .visit-btn.export:hover {
@@ -2326,6 +2333,16 @@ a {
 .action-btn.take-appointment {
   background-color: var(--success);
   color: var(--white);
+}
+
+.action-btn.cancel-appointment {
+  background-color: #f0f0f0;
+  color: var(--primary-dark);
+  border: 1px solid var(--silver);
+}
+
+.action-btn.cancel-appointment:hover {
+  background-color: var(--light-gray);
 }
 
 .action-btn.take-appointment:hover {
@@ -2539,6 +2556,8 @@ a {
   font-weight: 600;
   text-transform: uppercase;
   padding: 4px 8px;
+  display: flex;
+  align-items: center;
   border-radius: 4px;
 }
 

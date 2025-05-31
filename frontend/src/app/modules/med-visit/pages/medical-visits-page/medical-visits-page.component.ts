@@ -5,12 +5,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
 import { AuthService } from '../../../../core/services/auth.service';
-
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { CustomSnackbarComponent } from '../../../../shared/components/custom-snackbar/custom-snackbar.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CreateEditMedicalVisitComponent } from '../../components/create-edit-medical-visit/create-edit-medical-visit.component';
 import { TakeRegistrationDialogComponent } from '../../components/take-registration-dialog/take-registration-dialog.component';
 import { ConfirmationModalComponent } from '../../../../shared/components/confirmation-modal/confirmation-modal.component';
+import { AppointmentService } from '../../services/appointment.service';
 
 @Component({
   selector: 'app-medical-visits-page',
@@ -39,6 +41,7 @@ export class MedicalVisitsPageComponent {
   // Inject services
   authService = inject(AuthService);
   private medicalVisitService = inject(MedicalVisitService);
+  private appointmentService = inject(AppointmentService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
   private route = inject(ActivatedRoute);
@@ -193,14 +196,7 @@ export class MedicalVisitsPageComponent {
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        console.log(
-          'Appointment taken:',
-          JSON.stringify(
-            { action: 'take_appointment', visitId: visit.id, timeSlot: result },
-            null,
-            2
-          )
-        );
+        this.loadVisits();
         this.snackBar.openFromComponent(CustomSnackbarComponent, {
           data: {
             message: 'Appointment booked successfully!',
@@ -212,6 +208,41 @@ export class MedicalVisitsPageComponent {
           verticalPosition: 'top',
         });
       }
+    });
+  }
+
+  onCancelAppointment(id: number) {
+    const dialogRef = this.dialog.open(ConfirmationModalComponent, {
+      data: {
+        title: 'Cancel Appointment',
+        message: 'Are you sure you want to cancel this appointment?',
+        confirmButtonText: 'Cancel Appointment',
+        cancelButtonText: 'No, Keep Appointment',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe({
+      next: (confirmed) => {
+        if (confirmed) {
+          this.appointmentService.cancelAppointment(id).subscribe({
+            next: () => {
+              this.loadVisits();
+              this.launchSnackbar(
+                'Appointment cancelled successfully',
+                'success'
+              );
+            },
+            error: (error) => {
+              console.error('Error cancelling appointment:', error);
+              this.launchSnackbar('Failed to cancel appointment', 'error');
+            },
+          });
+        }
+      },
+      error: (error) => {
+        console.error('Error in confirmation dialog:', error);
+        this.launchSnackbar('Failed to confirm cancellation', 'error');
+      },
     });
   }
 
@@ -238,13 +269,38 @@ export class MedicalVisitsPageComponent {
     });
   }
 
-  export(type: 'pdf' | 'excel') {
+  export(type: 'pdf' | 'csv') {
     if (type === 'pdf') {
-      // Implement PDF export logic here
-      this.launchSnackbar('PDF export is not implemented yet', 'error');
-    } else if (type === 'excel') {
-      // Implement Excel export logic here
-      this.launchSnackbar('Excel export is not implemented yet', 'error');
+      const doc = new jsPDF();
+      doc.setFontSize(16);
+      doc.text('Medical Visits Report', 14, 16);
+
+      const tableData = this.displayedVisits.map((visit) => [
+        visit.id.toString(),
+        visit.doctorName,
+        visit.visitDate,
+      ]);
+
+      autoTable(doc, {
+        head: [['ID', 'Doctor Name', 'Visit Date', 'Patient Name', 'Status']],
+        body: tableData,
+      });
+
+      doc.save('medical_visits_report.pdf');
+    } else if (type === 'csv') {
+      const csvContent =
+        'data:text/csv;charset=utf-8,' +
+        this.displayedVisits
+          .map((visit) => `${visit.id},${visit.doctorName},${visit.visitDate}`)
+          .join('\n');
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', 'medical_visits_report.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } else {
       this.launchSnackbar('Invalid export type', 'error');
     }

@@ -6,17 +6,9 @@ import {
   inject,
 } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import {
-  MAT_DIALOG_DATA,
-  MatDialog,
-  MatDialogRef,
-} from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MedicalVisit } from '../../models/medical-visit';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {
-  ConfirmationModalComponent,
-  ConfirmationModalData,
-} from '../../../../shared/components/confirmation-modal/confirmation-modal.component';
 import { MedicalVisitService } from '../../services/medical-visit.service';
 import { CustomSnackbarComponent } from '../../../../shared/components/custom-snackbar/custom-snackbar.component';
 
@@ -26,7 +18,7 @@ import { CustomSnackbarComponent } from '../../../../shared/components/custom-sn
   templateUrl: './create-edit-medical-visit.component.html',
   styleUrl: './create-edit-medical-visit.component.css',
 })
-export class CreateEditMedicalVisitComponent {
+export class CreateEditMedicalVisitComponent implements AfterViewInit {
   @ViewChild('medicalVisitForm') medicalVisitForm!: NgForm;
   today = new Date().toISOString().split('T')[0];
   isLoading = false;
@@ -50,12 +42,66 @@ export class CreateEditMedicalVisitComponent {
       this.visitData = {
         ...data.visit,
         visitDate: new Date(data.visit.visitDate).toISOString().split('T')[0],
+        startTime: data.visit.startTime || '',
+        endTime: data.visit.endTime || '',
       };
       this.isEditMode = true;
     }
   }
 
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.validateTimeOrder();
+    });
+  }
+
+  validateTimeOrder(): void {
+    if (
+      !this.medicalVisitForm ||
+      !this.medicalVisitForm.controls['startTime'] ||
+      !this.medicalVisitForm.controls['endTime']
+    ) {
+      return;
+    }
+
+    const startTimeCtrl = this.medicalVisitForm.controls['startTime'];
+    const endTimeCtrl = this.medicalVisitForm.controls['endTime'];
+    const startTime = startTimeCtrl.value;
+    const endTime = endTimeCtrl.value;
+
+    if (startTime && endTime) {
+      if (endTime <= startTime) {
+        endTimeCtrl.setErrors({
+          ...(endTimeCtrl.errors || {}),
+          timeOrder: true,
+        });
+      } else {
+        if (endTimeCtrl.hasError('timeOrder')) {
+          endTimeCtrl.setErrors(
+            this.removeError(endTimeCtrl.errors, 'timeOrder')
+          );
+        }
+      }
+    } else {
+      if (endTimeCtrl.hasError('timeOrder')) {
+        endTimeCtrl.setErrors(
+          this.removeError(endTimeCtrl.errors, 'timeOrder')
+        );
+      }
+    }
+  }
+
   onSubmit() {
+    this.validateTimeOrder();
+
+    if (this.medicalVisitForm.invalid) {
+      Object.values(this.medicalVisitForm.controls).forEach((control) => {
+        control.markAsTouched();
+      });
+      this.launchSnackbar('Please correct the errors in the form.', 'error');
+      return;
+    }
+
     this.isLoading = true;
     if (this.data.isEdit && this.data.visit) {
       this.medicalVisitService
@@ -67,15 +113,22 @@ export class CreateEditMedicalVisitComponent {
         })
         .subscribe({
           next: (response) => {
+            this.isLoading = false;
             this.snackBar.open(response.message, 'Close', {
               duration: 3000,
             });
+            this.isLoading = false;
             this.dialogRef.close(true);
           },
           error: (error) => {
-            this.snackBar.open(error.error.message, 'Close', {
-              duration: 3000,
-            });
+            this.isLoading = false;
+            this.snackBar.open(
+              error.error?.message || 'Error updating medical visit',
+              'Close',
+              {
+                duration: 3000,
+              }
+            );
           },
         });
     } else {
@@ -94,11 +147,10 @@ export class CreateEditMedicalVisitComponent {
           },
           error: (error) => {
             this.launchSnackbar(
-              error.error.message || 'Error creating medical visit',
+              error.error?.message || 'Error creating medical visit',
               'error'
             );
             this.isLoading = false;
-            this.dialogRef.close;
           },
         });
     }

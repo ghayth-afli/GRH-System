@@ -5,4 +5,5 @@ export interface MedicalVisit {
   startTime: string;
   endTime: string;
   numberOfAppointments: number;
+  didIBookVisit?: boolean;
 }

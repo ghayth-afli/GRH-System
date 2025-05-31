@@ -169,4 +169,27 @@ public class AppointmentController {
         appointmentService.deleteAppointment(id);
         return ResponseEntity.ok(new MessageResponseDTO("Appointment deleted successfully"));
     }
+
+
+    //cancel appointment by medical visit id
+    @Operation(
+            summary = "Cancel an appointment",
+            description = "Cancels an existing appointment by ID. Requires HR, Employee, or Manager role."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Appointment cancelled successfully",
+            content = @Content(schema = @Schema(implementation = MessageResponseDTO.class))
+    )
+    @ApiResponse(responseCode = "404", description = "Appointment not found")
+    @ApiResponse(responseCode = "403", description = "Unauthorized access")
+    @DeleteMapping("/cancel/{id}")
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager')")
+    public ResponseEntity<MessageResponseDTO> cancelAppointment(
+            @Parameter(description = "ID of the appointment", example = "1")
+            @PathVariable("id") Long id
+    ) {
+        appointmentService.cancelAppointment(id);
+        return ResponseEntity.ok(new MessageResponseDTO("Appointment cancelled successfully"));
+    }
 }

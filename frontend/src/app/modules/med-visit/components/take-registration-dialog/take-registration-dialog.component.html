@@ -1,32 +1,39 @@
 <div class="take-appointment-dialog">
   <h2 class="dialog-title">Take Appointment</h2>
-  <form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()">
+  <form #takeSlotForm="ngForm" (ngSubmit)="onSubmit()">
     <div class="form-group">
       <label for="timeSlot">Time Slot *</label>
       <select
         id="timeSlot"
-        formControlName="timeSlot"
+        name="timeSlot"
+        [(ngModel)]="selectedTimeSlot"
+        required
         aria-label="Select time slot"
         [attr.aria-describedby]="
-          appointmentForm.get('timeSlot')!.errors ? 'timeSlot-error' : null
+          takeSlotForm.controls['timeSlot']?.invalid &&
+          (takeSlotForm.controls['timeSlot']?.touched ||
+            takeSlotForm.controls['timeSlot']?.dirty)
+            ? 'timeSlot-error'
+            : null
         "
+        #timeSlotInput="ngModel"
       >
         <option value="" disabled>Select a time slot</option>
-        <option *ngFor="let slot of timeSlots" [value]="slot">
+        @for (slot of timeSlots; track slot) {
+        <option [value]="slot">
           {{ slot }}
         </option>
+        }
       </select>
-      <span
-        *ngIf="
-          appointmentForm.get('timeSlot')?.errors &&
-          (appointmentForm.get('timeSlot')?.touched ||
-            appointmentForm.get('timeSlot')?.dirty)
-        "
-        class="form-error"
-        id="timeSlot-error"
-      >
-        Time Slot is required
+
+      @if (timeSlotInput.invalid && (timeSlotInput.touched ||
+      timeSlotInput.dirty)) {
+      <span class="form-error" id="timeSlot-error">
+        @if (timeSlotInput.errors?.['required']) {
+        <span>Time Slot is required</span>
+        }
       </span>
+      }
     </div>
 
     <div class="dialog-actions">
@@ -41,10 +48,14 @@
       <button
         type="submit"
         class="dialog-btn save"
-        [disabled]="appointmentForm.invalid"
+        [disabled]="takeSlotForm.invalid || isLoadingTimeSlots"
         aria-label="Book appointment"
       >
-        Book
+        @if (isLoadingTimeSlots) {
+        <span>Loading...</span>
+        } @else {
+        <i class="fa-solid fa-calendar-check"></i>
+        <span>&nbsp;Book</span> }
       </button>
     </div>
   </form>

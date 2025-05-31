@@ -1,4 +1,24 @@
 <div class="appointments-page">
+  @if(authService.hasRole("HR")) {
+  <div class="visits-actions">
+    @if(displayedAppointments) {
+    <button
+      class="visit-btn export export-pdf"
+      (click)="export('pdf')"
+      aria-label="Export to PDF"
+    >
+      <i class="fa-solid fa-file-pdf"></i> Export PDF
+    </button>
+    <button
+      class="visit-btn export export-csv"
+      (click)="export('csv')"
+      aria-label="Export to Excel"
+    >
+      <i class="fa-solid fa-file-excel"></i> Export Excel
+    </button>
+    }
+  </div>
+  }
   <div class="filter-section">
     <div class="filter-header">
       <h2 class="filter-title">Appointments</h2>
@@ -8,44 +28,30 @@
           type="text"
           class="search-input"
           placeholder="Search by employee name..."
-          [(ngModel)]="employeeNameFilter"
-          (ngModelChange)="applyFilters()"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchTermChange()"
           aria-label="Search appointments by employee name"
         />
       </div>
     </div>
-    <div class="filter-controls">
-      <div class="filter-group">
-        <label class="filter-label">Status:</label>
-        <select
-          class="filter-select"
-          [(ngModel)]="statusFilter"
-          (ngModelChange)="applyFilters()"
-          aria-label="Filter by status"
-        >
-          <option value="all">All Statuses</option>
-          <option value="PLANIFIE">Planifié</option>
-          <option value="CONFIRMED">Confirmed</option>
-          <option value="CANCELLED">Cancelled</option>
-        </select>
-      </div>
-    </div>
   </div>
 
-  <div class="no-data" *ngIf="!pagedAppointments.length" aria-live="polite">
+  <div class="no-data" *ngIf="!appointments.length" aria-live="polite">
     No appointments found.
   </div>
-  <div class="appointment-card" *ngFor="let appointment of appointments">
+  <div
+    class="appointment-card"
+    *ngFor="let appointment of displayedAppointments"
+  >
     <div class="appointment-info">
-      <h3 class="visit-title">{{ appointment.doctorName }}</h3>
+      <h3 class="visit-title">{{ appointment.employeeFullName }}</h3>
       <div class="appointment-meta">
-        <span>ID: {{ appointment.id }}</span>
+        <span><strong>ID:</strong> {{ appointment.id }}</span>
         <span
-          >Time Slot:
+          ><strong>Time Slot:</strong>
           {{ appointment.timeSlot | date : "MMM d, yyyy, h:mm a" }}</span
         >
-        <span>Employee: {{ appointment.employeeFullName }}</span>
-        <span>Email: {{ appointment.employeeEmail }}</span>
+        <span><strong>Email:</strong> {{ appointment.employeeEmail }}</span>
       </div>
     </div>
     <span
@@ -58,45 +64,44 @@
 
   <div class="pagination">
     <div class="pagination-info">
-      Showing
-      <b
-        >{{ (currentPage - 1) * pageSize + 1 }}-{{
-          (currentPage - 1) * pageSize + pagedAppointments.length
-        }}</b
-      >
-      of <b>{{ filteredAppointments.length }}</b> appointments
+      Showing <b>1-{{ pageSize }}</b> of
+      <b>{{ appointments.length }}</b> appointments
     </div>
     <div class="pagination-controls">
       <select
         class="page-size-select"
         [(ngModel)]="pageSize"
-        (ngModelChange)="updatePagination()"
+        (ngModelChange)="onPageSizeChange()"
       >
-        <option *ngFor="let size of pageSizeOptions" [value]="size">
-          {{ size }} per page
-        </option>
+        @for (size of pageSizeOptions; track size) {
+        <option [value]="size">{{ size }} per page</option>
+        }
       </select>
       <button
         class="pagination-btn"
-        [ngClass]="{ disabled: currentPage === 1 }"
-        (click)="changePage(currentPage - 1)"
-        aria-label="Previous page"
+        [class.disabled]="isPrevDisabled()"
+        (click)="previousPage()"
       >
         ◀
       </button>
+
+      @for (page of visiblePages; track page; let i = $index) { @if(page !==
+      '...') {
       <button
         class="pagination-btn"
-        *ngFor="let page of getPageNumbers()"
-        [ngClass]="{ active: page === currentPage }"
-        (click)="changePage(page)"
+        [class.active]="page === pageIndex"
+        (click)="goToPage(+page)"
       >
-        {{ page }}
+        {{ +page + 1 }}
       </button>
+      } @else {
+      <button class="pagination-btn" disabled>...</button>
+      } }
+
       <button
         class="pagination-btn"
-        [ngClass]="{ disabled: currentPage === totalPages }"
-        (click)="changePage(currentPage + 1)"
-        aria-label="Next page"
+        [class.disabled]="isNextDisabled()"
+        (click)="nextPage()"
       >
         ▶
       </button>

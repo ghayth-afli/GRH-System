@@ -75,7 +75,8 @@
         <span *ngIf="visitDateCtrl.errors?.['required']"
           >Visit Date is required</span
         >
-        <span *ngIf="visitDateCtrl.errors?.['minDate']"
+        <span
+          *ngIf="visitDateCtrl.errors?.['min'] || visitDateCtrl.errors?.['minDate']"
           >Visit Date must be today or later</span
         >
       </span>
@@ -88,6 +89,7 @@
         name="startTime"
         type="time"
         [(ngModel)]="visitData.startTime"
+        (ngModelChange)="validateTimeOrder()"
         required
         #startTimeCtrl="ngModel"
         aria-label="Start time"
@@ -123,6 +125,7 @@
         name="endTime"
         type="time"
         [(ngModel)]="visitData.endTime"
+        (ngModelChange)="validateTimeOrder()"
         required
         #endTimeCtrl="ngModel"
         aria-label="End time"
@@ -145,7 +148,7 @@
         <span *ngIf="endTimeCtrl.errors?.['required']"
           >End Time is required</span
         >
-        <span *ngIf="endTimeCtrl.errors?.['minTime']"
+        <span *ngIf="endTimeCtrl.errors?.['timeOrder']"
           >End Time must be after Start Time</span
         >
       </span>
@@ -169,12 +172,9 @@
         @if(isLoading){
         <span class="loader" aria-label="Loading"></span>
 
-        }@else{
-        <!-- <i class="form-btn-icon fa-solid fa-save"></i> -->
-        @if(isEditMode){
+        }@else{ @if(isEditMode){
         <i class="form-btn-icon fa-solid fa-pen-to-square"></i>
-        Uodate } @else{
-        <i class="form-btn-icon fa-solid fa-save"></i>
+        Update } @else{ <i class="form-btn-icon fa-solid fa-save"></i>
         Create } }
       </button>
     </div>
