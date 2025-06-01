@@ -8,9 +8,6 @@ const routes: Routes = [
   {
     path: '',
     component: HomePageComponent,
-    resolve: {
-      leaveHistory: LeaveHistoryResolver,
-    },
   },
 ];
 

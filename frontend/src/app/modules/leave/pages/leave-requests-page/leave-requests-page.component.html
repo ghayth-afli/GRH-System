@@ -106,6 +106,7 @@
       >
         <i class="fa-solid fa-paperclip"></i> Attachments
       </button>
+      @if(authService.hasRole('Manager')) {
       <button
         class="action-btn approve"
         *ngIf="request.status === 'EN_ATTENTE'"
@@ -122,6 +123,7 @@
       >
         <i class="fa-solid fa-times"></i> Reject
       </button>
+      }
     </div>
   </div>
 

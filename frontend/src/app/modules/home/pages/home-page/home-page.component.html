@@ -1,4 +1,108 @@
-<div class="home-container">
-  <app-calendar [events]="leaves"></app-calendar>
-  <app-calendar-side-bar [leaveTypes]="leaveTypes"></app-calendar-side-bar>
+<div class="homepage">
+  <!-- Replace the stat-cards div in homepage.component.html -->
+  <div class="stat-cards">
+    <div
+      class="stat-card balance"
+      role="region"
+      aria-labelledby="balance-label"
+    >
+      <i class="fa-solid fa-leaf stat-icon" aria-hidden="true"></i>
+      <div class="stat-label" id="balance-label">Leave Balance</div>
+      <div
+        class="stat-value"
+        [ngClass]="{ counting: animateBalance }"
+        #balanceValue
+      >
+        {{ stats.balance }} days
+      </div>
+    </div>
+    <div class="stat-card used" role="region" aria-labelledby="used-label">
+      <i class="fa-solid fa-calendar stat-icon" aria-hidden="true"></i>
+      <div class="stat-label" id="used-label">Used Leave</div>
+      <div class="stat-value" [ngClass]="{ counting: animateUsed }" #usedValue>
+        {{ stats.used }} days
+      </div>
+    </div>
+    <div
+      class="stat-card requests"
+      role="region"
+      aria-labelledby="requests-label"
+    >
+      <i class="fa-solid fa-file-alt stat-icon" aria-hidden="true"></i>
+      <div class="stat-label" id="requests-label">Total Leave Requests</div>
+      <div
+        class="stat-value"
+        [ngClass]="{ counting: animateRequests }"
+        #requestsValue
+      >
+        {{ stats.totalRequests }}
+      </div>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="calendar-section">
+      <div class="calendar-controls">
+        <div class="calendar-nav">
+          <button class="nav-btn" (click)="goToday()" aria-label="Go to today">
+            Today
+          </button>
+          <button
+            class="nav-btn"
+            aria-label="Previous month"
+            (click)="calendarApi?.prev()"
+          >
+            ◄
+          </button>
+          <button
+            class="nav-btn"
+            (click)="calendarApi?.next()"
+            aria-label="Next month"
+          >
+            ►
+          </button>
+          <button
+            class="nav-btn view-toggle"
+            (click)="toggleView()"
+            aria-label="Toggle calendar view"
+          >
+            {{ calendarView === "dayGridMonth" ? "Weekly" : "Monthly" }}
+          </button>
+        </div>
+      </div>
+      <full-calendar
+        #calendar
+        [options]="calendarOptions"
+        aria-label="Leave and holiday calendar"
+      ></full-calendar>
+    </div>
+    <div class="side-panel">
+      <button
+        class="submit-btn center"
+        (click)="openSubmitDialog()"
+        aria-label="Submit leave request"
+      >
+        <i class="fa-solid fa-plus"></i> Request Leave
+      </button>
+      <div class="leave-types">
+        <h3 class="section-title">Leave & Holidays</h3>
+        <div
+          class="legend-item"
+          *ngFor="let item of legendItems"
+          (click)="toggleLegendItem(item.type)"
+          [style.opacity]="item.visible ? 1 : 0.5"
+        >
+          <div class="legend-color" [style.backgroundColor]="item.color"></div>
+          <span>{{ item.label }}</span>
+        </div>
+      </div>
+    </div>
+    <button
+      class="drawer-toggle"
+      (click)="toggleDrawer()"
+      aria-label="Toggle side panel"
+    >
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </div>
 </div>

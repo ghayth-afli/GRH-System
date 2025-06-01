@@ -1,0 +1,198 @@
+<div class="dialog-container">
+  <h2 class="dialog-title">Submit Leave Request</h2>
+
+  <form [formGroup]="leaveRequestForm" (ngSubmit)="onSubmit()">
+    <!-- Leave Type -->
+    <div class="form-group">
+      <label class="form-label" for="leaveType">Leave Type *</label>
+      <select
+        id="leaveType"
+        class="form-control"
+        formControlName="leaveType"
+        aria-label="Select leave type"
+        [attr.aria-describedby]="
+          leaveRequestForm.get('leaveType')?.errors ? 'leaveType-error' : null
+        "
+      >
+        <option value="" disabled>Select leave type</option>
+        <option *ngFor="let type of leaveTypes" [value]="type.value">
+          {{ type.label }}
+        </option>
+      </select>
+      <span
+        class="form-error"
+        id="leaveType-error"
+        *ngIf="
+          leaveRequestForm.get('leaveType')?.errors &&
+          leaveRequestForm.get('leaveType')?.touched
+        "
+      >
+        Leave Type is required
+      </span>
+    </div>
+
+    <!-- Start Date -->
+    <div class="form-group">
+      <label class="form-label" for="startDate">Start Date *</label>
+      <input
+        id="startDate"
+        type="date"
+        class="form-control"
+        formControlName="startDate"
+        [min]="minDate"
+        aria-label="Start date"
+        [attr.aria-describedby]="
+          leaveRequestForm.get('startDate')?.errors ? 'startDate-error' : null
+        "
+      />
+      <span
+        class="form-error"
+        id="startDate-error"
+        *ngIf="
+          leaveRequestForm.get('startDate')?.errors &&
+          leaveRequestForm.get('startDate')?.touched
+        "
+      >
+        <span *ngIf="leaveRequestForm.get('startDate')?.errors?.['required']">
+          Start Date is required
+        </span>
+      </span>
+    </div>
+
+    <!-- End Date -->
+    <div class="form-group">
+      <label class="form-label" for="endDate">End Date *</label>
+      <input
+        id="endDate"
+        type="date"
+        class="form-control"
+        formControlName="endDate"
+        [min]="leaveRequestForm.get('startDate')?.value"
+        aria-label="End date"
+        [attr.aria-describedby]="
+          leaveRequestForm.get('endDate')?.errors ? 'endDate-error' : null
+        "
+      />
+      <span
+        class="form-error"
+        id="endDate-error"
+        *ngIf="
+          leaveRequestForm.get('endDate')?.errors &&
+          leaveRequestForm.get('endDate')?.touched
+        "
+      >
+        <span *ngIf="leaveRequestForm.get('endDate')?.errors?.['required']">
+          End Date is required
+        </span>
+        <span *ngIf="leaveRequestForm.get('endDate')?.errors?.['dateRange']">
+          End Date must be after Start Date
+        </span>
+      </span>
+    </div>
+
+    <!-- Start Time (Only for AUTORISATION) -->
+    <div class="form-group" *ngIf="hasTimeControls()">
+      <label class="form-label" for="startTime">Start Time *</label>
+      <input
+        id="startTime"
+        type="time"
+        class="form-control"
+        formControlName="startTime"
+        aria-label="Start time"
+        [attr.aria-describedby]="
+          leaveRequestForm.get('startTime')?.errors ? 'startTime-error' : null
+        "
+      />
+      <span
+        class="form-error"
+        id="startTime-error"
+        *ngIf="
+          leaveRequestForm.get('startTime')?.errors &&
+          leaveRequestForm.get('startTime')?.touched
+        "
+      >
+        Start Time is required
+      </span>
+    </div>
+
+    <!-- End Time (Only for AUTORISATION) -->
+    <div class="form-group" *ngIf="hasTimeControls()">
+      <label class="form-label" for="endTime">End Time *</label>
+      <input
+        id="endTime"
+        type="time"
+        class="form-control"
+        formControlName="endTime"
+        aria-label="End time"
+        [attr.aria-describedby]="
+          leaveRequestForm.get('endTime')?.errors ? 'endTime-error' : null
+        "
+      />
+      <span
+        class="form-error"
+        id="endTime-error"
+        *ngIf="
+          leaveRequestForm.get('endTime')?.errors &&
+          leaveRequestForm.get('endTime')?.touched
+        "
+      >
+        <span *ngIf="leaveRequestForm.get('endTime')?.errors?.['required']">
+          End Time is required
+        </span>
+        <span *ngIf="leaveRequestForm.get('endTime')?.errors?.['timeRange']">
+          End Time must be after Start Time
+        </span>
+      </span>
+    </div>
+
+    <!-- Attachments (Only for required types) -->
+    <div class="form-group" *ngIf="hasAttachmentControl()">
+      <label class="form-label" for="attachment">Attachment *</label>
+      <input
+        id="attachment"
+        type="file"
+        class="form-control"
+        (change)="onAttachmentSelected($event)"
+        aria-label="Upload attachment"
+        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+      />
+      <div class="file-info" *ngIf="selectedFile">
+        <span class="file-name">{{ selectedFile.name }}</span>
+        <span class="file-size"
+          >({{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB)</span
+        >
+      </div>
+      <span
+        class="form-error"
+        *ngIf="
+          leaveRequestForm.get('attachment')?.errors &&
+          leaveRequestForm.get('attachment')?.touched
+        "
+      >
+        Attachment is required for this leave type
+      </span>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="dialog-actions">
+      <button
+        type="button"
+        class="dialog-btn cancel"
+        (click)="onClose()"
+        [disabled]="isLoading"
+        aria-label="Cancel"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="dialog-btn submit"
+        [disabled]="leaveRequestForm.invalid || isLoading"
+        aria-label="Submit leave request"
+      >
+        <span *ngIf="!isLoading">Submit</span>
+        <span *ngIf="isLoading">Submitting...</span>
+      </button>
+    </div>
+  </form>
+</div>
