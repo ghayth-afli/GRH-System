@@ -36,7 +36,10 @@ public class TrainingMapper {
                 .createdBy(Optional.ofNullable(training.getCreatedBy()).orElse("System"))
                 .createdAt(training.getCreatedAt())
                 .isConfirmed(null)
-                .totalInvitations((long) training.getInvitations().size())
+                .totalInvitations(Optional.ofNullable(training.getInvitations())
+                          .map(List::size)
+                          .map(Integer::longValue)
+                          .orElse(null))
                 .build();
     }
 }

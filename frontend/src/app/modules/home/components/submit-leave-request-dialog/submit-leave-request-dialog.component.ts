@@ -127,6 +127,9 @@ export class SubmitLeaveRequestDialogComponent implements OnInit {
         new FormControl('', Validators.required)
       );
 
+      //remove endDate
+      this.leaveRequestForm.removeControl('endDate');
+
       // Add time validator
       this.leaveRequestForm.setValidators([
         this.dateValidator,
@@ -173,7 +176,10 @@ export class SubmitLeaveRequestDialogComponent implements OnInit {
     const submitData = {
       leaveType: formValue.leaveType,
       startDate: formValue.startDate,
-      endDate: formValue.endDate,
+      endDate:
+        formValue.leaveType === 'AUTORISATION'
+          ? formValue.startDate
+          : formValue.endDate,
       startTime: formValue.startTime,
       endTime: formValue.endTime,
       attachment: this.selectedFile ?? undefined,
@@ -212,6 +218,10 @@ export class SubmitLeaveRequestDialogComponent implements OnInit {
       this.leaveRequestForm.contains('startTime') &&
       this.leaveRequestForm.contains('endTime')
     );
+  }
+
+  hasEndDateControl(): boolean {
+    return this.leaveRequestForm.contains('endDate');
   }
 
   hasAttachmentControl(): boolean {

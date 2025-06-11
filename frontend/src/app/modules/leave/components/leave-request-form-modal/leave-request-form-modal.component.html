@@ -10,27 +10,6 @@
       <div class="form-controller-container">
         <div class="form-controller">
           <div class="label-container">
-            <label for="leaveType">Leave Type</label>
-          </div>
-          <select formControlName="leaveType" id="leaveType">
-            <option *ngFor="let type of requestTypes" [value]="type">
-              {{ type }}
-            </option>
-          </select>
-          <div
-            *ngIf="
-              leaveRequestForm.get('leaveType')?.invalid &&
-              leaveRequestForm.get('leaveType')?.touched
-            "
-          >
-            <small class="error">Leave type is required.</small>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-controller-container">
-        <div class="form-controller">
-          <div class="label-container">
             <label for="startDate">Start Date</label>
           </div>
           <input
@@ -45,9 +24,18 @@
               leaveRequestForm.get('startDate')?.touched
             "
           >
-            <small class="error"
-              >Start date is required and must be today or in the future.</small
+            <small
+              class="error"
+              *ngIf="leaveRequestForm.get('startDate')?.errors?.['required']"
             >
+              Start date is required.
+            </small>
+            <small
+              class="error"
+              *ngIf="leaveRequestForm.get('startDate')?.errors?.['noWeekends']"
+            >
+              Start date cannot be on a weekend.
+            </small>
           </div>
         </div>
         <div class="form-controller">
@@ -66,14 +54,22 @@
               leaveRequestForm.get('endDate')?.touched
             "
           >
-            <small class="error"
-              >End date is required and must be after the start date.</small
+            <small
+              class="error"
+              *ngIf="leaveRequestForm.get('endDate')?.errors?.['required']"
             >
+              End date is required.
+            </small>
+            <small
+              class="error"
+              *ngIf="leaveRequestForm.get('endDate')?.errors?.['noWeekends']"
+            >
+              End date cannot be on a weekend.
+            </small>
           </div>
         </div>
       </div>
 
-      <!-- Conditionally render these fields if the leave type requires them -->
       <div
         class="form-controller-container"
         *ngIf="leaveRequestForm.get('startTime')"
@@ -89,9 +85,18 @@
               leaveRequestForm.get('startTime')?.touched
             "
           >
-            <small class="error"
-              >Start time is required for certain leave types.</small
+            <small
+              class="error"
+              *ngIf="leaveRequestForm.get('startTime')?.errors?.['required']"
             >
+              Start time is required for certain leave types.
+            </small>
+            <small
+              class="error"
+              *ngIf="leaveRequestForm.get('startTime')?.errors?.['timeRange']"
+            >
+              Time between 12:30 and 14:00 is not allowed.
+            </small>
           </div>
         </div>
         <div class="form-controller" *ngIf="leaveRequestForm.get('endTime')">
@@ -105,62 +110,19 @@
               leaveRequestForm.get('endTime')?.touched
             "
           >
-            <small class="error"
-              >End time is required for certain leave types.</small
+            <small
+              class="error"
+              *ngIf="leaveRequestForm.get('endTime')?.errors?.['required']"
             >
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="form-controller-container"
-        *ngIf="leaveRequestForm.get('attachment')"
-      >
-        <div class="form-controller">
-          <div class="label-container">
-            <label for="attachment">Attachment</label>
-          </div>
-          <input
-            type="file"
-            id="attachment"
-            (change)="onAttachmentSelected($event)"
-            accept=".pdf,.doc,.docx"
-          />
-          <div
-            *ngIf="
-              leaveRequestForm.get('attachment')?.invalid &&
-              leaveRequestForm.get('attachment')?.touched
-            "
-          >
-            <small class="error"
-              >Attachment is required for certain leave types.</small
+              End time is required for certain leave types.
+            </small>
+            <small
+              class="error"
+              *ngIf="leaveRequestForm.get('endTime')?.errors?.['timeRange']"
             >
+              Time between 12:30 and 14:00 is not allowed.
+            </small>
           </div>
-        </div>
-      </div>
-
-      <div class="form-buttons">
-        <div class="button-submit">
-          <button
-            type="submit"
-            [disabled]="leaveRequestForm.invalid"
-            class="primary"
-          >
-            @if(isLoading){
-            <div class="spinner-container">
-              <mat-spinner [diameter]="15"></mat-spinner>
-            </div>
-            } @else{ Send Request }
-          </button>
-        </div>
-        <div class="button-cancel">
-          <button type="button" (click)="onClose()">
-            @if(isLoading){
-            <div class="spinner-container">
-              <mat-spinner [diameter]="15"></mat-spinner>
-            </div>
-            } @else{ Cancel }
-          </button>
         </div>
       </div>
     </div>

@@ -82,6 +82,15 @@ export class LeaveRequestsPageComponent {
     return `${diffDays} day${diffDays !== 1 ? 's' : ''}`;
   }
 
+  calculateTimeDuration(startDate: string, endDate: string): string {
+    const start = new Date(`1970-01-01T${startDate}`);
+    const end = new Date(`1970-01-01T${endDate}`);
+    const diffTime = end.getTime() - start.getTime();
+    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+    const diffMinutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+    return `${diffHours}h ${diffMinutes}m`;
+  }
+
   mapLeaveType(type: string): string {
     const map: { [key: string]: string } = {
       ANNUEL: 'Annual Leave',

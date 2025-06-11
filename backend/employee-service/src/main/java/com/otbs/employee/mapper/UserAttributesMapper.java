@@ -2,11 +2,13 @@ package com.otbs.employee.mapper;
 
 import com.otbs.employee.model.Employee;
 import com.otbs.employee.model.LdapUser;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Function;
 
 @Component
+@Slf4j
 public class UserAttributesMapper implements Function<LdapUser, Employee> {
 
     @Override
@@ -33,6 +35,7 @@ public class UserAttributesMapper implements Function<LdapUser, Employee> {
 
     private String extractRole(String groups) {
         String[] groupParts = groups.split(",");
+        log.info("Extracting role from groups: {}", groups);
         return groupParts.length > 0 ? groupParts[0].split("=")[1] : "Unknown";
     }
 }

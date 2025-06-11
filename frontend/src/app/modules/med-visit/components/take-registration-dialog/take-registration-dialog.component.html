@@ -10,9 +10,8 @@
         required
         aria-label="Select time slot"
         [attr.aria-describedby]="
-          takeSlotForm.controls['timeSlot'].invalid &&
-          (takeSlotForm.controls['timeSlot'].touched ||
-            takeSlotForm.controls['timeSlot'].dirty)
+          timeSlotInput.invalid &&
+          (timeSlotInput.touched || timeSlotInput.dirty)
             ? 'timeSlot-error'
             : null
         "
@@ -55,7 +54,8 @@
         <span>Loading...</span>
         } @else {
         <i class="fa-solid fa-calendar-check"></i>
-        <span>&nbsp;Book</span> }
+        <span>&nbsp;Book</span>
+        }
       </button>
     </div>
   </form>

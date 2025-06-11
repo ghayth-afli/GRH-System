@@ -34,6 +34,10 @@ export class AuthService {
     return user ? JSON.parse(user) : null;
   }
 
+  set authenticatedUser(user: User) {
+    this._setUser(user);
+  }
+
   // login method to get access token and refresh token
   login(username: string, password: string): Observable<LoginResponse> {
     return this.http
@@ -165,6 +169,20 @@ export class AuthService {
   }
 
   hasRole(role: string): boolean {
-    return localStorage.getItem('user')?.includes(role) ?? false;
+    const user = this.authenticatedUser;
+    if (!user) return false;
+
+    switch (role) {
+      case 'HRD':
+        return user.department === 'HR' && user.role === 'Manager';
+      case 'Manager':
+        return user.department !== 'HR' && user.role === 'Manager';
+      case 'Employee':
+        return user.role === 'Employee';
+      case 'HR':
+        return user.department === 'HR' && user.role === 'HR';
+      default:
+        return false;
+    }
   }
 }

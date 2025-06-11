@@ -33,7 +33,9 @@
 
     <!-- Start Date -->
     <div class="form-group">
-      <label class="form-label" for="startDate">Start Date *</label>
+      <label class="form-label" for="startDate">
+        @if (hasEndDateControl()){ Start Date * }@else{Date *}
+      </label>
       <input
         id="startDate"
         type="date"
@@ -60,7 +62,7 @@
     </div>
 
     <!-- End Date -->
-    <div class="form-group">
+    <div class="form-group" *ngIf="hasEndDateControl()">
       <label class="form-label" for="endDate">End Date *</label>
       <input
         id="endDate"

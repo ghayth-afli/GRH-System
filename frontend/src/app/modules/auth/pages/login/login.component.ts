@@ -36,12 +36,14 @@ export class LoginComponent {
       next: () => {
         this.isLoading = false;
         if (this.authService.hasRole('Employee')) {
-          this.router.navigate(['/recruitment/job-offers']);
+          this.router.navigate(['/home']);
         } else if (
           this.authService.hasRole('Manager') ||
           this.authService.hasRole('HR')
         ) {
-          this.router.navigate(['/recruitment/job-offers']);
+          this.router.navigate(['/home']);
+        } else if (this.authService.hasRole('HRD')) {
+          this.router.navigate(['/home']);
         }
       },
       error: (error: Error) => {

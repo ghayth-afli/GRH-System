@@ -1,6 +1,7 @@
 package com.otbs.leave.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class LeaveBalance {
 
     @Id
@@ -22,21 +24,29 @@ public class LeaveBalance {
     private String userDn;
 
     @Column(nullable = false)
-    private Integer totalLeave;
+    private Double totalLeave;
 
     @Column(nullable = false)
-    private Integer usedLeave;
+    private Double usedLeave;
 
     @Column(nullable = false)
-    private Integer remainingLeave;
+    private Double remainingLeave;
 
     @Column(nullable = false)
     private LocalDate lastUpdatedDate;
 
+    public LeaveBalance(String userDn, Double totalLeave, Double usedLeave, Double remainingLeave) {
+        this.userDn = userDn;
+        this.totalLeave = totalLeave;
+        this.usedLeave = usedLeave;
+        this.remainingLeave = remainingLeave;
+        this.lastUpdatedDate = LocalDate.now();
+    }
+
 
     public void addMonthlyLeave() {
         if (lastUpdatedDate != null && lastUpdatedDate.plusMonths(1).isBefore(LocalDate.now())) {
-            totalLeave += 2;
+            totalLeave += 2.5;
             remainingLeave = totalLeave - usedLeave;
             lastUpdatedDate = LocalDate.now();
         }

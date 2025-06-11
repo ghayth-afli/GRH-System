@@ -16,7 +16,7 @@ export class EditPersonalInfoModalFormComponent implements OnInit {
   user = {
     profilePicture: '/assets/images/nopicture.png',
   };
-  userHasNullAttributes = true;
+  userHasNullAttributes = false;
 
   constructor(
     private fb: FormBuilder,
@@ -42,12 +42,12 @@ export class EditPersonalInfoModalFormComponent implements OnInit {
     this.handleIfUserHasNullAttributes();
     this.user.profilePicture = this.data.imageSrc || this.user.profilePicture;
     this.editForm.patchValue({
-      firstName: this.data.firstName || '',
-      lastName: this.data.lastName || '',
-      email: this.data.email || '',
-      jobTitle: this.data.jobTitle || '',
-      phoneNumber1: this.data.phoneNumber1 || '',
-      phoneNumber2: this.data.phoneNumber2 || '',
+      firstName: this.data.user.firstName || '',
+      lastName: this.data.user.lastName || '',
+      email: this.data.user.email || '',
+      jobTitle: this.data.user.jobTitle || '',
+      phoneNumber1: this.data.user.phoneNumber1 || '',
+      phoneNumber2: this.data.user.phoneNumber2 || '',
     });
   }
 

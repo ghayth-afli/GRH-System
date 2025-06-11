@@ -1,5 +1,6 @@
 <div class="dialog-container">
   <h2 class="dialog-title">Edit Profile</h2>
+  @if (userHasNullAttributes) {
   <div class="alert-container">
     <div class="alert alert-warning">
       <div class="alert-icon">
@@ -15,6 +16,8 @@
       </div>
     </div>
   </div>
+  }
+
   <form [formGroup]="editForm" (ngSubmit)="onSubmit()">
     <div class="profile-picture-container">
       <img

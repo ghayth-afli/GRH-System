@@ -4,6 +4,7 @@ import com.otbs.leave.model.ELeaveType;
 import com.otbs.leave.model.EStatus;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 public record LeaveResponseDTO(
         Long id,
@@ -12,6 +13,8 @@ public record LeaveResponseDTO(
         LocalDate startDate,
         LocalDate endDate,
         ELeaveType leaveType,
-        EStatus status
+        EStatus status,
+        LocalTime startHOURLY,
+        LocalTime endHOURLY
 ) {
 }

@@ -6,6 +6,47 @@
   <component name="ChangeListManager">
     <list default="true" id="8831ef2c-5863-4771-acbe-37c7b2e108e5" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/employee-service/src/main/java/com/otbs/employee/mapper/UserAttributesMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/employee-service/src/main/java/com/otbs/employee/mapper/UserAttributesMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/employee-service/target/classes/com/otbs/employee/mapper/UserAttributesMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/employee-service/target/classes/com/otbs/employee/mapper/UserAttributesMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/controller/LeaveController.java" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/controller/LeaveController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/dto/LeaveRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/dto/LeaveRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/dto/LeaveResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/dto/LeaveResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/mapper/LeaveAttributesMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/mapper/LeaveAttributesMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/model/EStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/model/EStatus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/model/Leave.java" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/model/Leave.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/model/LeaveBalance.java" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/model/LeaveBalance.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/repository/LeaveRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/repository/LeaveRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/security/JwtAuthFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/security/JwtAuthFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/service/LeaveNotificationEventService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/service/LeaveNotificationService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/service/LeaveService.java" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/service/LeaveService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/service/LeaveServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/service/LeaveServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/controller/LeaveController.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/controller/LeaveController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/mapper/LeaveAttributesMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/mapper/LeaveAttributesMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/model/EStatus.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/model/EStatus.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/model/Leave$LeaveBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/model/Leave$LeaveBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/model/Leave.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/model/Leave.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/model/LeaveBalance.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/model/LeaveBalance.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/repository/LeaveRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/repository/LeaveRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/security/JwtAuthFilter.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/security/JwtAuthFilter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/service/LeaveNotificationEventService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/service/LeaveNotificationService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/service/LeaveService.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/service/LeaveService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/service/LeaveServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/service/LeaveServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training-management-service/src/main/java/com/otbs/training/mapper/TrainingMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/training-management-service/src/main/java/com/otbs/training/mapper/TrainingMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training-management-service/target/classes/com/otbs/training/mapper/TrainingMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/training-management-service/target/classes/com/otbs/training/mapper/TrainingMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/app/core/services/auth.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/core/services/auth.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/app/layout/header/header.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/layout/header/header.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/app/layout/sidebar/sidebar.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/layout/sidebar/sidebar.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/app/modules/auth/pages/login/login.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/modules/auth/pages/login/login.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/app/modules/home/pages/home-page/home-page.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/modules/home/pages/home-page/home-page.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/app/modules/med-visit/components/take-registration-dialog/take-registration-dialog.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/modules/med-visit/components/take-registration-dialog/take-registration-dialog.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/app/modules/med-visit/components/take-registration-dialog/take-registration-dialog.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/modules/med-visit/components/take-registration-dialog/take-registration-dialog.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/app/modules/recruitment/pages/job-offer-form/job-offer-form.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/modules/recruitment/pages/job-offer-form/job-offer-form.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/app/shared/components/edit-personal-info-modal-form/edit-personal-info-modal-form.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/shared/components/edit-personal-info-modal-form/edit-personal-info-modal-form.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/app/shared/components/edit-personal-info-modal-form/edit-personal-info-modal-form.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/shared/components/edit-personal-info-modal-form/edit-personal-info-modal-form.component.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -444,7 +485,10 @@
       <workItem from="1748590931877" duration="2977000" />
       <workItem from="1748681621886" duration="8267000" />
       <workItem from="1748768869506" duration="90000" />
-      <workItem from="1748768974245" duration="5439000" />
+      <workItem from="1748768974245" duration="7157000" />
+      <workItem from="1748850432818" duration="8928000" />
+      <workItem from="1749467545304" duration="14019000" />
+      <workItem from="1749562137026" duration="10405000" />
     </task>
     <servers />
   </component>

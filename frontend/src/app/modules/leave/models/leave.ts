@@ -1,4 +1,4 @@
-import {LeaveType} from './leave-type';
+import { LeaveType } from './leave-type';
 
 export interface Leave {
   id: number;
@@ -6,6 +6,8 @@ export interface Leave {
   Department: string;
   startDate: string;
   endDate: string;
+  startHOURLY: string;
+  endHOURLY: string;
   leaveType: LeaveType;
   status: string;
 }

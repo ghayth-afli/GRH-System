@@ -53,10 +53,12 @@ export class TakeRegistrationDialogComponent implements OnInit {
         this.data.visit.id.toString(),
         visitDateStr
       );
-
+      console.log('Taken time slots:', takenTimeSlots);
+      console.log('All possible time slots:', allPossibleSlots);
       this.timeSlots = allPossibleSlots.filter(
         (slot) => !takenTimeSlots.includes(slot)
       );
+      console.log('Available time slots:', this.timeSlots);
     } catch (error) {
       console.error('Error loading time slots:', error);
       this.timeSlots = [];

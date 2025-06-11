@@ -4,7 +4,6 @@ import com.otbs.leave.dto.LeaveRequestDTO;
 import com.otbs.leave.dto.LeaveResponseDTO;
 import com.otbs.leave.dto.MessageResponseDTO;
 import com.otbs.leave.model.ELeaveType;
-import com.otbs.leave.model.Leave;
 import com.otbs.leave.model.LeaveBalance;
 import com.otbs.leave.service.LeaveService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,16 +16,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -56,7 +51,7 @@ public class LeaveController {
     @ApiResponse(responseCode = "400", description = "Invalid input data (e.g., start date after end date)")
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @PostMapping(value = "/apply", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasAuthority('Employee')")
+    @PreAuthorize("hasAuthority('Employee') or hasAuthority('Manager') or hasAuthority('HR')")
     public ResponseEntity<MessageResponseDTO> applyLeave(
             @Parameter(description = "Type of leave", example = "ANNUAL", required = true)
             @RequestParam("leaveType") ELeaveType leaveType,
@@ -88,7 +83,7 @@ public class LeaveController {
     @ApiResponse(responseCode = "404", description = "Leave not found")
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @DeleteMapping("/cancel/{leaveId}")
-    @PreAuthorize("hasAuthority('Employee')")
+    @PreAuthorize("hasAuthority('Employee') or hasAuthority('Manager') or hasAuthority('HR')")
     public ResponseEntity<MessageResponseDTO> cancelLeave(
             @Parameter(description = "ID of the leave request", example = "1")
             @PathVariable("leaveId") Long leaveId
@@ -152,13 +147,15 @@ public class LeaveController {
     @ApiResponse(responseCode = "404", description = "Leave not found")
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @PutMapping("/update/{leaveId}")
-    @PreAuthorize("hasAuthority('Employee')")
+    @PreAuthorize("hasAuthority('Employee') or hasAuthority('Manager') or hasAuthority('HR')")
     public ResponseEntity<MessageResponseDTO> updateLeave(
             @Parameter(description = "ID of the leave request", example = "1")
             @PathVariable("leaveId") Long leaveId,
-            @Valid @RequestBody LeaveRequestDTO leaveRequestDTO
+            @Valid @RequestBody LeaveRequestDTO leaveRequestDTO,
+            @RequestParam(value = "attachment", required = false) MultipartFile attachment
+
     ) {
-        leaveService.updateLeave(leaveId, leaveRequestDTO);
+        leaveService.updateLeave(leaveId, leaveRequestDTO,attachment);
         return ResponseEntity.ok(new MessageResponseDTO("Leave updated successfully"));
     }
 
@@ -174,28 +171,28 @@ public class LeaveController {
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('Manager') or hasAuthority('HR')")
-    public ResponseEntity<List<LeaveResponseDTO>> getAllLeaves() {
-        return ResponseEntity.ok(leaveService.getAllLeaves());
+    public ResponseEntity<List<LeaveResponseDTO>> getAllRecievedLeaves() {
+        return ResponseEntity.ok(leaveService.getAllRecievedLeavesRequests());
     }
 
+    //get all leave requests for the authenticated user
     @Operation(
-            summary = "Get received leave requests for manager",
-            description = "Retrieves paginated leave requests assigned to the manager. Requires Manager role."
+            summary = "Get all leave requests for authenticated user",
+            description = "Retrieves all leave requests for the authenticated employee. Requires Employee role."
     )
     @ApiResponse(
             responseCode = "200",
-            description = "Paginated list of leave requests",
-            content = @Content(schema = @Schema(implementation = Page.class))
+            description = "List of leave requests for the authenticated user",
+            content = @Content(schema = @Schema(implementation = LeaveResponseDTO.class))
     )
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
-    @GetMapping("/received")
-    @PreAuthorize("hasAuthority('Manager')")
-    public ResponseEntity<Page<Leave>> getAllReceivedLeaves(
-            @Parameter(description = "Pagination and sorting parameters (e.g., page=0, size=10, sort=startDate,asc)")
-            @PageableDefault(size = 10, sort = "startDate") Pageable pageable
-    ) {
-        return ResponseEntity.ok(leaveService.getAllLeavesForManager(pageable));
+    @GetMapping("/myLeaves")
+    @PreAuthorize("hasAuthority('Manager') or hasAuthority('HR') or hasAuthority('Employee')")
+    public ResponseEntity<List<LeaveResponseDTO>> getMyLeaves() {
+        List<LeaveResponseDTO> myLeaves = leaveService.getAllSentLeavesRequests();
+        return ResponseEntity.ok(myLeaves);
     }
+
 
     @Operation(
             summary = "Get leave balance",
@@ -208,29 +205,11 @@ public class LeaveController {
     )
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @GetMapping("/balance")
-    @PreAuthorize("hasAuthority('Employee')")
+    @PreAuthorize("hasAuthority('Employee') or hasAuthority('Manager') or hasAuthority('HR')")
     public ResponseEntity<LeaveBalance> getLeaveBalance() {
-        return ResponseEntity.ok(leaveService.getLeaveBalance((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal()));
+        return ResponseEntity.ok(leaveService.getLeaveBalance());
     }
 
-    @Operation(
-            summary = "Get leave history",
-            description = "Retrieves the leave history for the authenticated employee. Requires Employee role."
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "List of past leave requests",
-            content = @Content(schema = @Schema(implementation = Leave.class))
-    )
-    @ApiResponse(responseCode = "403", description = "Unauthorized access")
-    @GetMapping("/history")
-    @PreAuthorize("hasAuthority('Employee')")
-    public ResponseEntity<List<Leave>> getLeaveHistory(
-            @Parameter(description = "Pagination and sorting parameters (e.g., page=0, size=10, sort=startDate,asc)")
-            @PageableDefault(size = 10, sort = "startDate") Pageable pageable
-    ) {
-        return ResponseEntity.ok(leaveService.getLeaveHistory((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal()));
-    }
 
     @Operation(
             summary = "Download leave attachment",

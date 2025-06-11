@@ -69,6 +69,26 @@
       <h3 class="leave-request-name">{{ request.Name }}</h3>
       <div class="leave-request-meta">
         <span><strong>Department:</strong> {{ request.Department }}</span>
+
+        @if(request.leaveType === "AUTORISATION") {
+        <span
+          ><strong>Date :</strong>
+          {{ request.startDate | date : "d MMM, yyyy" }}</span
+        >
+        <span>
+          <strong>Duration:</strong>
+          {{ calculateTimeDuration(request.startHOURLY, request.endHOURLY) }}
+        </span>
+
+        <span>
+          <strong>From:</strong>
+          {{ request.startHOURLY }}
+        </span>
+        <span>
+          <strong>To:</strong>
+          {{ request.endHOURLY }}
+        </span>
+        }@else{
         <span
           ><strong>Start:</strong>
           {{ request.startDate | date : "MMM d, yyyy" }}</span
@@ -81,6 +101,8 @@
           ><strong>Duration:</strong>
           {{ calculateDuration(request.startDate, request.endDate) }}</span
         >
+        }
+
         <span
           ><strong>Type:</strong> {{ mapLeaveType(request.leaveType) }}</span
         >
@@ -109,7 +131,7 @@
       @if(authService.hasRole('Manager')) {
       <button
         class="action-btn approve"
-        *ngIf="request.status === 'EN_ATTENTE'"
+        *ngIf="request.status === 'PENDING'"
         (click)="openApproveConfirmation(request.id)"
         aria-label="Approve leave request"
       >
@@ -117,7 +139,7 @@
       </button>
       <button
         class="action-btn reject"
-        *ngIf="request.status === 'EN_ATTENTE'"
+        *ngIf="request.status === 'PENDING'"
         (click)="openRejectConfirmation(request.id)"
         aria-label="Reject leave request"
       >

@@ -171,13 +171,22 @@ export class HeaderComponent implements OnInit, OnDestroy {
     $event.stopPropagation(); // Prevent the click from propagating to the document
     const dialogRef = this.dialog.open(EditPersonalInfoModalFormComponent, {
       width: '400px',
-      data: { user: this.user },
+      data: { user: this.user, imageSrc: this.imageSrc },
     });
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.user = result; // Update user with the edited data
-        this.loadProfilePicture(); // Reload profile picture after edit
+        this.user = {
+          ...this.user,
+          firstName: result.firstName,
+          lastName: result.lastName,
+          email: result.email,
+          jobTitle: result.jobTitle,
+          phoneNumber1: result.phoneNumber1,
+          phoneNumber2: result.phoneNumber2,
+        };
+        localStorage.setItem('user', JSON.stringify(this.user));
+        this.loadProfilePicture();
       }
     });
   }

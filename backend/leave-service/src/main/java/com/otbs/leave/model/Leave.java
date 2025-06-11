@@ -51,6 +51,10 @@ public class Leave {
     @NotNull(message = "Status is required")
     private EStatus status;
 
+    @Column(nullable = false, length = 50)
+    @NotBlank(message = "Department cannot be empty")
+    private String department;
+
     @Lob
     @Column(name = "attachment")
     private byte[] attachment;
