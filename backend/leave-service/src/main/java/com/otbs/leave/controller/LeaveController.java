@@ -33,7 +33,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 @RestController
-@Tag(name = "Leave Management", description = "APIs for managing employee leave requests, approvals, and balances")
+@Tag(name = "Leave Management", description = "APIs for managing user leave requests, approvals, and balances")
 @SecurityRequirement(name = "bearerAuth")
 public class LeaveController {
 
@@ -41,7 +41,7 @@ public class LeaveController {
 
     @Operation(
             summary = "Apply for a leave",
-            description = "Submits a leave request with optional attachment. Requires Employee role. Start and end times are required for AUTHORIZATION leave."
+            description = "Submits a leave request with optional attachment. Requires User role. Start and end times are required for AUTHORIZATION leave."
     )
     @ApiResponse(
             responseCode = "200",
@@ -73,7 +73,7 @@ public class LeaveController {
 
     @Operation(
             summary = "Cancel a leave request",
-            description = "Cancels a leave request by ID. Requires Employee role."
+            description = "Cancels a leave request by ID. Requires User role."
     )
     @ApiResponse(
             responseCode = "200",
@@ -104,7 +104,7 @@ public class LeaveController {
     @ApiResponse(responseCode = "404", description = "Leave not found")
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @PutMapping("/approve/{leaveId}")
-    @PreAuthorize("hasAuthority('Manager')")
+    @PreAuthorize("hasAuthority('Manager') or hasAuthority('HRD')")
     public ResponseEntity<MessageResponseDTO> approveLeave(
             @Parameter(description = "ID of the leave request", example = "1")
             @PathVariable("leaveId") Long leaveId
@@ -125,7 +125,7 @@ public class LeaveController {
     @ApiResponse(responseCode = "404", description = "Leave not found")
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @PutMapping("/reject/{leaveId}")
-    @PreAuthorize("hasAuthority('Manager')")
+    @PreAuthorize("hasAuthority('Manager') or hasAuthority('HRD')")
     public ResponseEntity<MessageResponseDTO> rejectLeave(
             @Parameter(description = "ID of the leave request", example = "1")
             @PathVariable("leaveId") Long leaveId
@@ -136,7 +136,7 @@ public class LeaveController {
 
     @Operation(
             summary = "Update a leave request",
-            description = "Updates an existing leave request by ID. Requires Employee role."
+            description = "Updates an existing leave request by ID. Requires User role."
     )
     @ApiResponse(
             responseCode = "200",
@@ -170,7 +170,7 @@ public class LeaveController {
     )
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @GetMapping("/all")
-    @PreAuthorize("hasAuthority('Manager') or hasAuthority('HR')")
+    @PreAuthorize("hasAuthority('Manager') or hasAuthority('HR') or hasAuthority('HRD')")
     public ResponseEntity<List<LeaveResponseDTO>> getAllRecievedLeaves() {
         return ResponseEntity.ok(leaveService.getAllRecievedLeavesRequests());
     }
@@ -178,7 +178,7 @@ public class LeaveController {
     //get all leave requests for the authenticated user
     @Operation(
             summary = "Get all leave requests for authenticated user",
-            description = "Retrieves all leave requests for the authenticated employee. Requires Employee role."
+            description = "Retrieves all leave requests for the authenticated user. Requires User role."
     )
     @ApiResponse(
             responseCode = "200",
@@ -196,11 +196,11 @@ public class LeaveController {
 
     @Operation(
             summary = "Get leave balance",
-            description = "Retrieves the leave balance for the authenticated employee. Requires Employee role."
+            description = "Retrieves the leave balance for the authenticated user. Requires User role."
     )
     @ApiResponse(
             responseCode = "200",
-            description = "Employee's leave balance",
+            description = "User's leave balance",
             content = @Content(schema = @Schema(implementation = LeaveBalance.class))
     )
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
@@ -223,7 +223,7 @@ public class LeaveController {
     @ApiResponse(responseCode = "404", description = "Attachment or leave not found")
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @GetMapping("/{leaveId}/receivedAttachment")
-    @PreAuthorize("hasAuthority('Manager') or hasAuthority('HR')")
+    @PreAuthorize("hasAuthority('Manager') or hasAuthority('HR') or hasAuthority('HRD')")
     public ResponseEntity<byte[]> getReceivedAttachment(
             @Parameter(description = "ID of the leave request", example = "1")
             @PathVariable("leaveId") Long leaveId

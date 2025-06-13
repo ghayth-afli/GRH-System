@@ -7,15 +7,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class AppointmentMapper {
 
-    public AppointmentResponseDTO toDto(Appointment appointment, String employeeFullName, String employeeEmail) {
+    public AppointmentResponseDTO toDto(Appointment appointment, String userFullName, String userEmail) {
         return new AppointmentResponseDTO(
                 appointment.getId(),
                 appointment.getMedicalVisit().getId(),
                 appointment.getMedicalVisit().getDoctorName(),
                 appointment.getTimeSlot(),
                 appointment.getStatus(),
-                employeeFullName,
-                employeeEmail
+                userFullName,
+                userEmail
         );
     }
 }

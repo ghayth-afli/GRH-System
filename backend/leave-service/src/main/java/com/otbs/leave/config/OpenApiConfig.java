@@ -24,7 +24,7 @@ public class OpenApiConfig {
                 .info(new Info()
                         .title("Leave Service API")
                         .version("1.0")
-                        .description("API for managing employee leave requests, approvals, and balances"))
+                        .description("API for managing user leave requests, approvals, and balances"))
                 .components(new Components()
                         .addSecuritySchemes("bearerAuth",
                                 new SecurityScheme()

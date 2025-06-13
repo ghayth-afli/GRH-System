@@ -42,7 +42,7 @@ export class UserService {
     }
 
     return this.http.put<{ message: string }>(
-      `${environment.apiUrl}/employee/update`,
+      `${environment.apiUrl}/users/update`,
       formData
     );
   }

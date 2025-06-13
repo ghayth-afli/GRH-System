@@ -1,7 +1,6 @@
 package com.otbs.medVisit.service;
 
-import com.otbs.common.event.Event;
-import com.otbs.feign.client.employee.EmployeeClient;
+import com.otbs.feign.client.user.UserClient;
 import com.otbs.medVisit.dto.MedicalVisitRequestDTO;
 import com.otbs.medVisit.dto.MedicalVisitResponseDTO;
 import com.otbs.medVisit.exception.MedicalVisitException;
@@ -13,12 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -28,9 +24,8 @@ public class MedicalVisitServiceImpl implements MedicalVisitService {
 
     private final MedicalVisitRepository medicalVisitRepository;
     private final MedicalVisitMapper medicalVisitMapper;
-    private final EmployeeClient employeeClient;
+    private final UserClient userClient;
     private final MedicalVisitNotificationService notificationService;
-    private final MedicalVisitNotificationEventService notificationEventService;
 
 
     @Override
@@ -49,9 +44,8 @@ public class MedicalVisitServiceImpl implements MedicalVisitService {
         MedicalVisit medVisit = medicalVisitMapper.toEntity(medicalVisitRequestDTO);
         medicalVisitRepository.save(medVisit);
 
-        // Asynchronously notify employees
-        notifyEmployeesAsync(medicalVisitRequestDTO, medVisit.getId());
-        sendAsyncEventNotifications(medVisit, "CREATED_MEDICAL_VISIT");
+        // Asynchronously notify users
+        notifyUsersAsync(medicalVisitRequestDTO, medVisit.getId());
     }
 
     @Override
@@ -75,7 +69,6 @@ public class MedicalVisitServiceImpl implements MedicalVisitService {
         medicalVisit.setStartTime(medicalVisitRequestDTO.startTime());
         medicalVisit.setEndTime(medicalVisitRequestDTO.endTime());
         medicalVisitRepository.save(medicalVisit);
-        sendAsyncEventNotifications(medicalVisit, "UPDATED_MEDICAL_VISIT");
     }
 
     @Override
@@ -87,7 +80,6 @@ public class MedicalVisitServiceImpl implements MedicalVisitService {
         MedicalVisit medicalVisit = medicalVisitRepository.findById(id)
                 .orElseThrow(() -> new MedicalVisitException("Medical visit not found"));
         medicalVisitRepository.deleteById(id);
-        sendAsyncEventNotifications(medicalVisit, "DELETED_MEDICAL_VISIT");
     }
 
     @Override
@@ -97,7 +89,7 @@ public class MedicalVisitServiceImpl implements MedicalVisitService {
                         medicalVisit -> {
                             MedicalVisitResponseDTO medicalVisitResponseDTO = medicalVisitMapper.toDto(medicalVisit);
                             final boolean didIBookVisit = medicalVisit.getAppointments().stream()
-                                    .anyMatch(appointment -> appointment.getEmployeeId().equals(getCurrentUserDn()));
+                                    .anyMatch(appointment -> appointment.getUserId().equals(getCurrentUserDn()));
                             medicalVisitResponseDTO.setDidIBookVisit(didIBookVisit);
                             return medicalVisitResponseDTO;
                         }
@@ -112,7 +104,7 @@ public class MedicalVisitServiceImpl implements MedicalVisitService {
                         medicalVisit -> {
                             MedicalVisitResponseDTO medicalVisitResponseDTO =medicalVisitMapper.toDto(medicalVisit);
                                     final boolean didIBookVisit = medicalVisit.getAppointments().stream()
-                                            .anyMatch(appointment -> appointment.getEmployeeId().equals(getCurrentUserDn()));
+                                            .anyMatch(appointment -> appointment.getUserId().equals(getCurrentUserDn()));
                             medicalVisitResponseDTO.setDidIBookVisit(didIBookVisit);
                             return medicalVisitResponseDTO;
                         }
@@ -136,36 +128,9 @@ public class MedicalVisitServiceImpl implements MedicalVisitService {
     }
 
     @Async
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void sendAsyncEventNotifications(MedicalVisit medVisit, String eventType) {
-        MedicalVisitResponseDTO medicalVisitResponseDTO = medicalVisitMapper.toDto(medVisit);
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("medicalVisit", medicalVisitResponseDTO);
-        CompletableFuture<Void> eventNotification = CompletableFuture.runAsync(() ->
-                notificationEventService.sendEventNotification(
-                        new Event(
-                                eventType,
-                                medVisit.getId().toString(),
-                                "MEDICAL_VISIT",
-                                payload
-                        )
-                ));
-
-        CompletableFuture.allOf(eventNotification)
-                .whenComplete((_, throwable) -> {
-                    if (throwable != null) {
-                        log.error("Failed to send event notifications for leave ID {}: {}",
-                                medVisit.getId(), throwable.getMessage());
-                    } else {
-                        log.debug("Event notifications sent successfully for leave ID {}", medVisit.getId());
-                    }
-                });
-    }
-
-    @Async
-    protected void notifyEmployeesAsync(MedicalVisitRequestDTO medicalVisitRequestDTO, Long medicalVisitId) {
-        CompletableFuture.supplyAsync(employeeClient::getAllEmployees)
-                .thenAccept(employees -> employees.forEach(employee -> {
+    protected void notifyUsersAsync(MedicalVisitRequestDTO medicalVisitRequestDTO, Long medicalVisitId) {
+        CompletableFuture.supplyAsync(userClient::getAllUsers)
+                .thenAccept(users -> users.forEach(user -> {
                     String message = String.format(
                             "A new medical visit has been scheduled with %s on %s from %s to %s",
                             medicalVisitRequestDTO.doctorName(),
@@ -175,16 +140,16 @@ public class MedicalVisitServiceImpl implements MedicalVisitService {
 
                     CompletableFuture.allOf(
                             CompletableFuture.runAsync(() -> notificationService.sendMedicalVisitNotification(
-                                    employee.id(), "New Medical Visit", message, medicalVisitId)),
+                                    user.id(), "New Medical Visit", message, medicalVisitId)),
                             CompletableFuture.runAsync(() -> notificationService.sendMailNotification(
-                                    employee.email(), "New Medical Visit", message))
+                                    user.email(), "New Medical Visit", message))
                     ).exceptionally(throwable -> {
-                        log.error("Failed to send notification to employee {}: {}", employee.id(), throwable.getMessage());
+                        log.error("Failed to send notification to user {}: {}", user.id(), throwable.getMessage());
                         return null;
                     });
                 }))
                 .exceptionally(throwable -> {
-                    log.error("Failed to fetch employees for notification: {}", throwable.getMessage());
+                    log.error("Failed to fetch users for notification: {}", throwable.getMessage());
                     return null;
                 });
     }

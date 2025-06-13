@@ -1,5 +1,5 @@
 <div class="job-offers-page">
-  @if(authService.hasRole("HR")) {
+  @if(authService.hasRole('HRD') || authService.hasRole("HR")) {
   <a routerLink="/recruitment/job-offers/create" class="create-btn">
     <i class="create-icon fa-solid fa-plus"></i> Create Job Offer
   </a>
@@ -36,7 +36,7 @@
           <option value="commercial">Commercial</option>
         </select>
       </div>
-      @if(authService.hasRole("HR")) {
+      @if(authService.hasRole('HRD') || authService.hasRole("HR")) {
       <div class="filter-group">
         <label class="filter-label">Type:</label>
         <select
@@ -70,8 +70,8 @@
       There are currently no job offers listed.
     </div>
     @for (jobOffer of displayedJobOffers; track jobOffer.id) {
-    @if((!authService.hasRole("HR"))&&(jobOffer.status !==
-    "CLOSED")&&(jobOffer.isInternal)) {
+    @if((!authService.hasRole("HR")&& !authService.hasRole('HRD')
+    )&&(jobOffer.status !== "CLOSED")&&(jobOffer.isInternal)) {
     <div class="job-offer-card">
       <div
         class="job-offer-info"
@@ -103,7 +103,7 @@
         </div>
       </div>
     </div>
-    } @else if(authService.hasRole("HR")){
+    } @else if(authService.hasRole('HRD') || authService.hasRole("HR")){
     <div class="job-offer-card">
       <div
         class="job-offer-info"

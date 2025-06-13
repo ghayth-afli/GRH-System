@@ -1,6 +1,6 @@
 package com.otbs.auth.dto;
 
-import com.otbs.feign.client.employee.dto.EmployeeResponse;
+import com.otbs.feign.client.user.dto.UserResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Response containing JWT tokens and user details")
@@ -18,5 +18,5 @@ public record JwtResponseDTO(
         long refreshExpiration,
 
         @Schema(description = "Details of the authenticated user")
-        EmployeeResponse user
+        UserResponse user
 ) {}

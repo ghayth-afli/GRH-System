@@ -1,5 +1,5 @@
 <div class="visits-page">
-  @if(authService.hasRole("HR")) {
+  @if(authService.hasRole('HRD') || authService.hasRole("HR")) {
   <div class="visits-actions">
     <button
       class="visit-btn create"
@@ -41,7 +41,7 @@
         />
       </div>
     </div>
-    @if(authService.hasRole("HR")) {
+    @if(authService.hasRole('HRD') || authService.hasRole("HR")) {
     <div class="filter-controls">
       <div class="filter-group">
         <label class="filter-label">Visit Date:</label>
@@ -74,7 +74,7 @@
       </div>
     </div>
     <div class="visit-actions">
-      @if(authService.hasRole("HR")) {
+      @if(authService.hasRole('HRD') || authService.hasRole("HR")) {
       <button
         class="action-btn edit"
         (click)="openEditDialog(visit)"

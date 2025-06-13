@@ -1,5 +1,5 @@
 <div class="job-details-container">
-  @if(!authService.hasRole("HR")) {
+  @if(!authService.hasRole("HR") && !authService.hasRole('HRD')){
   <div class="job-details-actions">
     <div class="applied-status" *ngIf="hasApplied" aria-live="polite">
       <i class="applied-status-icon fa-solid fa-check-circle"></i>
@@ -29,7 +29,7 @@
     <h2 class="job-details-title">{{ jobOffer?.title }}</h2>
     <div class="job-details-meta">
       <p><strong>Department:</strong> {{ jobOffer?.department }}</p>
-      @if(authService.hasRole("HR")) {
+      @if(authService.hasRole('HRD') || authService.hasRole("HR")) {
       <p>
         <strong>Type:</strong>
         {{ jobOffer?.isInternal ? "Internal" : "External" }}
@@ -40,7 +40,8 @@
         <strong>Created On:</strong>
         {{ jobOffer?.createdAt | date : "MMM d, yyyy" }}
       </p>
-      @if(!authService.hasRole("HR") && (jobOffer?.applied)) {
+      @if(!authService.hasRole("HR") && !authService.hasRole('HRD') ||
+      (jobOffer?.applied)) {
       <p>
         <strong>Application Status:</strong>
         {{
@@ -64,7 +65,7 @@
     <p>{{ jobOffer?.qualifications }}</p>
   </div>
   <div class="action-buttons">
-    @if(authService.hasRole("HR")) {
+    @if(authService.hasRole('HRD') || authService.hasRole("HR")) {
     <button
       class="action-btn delete"
       (click)="openDeleteConfirmation(jobOffer!.id)"

@@ -40,7 +40,7 @@
         <i class="nav-icon-fa fa-solid fa-clock"></i>
         <span class="nav-text">Attendance</span>
       </a> -->
-      @if (authService.hasRole('HR')) {
+      @if (authService.hasRole('HRD') || authService.hasRole('HR')) {
       <a
         routerLink="/recruitment/job-offers"
         class="nav-item"
@@ -58,7 +58,8 @@
         <i class="nav-icon-fa fa-solid fa-briefcase"> </i>
         <span class="nav-text">Job offers</span>
       </a>
-      } @if (authService.hasRole('HR') || authService.hasRole('Manager')) {
+      } @if (authService.hasRole('HRD') || authService.hasRole('HR') ||
+      authService.hasRole('Manager')) {
       <a routerLink="/leave" class="nav-item" routerLinkActive="active">
         <i class="nav-icon-fa fa-solid fa-calendar-check"></i>
         <span class="nav-text">Leave Request</span>

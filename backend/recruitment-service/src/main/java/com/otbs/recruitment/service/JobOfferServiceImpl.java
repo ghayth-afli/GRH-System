@@ -1,6 +1,6 @@
 package com.otbs.recruitment.service;
 
-import com.otbs.feign.client.employee.EmployeeClient;
+import com.otbs.feign.client.user.UserClient;
 import com.otbs.recruitment.dto.JobOfferRequestDTO;
 import com.otbs.recruitment.dto.JobOfferResponseDTO;
 import com.otbs.recruitment.exception.JobOfferException;
@@ -23,7 +23,7 @@ public class JobOfferServiceImpl implements JobOfferService {
 
     private final JobOfferRepository jobOfferRepository;
     private final JobOfferAttributesMapper jobOfferAttributesMapper;
-    private final EmployeeClient employeeClient;
+    private final UserClient userClient;
     private final ApplicationService applicationService;
 
     @Override
@@ -66,15 +66,15 @@ public class JobOfferServiceImpl implements JobOfferService {
         String currentUserRole = getCurrentUserRole();
 
         boolean isApplied = jobOffer.getInternalApplications().stream()
-                .anyMatch(app -> app.getEmployeeId().equals(currentUserId));
+                .anyMatch(app -> app.getUserId().equals(currentUserId));
 
-        Integer numberOfApplications = "HR".equals(currentUserRole)
+        Integer numberOfApplications = "HR".equals(currentUserRole) || "HRD".equals(currentUserRole)
                 ? jobOffer.getInternalApplications().size()
                 : null;
 
-        EApplicationStatus applicationStatus = !"HR".equals(currentUserRole)
+        EApplicationStatus applicationStatus = !"HR".equals(currentUserRole) && !"HRD".equals(currentUserRole)
                 ? jobOffer.getInternalApplications().stream()
-                .filter(app -> app.getEmployeeId().equals(currentUserId))
+                .filter(app -> app.getUserId().equals(currentUserId))
                 .map(InternalApplication::getStatus)
                 .findFirst()
                 .orElse(null)
@@ -93,15 +93,15 @@ public class JobOfferServiceImpl implements JobOfferService {
         return jobOfferRepository.findAll().stream()
                 .map(jobOffer -> {
                     boolean isApplied = jobOffer.getInternalApplications().stream()
-                            .anyMatch(app -> app.getEmployeeId().equals(getCurrentUserId()));
+                            .anyMatch(app -> app.getUserId().equals(getCurrentUserId()));
                     JobOfferResponseDTO responseDTO = jobOfferAttributesMapper.toResponseDTO(jobOffer);
                     responseDTO.setApplied(isApplied);
-                    Integer numberOfApplications = getCurrentUserRole().equals("HR")
+                    Integer numberOfApplications = getCurrentUserRole().equals("HR") || getCurrentUserRole().equals("HRD")
                             ? jobOffer.getInternalApplications().size()
                             : null;
-                    EApplicationStatus applicationStatus = !getCurrentUserRole().equals("HR")
+                    EApplicationStatus applicationStatus = !getCurrentUserRole().equals("HR") && !getCurrentUserRole().equals("HRD")
                             ? jobOffer.getInternalApplications().stream()
-                            .filter(app -> app.getEmployeeId().equals(getCurrentUserId()))
+                            .filter(app -> app.getUserId().equals(getCurrentUserId()))
                             .map(InternalApplication::getStatus)
                             .findFirst()
                             .orElse(null)
@@ -144,6 +144,6 @@ public class JobOfferServiceImpl implements JobOfferService {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
     private String getCurrentUserRole() {
-        return employeeClient.getEmployeeByDn(getCurrentUserId()).role();
+        return userClient.getUserByDn(getCurrentUserId()).role();
     }
 }

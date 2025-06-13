@@ -32,7 +32,7 @@ public class MedicalVisitController {
 
     @Operation(
             summary = "Get all medical visits",
-            description = "Retrieves a list of all medical visits. Requires HR, Employee, or Manager role."
+            description = "Retrieves a list of all medical visits. Requires HR, User, or Manager role."
     )
     @ApiResponse(
             responseCode = "200",
@@ -41,7 +41,7 @@ public class MedicalVisitController {
     )
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @GetMapping
-    @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager')")
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager') or hasAuthority('HRD')")
     public ResponseEntity<List<MedicalVisitResponseDTO>> getMedicalVisits() {
         return ResponseEntity.ok(medicalVisitService.getMedicalVisits());
     }
@@ -58,7 +58,7 @@ public class MedicalVisitController {
     @ApiResponse(responseCode = "404", description = "Medical visit not found")
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('HR')")
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('HRD')")
     public ResponseEntity<MedicalVisitResponseDTO> getMedicalVisit(
             @Parameter(description = "ID of the medical visit", example = "1")
             @PathVariable("id") Long id
@@ -78,7 +78,7 @@ public class MedicalVisitController {
     @ApiResponse(responseCode = "400", description = "Invalid input data (e.g., end time before start time)")
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @PostMapping
-    @PreAuthorize("hasAuthority('HR')")
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('HRD')")
     public ResponseEntity<MessageResponseDTO> createMedicalVisit(
             @Valid @RequestBody MedicalVisitRequestDTO medicalVisitRequestDTO
     ) {
@@ -99,7 +99,7 @@ public class MedicalVisitController {
     @ApiResponse(responseCode = "404", description = "Medical visit not found")
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('HR')")
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('HRD')")
     public ResponseEntity<MessageResponseDTO> updateMedicalVisit(
             @Parameter(description = "ID of the medical visit", example = "1")
             @PathVariable("id") Long id,
@@ -121,7 +121,7 @@ public class MedicalVisitController {
     @ApiResponse(responseCode = "404", description = "Medical visit not found")
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('HR')")
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('HRD')")
     public ResponseEntity<MessageResponseDTO> deleteMedicalVisit(
             @Parameter(description = "ID of the medical visit", example = "1")
             @PathVariable("id") Long id

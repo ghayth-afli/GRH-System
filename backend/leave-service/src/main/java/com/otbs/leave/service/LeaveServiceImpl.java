@@ -1,7 +1,7 @@
 package com.otbs.leave.service;
 
-import com.otbs.feign.client.employee.EmployeeClient;
-import com.otbs.feign.client.employee.dto.EmployeeResponse;
+import com.otbs.feign.client.user.UserClient;
+import com.otbs.feign.client.user.dto.UserResponse;
 import com.otbs.leave.dto.LeaveRequestDTO;
 import com.otbs.leave.dto.LeaveResponseDTO;
 import com.otbs.leave.exception.*;
@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,8 +30,9 @@ public class LeaveServiceImpl implements LeaveService {
 
     private final LeaveRepository leaveRepository;
     private final LeaveAttributesMapper leaveAttributesMapper;
-    private final EmployeeClient employeeClient;
+    private final UserClient userClient;
     private final LeaveBalanceRepository leaveBalanceRepository;
+    private final AsyncProcessingService asyncProcessingService;
 
     private static final double WORKDAY_IN_MINUTES = 8*60;
 
@@ -39,6 +41,14 @@ public class LeaveServiceImpl implements LeaveService {
         validateLeaveRequest(leaveRequestDTO);
         Leave leave = createLeaveEntity(leaveRequestDTO, attachment);
         leaveRepository.save(leave);
+        UserResponse currentUser = getCurrentUser();
+        if (currentUser.email() != null && !currentUser.email().isEmpty()) {
+            asyncProcessingService.sendMailNotification(
+                    currentUser.email(),
+                    "Leave Request Submitted",
+                    "Your leave request has been submitted successfully."
+            );
+        }
     }
 
     @Override
@@ -47,6 +57,14 @@ public class LeaveServiceImpl implements LeaveService {
         Leave leave = getLeaveForUpdate(leaveId);
         updateLeaveEntity(leave, leaveRequestDTO, attachment);
         leaveRepository.save(leave);
+        UserResponse currentUser = getCurrentUser();
+        if (currentUser.email() != null && !currentUser.email().isEmpty()) {
+            asyncProcessingService.sendMailNotification(
+                    currentUser.email(),
+                    "Leave Request Updated",
+                    "Your leave request has been updated successfully."
+            );
+        }
     }
 
     @Override
@@ -55,6 +73,14 @@ public class LeaveServiceImpl implements LeaveService {
         validatePendingStatus(leave);
         leave.setStatus(EStatus.CANCELLED);
         leaveRepository.save(leave);
+        UserResponse currentUser = getCurrentUser();
+        if (currentUser.email() != null && !currentUser.email().isEmpty()) {
+            asyncProcessingService.sendMailNotification(
+                    currentUser.email(),
+                    "Leave Request Cancelled",
+                    "Your leave request has been cancelled successfully."
+            );
+        }
     }
 
     @Override
@@ -63,6 +89,15 @@ public class LeaveServiceImpl implements LeaveService {
                 .orElseThrow(() -> new IllegalArgumentException("Leave not found"));
         validateApprovalAuthorization(leave);
         processApprovalAndUpdateBalance(leave);
+        UserResponse user = getUserByDn(leave.getUserDn());
+        if (user.email() != null && !user.email().isEmpty()) {
+            asyncProcessingService.sendMailNotification(
+                    user.email(),
+                    "Leave Request Approved",
+                    "Your leave request has been approved successfully."
+            );
+        }
+
     }
 
     @Override
@@ -72,14 +107,24 @@ public class LeaveServiceImpl implements LeaveService {
         validateRejectionAuthorization(leave);
         leave.setStatus(EStatus.REJECTED);
         leaveRepository.save(leave);
+        UserResponse user = getUserByDn(leave.getUserDn());
+        log .info("User email: {}", user.email());
+        if (user.email() != null && !user.email().isEmpty()) {
+            asyncProcessingService.sendMailNotification(
+                    user.email(),
+                    "Leave Request Rejected",
+                    "Your leave request has been rejected."
+            );
+        }
     }
 
     @Override
     public List<LeaveResponseDTO> getAllRecievedLeavesRequests() {
-        EmployeeResponse currentUser = getCurrentUser();
+        UserResponse currentUser = getCurrentUser();
         return switch (currentUser.role()) {
             case "Manager" -> getRecievedLeavesForManager(currentUser);
             case "HR" -> getRecievedLeavesForHR();
+            case "HRD" -> getRecievedLeavesForHRDirector(currentUser);
             default -> throw new IllegalStateException("Unexpected role");
         };
     }
@@ -92,7 +137,7 @@ public class LeaveServiceImpl implements LeaveService {
     @Override
     @Transactional(readOnly = true)
     public byte[] downloadAttachment(Long leaveId) {
-        EmployeeResponse user = getCurrentUser();
+        UserResponse user = getCurrentUser();
         return leaveRepository.findById(leaveId)
                 .filter(leave -> leave.getDepartment().equals(user.department()) || "HR".equals(user.role()))
                 .map(Leave::getAttachment)
@@ -107,10 +152,18 @@ public class LeaveServiceImpl implements LeaveService {
 
     @Scheduled(cron = "0 0 0 1 * *")
     @Transactional
-    protected void addMonthlyLeaveForAllEmployees() {
+    protected void addMonthlyLeaveForAllUsers() {
         leaveBalanceRepository.findAll().forEach(balance -> {
             balance.addMonthlyLeave();
             leaveBalanceRepository.save(balance);
+            UserResponse user = getUserByDn(balance.getUserDn());
+            if (user.email() != null && !user.email().isEmpty()) {
+                asyncProcessingService.sendMailNotification(
+                        user.email(),
+                        "Monthly Leave Added",
+                        "Your monthly leave has been added successfully."
+                );
+            }
         });
     }
 
@@ -125,7 +178,7 @@ public class LeaveServiceImpl implements LeaveService {
 
     private Leave getLeaveForUpdate(Long leaveId) {
         return leaveRepository.findByIdAndUserDn(leaveId, getCurrentUser().id())
-                .orElseThrow(() -> new IllegalArgumentException("Leave not found or does not belong to the user"));
+                .orElseThrow(() -> new LeaveException("Leave not found or does not belong to the user"));
     }
 
     private void updateLeaveEntity(Leave leave, LeaveRequestDTO leaveRequestDTO, MultipartFile attachment) {
@@ -138,12 +191,12 @@ public class LeaveServiceImpl implements LeaveService {
 
     private void validatePendingStatus(Leave leave) {
         if (!EStatus.PENDING.equals(leave.getStatus())) {
-            throw new IllegalArgumentException("Only pending leaves can be modified");
+            throw new LeaveException("Only pending leaves can be modified");
         }
     }
 
     private void validateApprovalAuthorization(Leave leave) {
-        EmployeeResponse currentUser = getCurrentUser();
+        UserResponse currentUser = getCurrentUser();
         String leaveUserRole = getRoleByUserDn(leave.getUserDn());
         boolean isAuthorized = switch (leave.getDepartment()) {
             case "HR" -> "Manager".equals(currentUser.role()) && "HR".equals(currentUser.department());
@@ -154,41 +207,52 @@ public class LeaveServiceImpl implements LeaveService {
             };
         };
         if (!isAuthorized) {
-            throw new IllegalArgumentException("User is not authorized to approve this leave request.");
+            throw new LeaveException("User is not authorized to approve this leave request.");
         }
     }
 
     private void validateRejectionAuthorization(Leave leave) {
-        EmployeeResponse currentUser = getCurrentUser();
+        UserResponse currentUser = getCurrentUser();
         String leaveUserRole = getRoleByUserDn(leave.getUserDn());
         boolean isAuthorized = switch (leave.getDepartment()) {
-            case "HR" -> "Manager".equals(currentUser.role()) && "HR".equals(currentUser.department());
+            case "HR" -> "HRD".equals(currentUser.role());
             default -> switch (leaveUserRole) {
-                case "Manager" -> "Manager".equals(currentUser.role()) && "HR".equals(currentUser.department());
+                case "Manager" -> "HRD".equals(currentUser.role());
                 case "Employee" -> "Manager".equals(currentUser.role()) && currentUser.department().equals(leave.getDepartment());
                 default -> false;
             };
         };
         if (!isAuthorized) {
-            throw new IllegalArgumentException("User is not authorized to reject this leave request.");
+            throw new LeaveException("User is not authorized to reject this leave request.");
         }
     }
 
-    private List<LeaveResponseDTO> getLeaves(EmployeeResponse currentUser) {
+    private List<LeaveResponseDTO> getLeaves(UserResponse currentUser) {
         return leaveRepository.findAllByUserDn(currentUser.id()).stream()
+                .sorted((l1, l2) -> l2.getCreatedAt().compareTo(l1.getCreatedAt()))
                 .map(leaveAttributesMapper::toDto)
                 .toList();
     }
 
-    private List<LeaveResponseDTO> getRecievedLeavesForManager(EmployeeResponse currentUser) {
+    private List<LeaveResponseDTO> getRecievedLeavesForManager(UserResponse currentUser) {
         return leaveRepository.findAll().stream()
                 .filter(leave -> "HR".equals(currentUser.department())? List.of("Manager", "HR").contains(getRoleByUserDn(leave.getUserDn())): "Employee".equals(getRoleByUserDn(leave.getUserDn())) && leave.getDepartment().equals(currentUser.department()))
+                .sorted((l1, l2) -> l2.getCreatedAt().compareTo(l1.getCreatedAt()))
+                .map(leaveAttributesMapper::toDto)
+                .toList();
+    }
+
+    private List<LeaveResponseDTO> getRecievedLeavesForHRDirector(UserResponse currentUser) {
+        return leaveRepository.findAll().stream()
+                .filter(leave -> "HR".equals(currentUser.department()) || "Manager".equals(getRoleByUserDn(leave.getUserDn())))
+                .sorted((l1, l2) -> l2.getCreatedAt().compareTo(l1.getCreatedAt()))
                 .map(leaveAttributesMapper::toDto)
                 .toList();
     }
 
     private List<LeaveResponseDTO> getRecievedLeavesForHR() {
         return leaveRepository.findAll().stream()
+                .sorted((l1, l2) -> l2.getCreatedAt().compareTo(l1.getCreatedAt()))
                 .map(leaveAttributesMapper::toDto)
                 .toList();
     }
@@ -240,7 +304,7 @@ public class LeaveServiceImpl implements LeaveService {
     private void validateLeaveDateRange(Leave leave) {
         leaveRepository.findAllByUserDn(leave.getUserDn()).forEach(existingLeave -> {
             if (!existingLeave.getId().equals(leave.getId()) && isOverlappingLeave(existingLeave, leave)) {
-                throw new TimeRangeException("Leave date range is overlapping with existing leave");
+                throw new LeaveException("Leave date range is overlapping with existing leave");
             }
         });
     }
@@ -251,16 +315,24 @@ public class LeaveServiceImpl implements LeaveService {
                 && newLeave.getEndDate().plusDays(1).isAfter(existingLeave.getStartDate());
     }
 
-    private EmployeeResponse getCurrentUser() {
+    private UserResponse getCurrentUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof EmployeeResponse employeeResponse) {
-            return employeeResponse;
+        if (principal instanceof UserResponse userResponse) {
+            return userResponse;
         }
-        throw new IllegalStateException("Current user is not authenticated or does not have the expected type");
+        throw new LeaveException("Current user is not authenticated or does not have the expected type");
     }
 
     private String getRoleByUserDn(String userDn) {
-        EmployeeResponse employeeResponse = employeeClient.getEmployeeByDn(userDn);
-        return employeeResponse != null ? employeeResponse.role() : null;
+        UserResponse userResponse = userClient.getUserByDn(userDn);
+        return userResponse != null ? userResponse.role() : null;
+    }
+
+    private UserResponse getUserByDn(String userDn) {
+        UserResponse userResponse = userClient.getUserByDn(userDn);
+        if (userResponse == null) {
+            throw new UsernameNotFoundException("User not found for DN: " + userDn);
+        }
+        return userResponse;
     }
 }

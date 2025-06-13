@@ -10,6 +10,6 @@ public record AppointmentResponseDTO(
     String doctorName,
     LocalDateTime timeSlot,
     EAppointmentStatus status,
-    String employeeFullName,
-    String employeeEmail
+    String userFullName,
+    String userEmail
 ){}

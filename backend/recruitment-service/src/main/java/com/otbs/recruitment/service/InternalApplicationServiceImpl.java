@@ -1,7 +1,7 @@
 package com.otbs.recruitment.service;
 
 import com.otbs.feign.client.candidate.CandidateClient;
-import com.otbs.feign.client.employee.EmployeeClient;
+import com.otbs.feign.client.user.UserClient;
 import com.otbs.feign.client.resumeMatcher.ResumeMatcherClient;
 import com.otbs.recruitment.dto.ApplicationDetailsResponseDTO;
 import com.otbs.recruitment.dto.ApplicationResponseDTO;
@@ -40,7 +40,7 @@ public class InternalApplicationServiceImpl implements ApplicationService {
     private final AsyncProcessingService asyncProcessingService;
 
     private final JobOfferRepository jobOfferRepository;
-    private final EmployeeClient employeeClient;
+    private final UserClient userClient;
 
 
     @Override
@@ -78,7 +78,7 @@ public class InternalApplicationServiceImpl implements ApplicationService {
                 .matchResult(null)
                 .status(EApplicationStatus.PENDING)
                 .attachment(resumeBytes)
-                .employeeId(getCurrentUserId())
+                .userId(getCurrentUserId())
                 .build();
 
         internalApplication = internalapplicationRepository.save(internalApplication);
@@ -91,7 +91,7 @@ public class InternalApplicationServiceImpl implements ApplicationService {
     @Override
     @Transactional
     public void deleteApplication(Long applicationId) {
-        internalapplicationRepository.findByIdAndEmployeeId(applicationId, getCurrentUserId())
+        internalapplicationRepository.findByIdAndUserId(applicationId, getCurrentUserId())
                 .orElseThrow(() -> new ApplicationException("Application not found"));
 
         internalapplicationRepository.deleteById(applicationId);
@@ -146,16 +146,16 @@ public class InternalApplicationServiceImpl implements ApplicationService {
             case SELECTED -> internalApplication.setStatus(EApplicationStatus.SELECTED);
             case REJECTED -> {
                 internalApplication.setStatus(EApplicationStatus.REJECTED);
-                fetchEmployeeAndNotifyAsync(
-                        internalApplication.getEmployeeId(),
+                fetchUserAndNotifyAsync(
+                        internalApplication.getUserId(),
                         EApplicationStatus.REJECTED,
                         internalApplication.getJobOffer().getTitle()
                 );
             }
             case HIRED -> {
                 internalApplication.setStatus(EApplicationStatus.HIRED);
-                fetchEmployeeAndNotifyAsync(
-                        internalApplication.getEmployeeId(),
+                fetchUserAndNotifyAsync(
+                        internalApplication.getUserId(),
                         EApplicationStatus.HIRED,
                         internalApplication.getJobOffer().getTitle()
                 );
@@ -167,7 +167,7 @@ public class InternalApplicationServiceImpl implements ApplicationService {
     @Override
     @Transactional
     public void deleteApplicationByJobOfferId(Long jobOfferId) {
-        InternalApplication c = internalapplicationRepository.findByJobOfferIdAndEmployeeId(jobOfferId, getCurrentUserId())
+        InternalApplication c = internalapplicationRepository.findByJobOfferIdAndUserId(jobOfferId, getCurrentUserId())
                 .orElseThrow(() -> new ApplicationException("Application not found"));
 
         internalapplicationRepository.delete(c);
@@ -178,23 +178,23 @@ public class InternalApplicationServiceImpl implements ApplicationService {
     }
 
     private String getCurrentUserDepartment() {
-        return employeeClient.getEmployeeByDn(getCurrentUserId()).department();
+        return userClient.getUserByDn(getCurrentUserId()).department();
     }
 
 
-    public void fetchEmployeeAndNotifyAsync(String employeeId, EApplicationStatus status,String jobOfferTitle) {
+    public void fetchUserAndNotifyAsync(String userId, EApplicationStatus status,String jobOfferTitle) {
         CompletableFuture.supplyAsync(() -> {
             try {
-                return employeeClient.getEmployeeByDn(employeeId);
+                return userClient.getUserByDn(userId);
             } catch (RuntimeException e) {
-                log.error("Error fetching employee details for ID {}: {}", employeeId, e.getMessage());
-                throw new UserException("Error fetching employee details");
+                log.error("Error fetching user details for ID {}: {}", userId, e.getMessage());
+                throw new UserException("Error fetching user details");
             }
-        }).thenAccept(employee -> {
+        }).thenAccept(user -> {
             switch (status) {
                 case REJECTED -> {
                     String mailBody =
-                    "Dear " + employee.firstName()+" "+employee.lastName() + ",\n\n"
+                    "Dear " + user.firstName()+" "+user.lastName() + ",\n\n"
                     + "Thank you for your interest in the" +jobOfferTitle +". "
                     + "After careful consideration, we regret to inform you that we have decided to move forward with other candidates at this time.\n\n"
                     + "We truly appreciate the time and effort you invested in applying and interviewing with us. "
@@ -204,14 +204,14 @@ public class InternalApplicationServiceImpl implements ApplicationService {
                     + "Hr Team\n"
                     + "OTBS";
                     recruitmentNotificationService.sendMailNotification(
-                            employee.email(),
+                            user.email(),
                             "Application Rejection",
                             mailBody
                     );
                 }
                 case HIRED -> {
                     String mailBody =
-                            "Dear " + employee.firstName()+" "+employee.lastName() + ",\n\n"
+                            "Dear " + user.firstName()+" "+user.lastName() + ",\n\n"
                                     + "Congratulations! We are pleased to inform you that you have been selected for the position of" +jobOfferTitle +". "
                                     + "We were impressed with your skills and experience, and we believe you will be a valuable addition to our team.\n\n"
                                     + "Please find attached the offer letter for your review. If you have any questions or need further information, "
@@ -221,14 +221,14 @@ public class InternalApplicationServiceImpl implements ApplicationService {
                                     + "Hr Team\n"
                                     + "OTBS";
                     recruitmentNotificationService.sendMailNotification(
-                            employee.email(),
+                            user.email(),
                             "Application Acceptance",
                             mailBody
                     );
                 }
             }
         }).exceptionally(throwable -> {
-            log.error("Failed to send notification for employee {}: {}", employeeId, throwable.getMessage());
+            log.error("Failed to send notification for user {}: {}", userId, throwable.getMessage());
             return null;
         });
     }

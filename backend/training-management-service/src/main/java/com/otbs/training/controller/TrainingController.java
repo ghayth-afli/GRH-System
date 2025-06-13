@@ -42,7 +42,7 @@ public class TrainingController {
     @ApiResponse(responseCode = "400", description = "Invalid input data (e.g., end date before start date)")
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @PostMapping
-    @PreAuthorize("hasAuthority('Manager')")
+    @PreAuthorize("hasAuthority('Manager') ")
     public ResponseEntity<MessageResponseDTO> createTraining(
             @Valid @RequestBody TrainingRequestDTO trainingRequestDTO
     ) {
@@ -96,7 +96,7 @@ public class TrainingController {
 
     @Operation(
             summary = "Get all training sessions",
-            description = "Retrieves a list of all training sessions. Requires HR, Manager, or Employee role."
+            description = "Retrieves a list of all training sessions. Requires HR, Manager, or User role."
     )
     @ApiResponse(
             responseCode = "200",
@@ -105,7 +105,7 @@ public class TrainingController {
     )
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @GetMapping
-    @PreAuthorize("hasAuthority('HR') or hasAuthority('Manager') or hasAuthority('Employee')")
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('Manager') or hasAuthority('Employee') or hasAuthority('HRD')")
     public ResponseEntity<List<TrainingResponseDTO>> getAllTrainings() {
         return ResponseEntity.ok(trainingService.getAllTrainings());
     }
@@ -122,7 +122,7 @@ public class TrainingController {
     @ApiResponse(responseCode = "404", description = "Training session not found")
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('HR') or hasAuthority('Manager') or hasAuthority('Employee')")
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('Manager') or hasAuthority('Employee')  or hasAuthority('HRD')")
     public ResponseEntity<TrainingResponseDTO> getTrainingById(
             @Parameter(description = "ID of the training session", example = "1")
             @PathVariable("id") Long id

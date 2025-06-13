@@ -11,7 +11,7 @@ const routes: Routes = [
     path: '',
     component: TrainingsPageComponent,
     canActivate: [RoleGuard],
-    data: { roles: ['Manager', 'HR', 'Employee'] },
+    data: { roles: ['Manager', 'HR', 'Employee', 'HRD'] },
   },
   {
     path: 'create',
@@ -29,13 +29,13 @@ const routes: Routes = [
     path: ':id/details',
     component: TrainingDetailsPageComponent,
     canActivate: [RoleGuard],
-    data: { roles: ['Manager', 'HR', 'Employee'] },
+    data: { roles: ['Manager', 'HR', 'Employee', 'HRD'] },
   },
   {
     path: ':id/invitations',
     component: InvitationsPageComponent,
     canActivate: [RoleGuard],
-    data: { roles: ['Manager', 'HR'] },
+    data: { roles: ['Manager', 'HR', 'HRD'] },
   },
 ];
 

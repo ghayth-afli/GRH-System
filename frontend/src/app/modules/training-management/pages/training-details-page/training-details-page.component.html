@@ -19,7 +19,8 @@
     <div class="training-details-header">
       <h2 class="training-details-title">{{ training?.title }}</h2>
       <div class="training-details-meta">
-        @if (authService.hasRole('Manager') || authService.hasRole('HR')) {
+        @if (authService.hasRole('HRD') || authService.hasRole('Manager') ||
+        authService.hasRole('HR')) {
         <p><strong>ID:</strong> {{ training?.id }}</p>
         }
         <p><strong>Department:</strong> {{ training?.department }}</p>
@@ -31,9 +32,11 @@
           <strong>End Date:</strong>
           {{ training?.endDate | date : "MMM d, yyyy" }}
         </p>
-        @if (authService.hasRole('Manager') || authService.hasRole('HR')) {
+        @if (authService.hasRole('HRD') || authService.hasRole('Manager') ||
+        authService.hasRole('HR')) {
         <p><strong>Created By:</strong> {{ training?.createdBy }}</p>
-        } @if (authService.hasRole('Manager') || authService.hasRole('HR')) {
+        } @if (authService.hasRole('HRD') || authService.hasRole('Manager') ||
+        authService.hasRole('HR')) {
         <p>
           <strong>Created At:</strong>
           {{ training?.createdAt | date : "MMM d, yyyy, h:mm a" }}
@@ -43,7 +46,8 @@
           <strong>Status:</strong>
           {{ training?.isConfirmed ? "Confirmed" : "Not Confirmed" }}
         </p>
-        } @if (authService.hasRole('Manager') || authService.hasRole('HR')) {
+        } @if (authService.hasRole('HRD') || authService.hasRole('Manager') ||
+        authService.hasRole('HR')) {
         <p>
           <strong>Total Invitations:</strong> {{ training?.totalInvitations }}
         </p>

@@ -1,8 +1,7 @@
 package com.otbs.training.service;
 
-import com.otbs.common.event.Event;
-import com.otbs.feign.client.employee.EmployeeClient;
-import com.otbs.feign.client.employee.dto.EmployeeResponse;
+import com.otbs.feign.client.user.UserClient;
+import com.otbs.feign.client.user.dto.UserResponse;
 import com.otbs.training.dto.TrainingRequestDTO;
 import com.otbs.training.dto.TrainingResponseDTO;
 import com.otbs.training.exception.TrainingException;
@@ -16,13 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -33,19 +29,19 @@ public class TrainingServiceImpl implements TrainingService {
     private static final String HR_ROLE = "HR";
     private static final String MANAGER_ROLE = "Manager";
     private static final String EMPLOYEE_ROLE = "Employee";
+    private static final String HRD_ROLE = "HRD";
 
     private final TrainingRepository trainingRepository;
     private final TrainingMapper trainingMapper;
-    private final EmployeeClient employeeClient;
+    private final UserClient userClient;
     private final TrainingNotificationService trainingNotificationService;
     private final TransactionTemplate transactionTemplate;
-    private final TrainingNotificationEventService notificationEventService;
 
     @Override
     @Transactional
     public void createTraining(TrainingRequestDTO request) {
         String managerId = getCurrentUserId();
-        EmployeeResponse manager = fetchEmployee(managerId);
+        UserResponse manager = fetchUser(managerId);
 
         validateDateRange(request);
 
@@ -55,8 +51,7 @@ public class TrainingServiceImpl implements TrainingService {
 
         Training savedTraining = trainingRepository.save(training);
 
-        fetchDepartmentEmployeesAndNotifyAsync(manager, savedTraining, request);
-        sendAsyncEventNotifications(savedTraining, "CREATED_TRAINING");
+        fetchDepartmentUsersAndNotifyAsync(manager, savedTraining, request);
     }
 
     @Override
@@ -73,7 +68,6 @@ public class TrainingServiceImpl implements TrainingService {
         training.setEndDate(request.endDate());
 
         trainingRepository.save(training);
-        sendAsyncEventNotifications(training, "UPDATED_TRAINING");
     }
 
     @Override
@@ -82,28 +76,27 @@ public class TrainingServiceImpl implements TrainingService {
         String managerId = getCurrentUserId();
         Training training = findTrainingForManager(managerId, trainingId);
         trainingRepository.delete(training);
-        sendAsyncEventNotifications(training, "DELETED_TRAINING");
     }
 
     @Override
     public TrainingResponseDTO getTrainingById(Long trainingId) {
         String userId = getCurrentUserId();
-        EmployeeResponse user = fetchEmployee(userId);
+        UserResponse user = fetchUser(userId);
 
-        if (HR_ROLE.equals(user.role())) {
+        if (HR_ROLE.equals(user.role()) || HRD_ROLE.equals(user.role())) {
             return trainingRepository.findById(trainingId)
                     .map(trainingMapper::toResponseDTO)
                     .orElseThrow(() -> new TrainingException("Training not found"));
         } else if (MANAGER_ROLE.equals(user.role())) {
             return trainingMapper.toResponseDTO(findTrainingForManager(userId, trainingId));
         } else if (EMPLOYEE_ROLE.equals(user.role())) {
-            return trainingRepository.findByIdAndInvitations_EmployeeId(trainingId, userId).stream()
+            return trainingRepository.findByIdAndInvitations_UserId(trainingId, userId).stream()
                     .map(
                             training -> {
                                 TrainingResponseDTO responseDTO = trainingMapper.toResponseDTO(training);
                                 responseDTO.setIsConfirmed(
                                         training.getInvitations().stream()
-                                                .anyMatch(invitation -> invitation.getEmployeeId().equals(userId) && invitation.getStatus() == EStatus.CONFIRMED)
+                                                .anyMatch(invitation -> invitation.getUserId().equals(userId) && invitation.getStatus() == EStatus.CONFIRMED)
                                 );
                                 return responseDTO;
                             }
@@ -118,9 +111,9 @@ public class TrainingServiceImpl implements TrainingService {
     @Override
     public List<TrainingResponseDTO> getAllTrainings() {
         String userId = getCurrentUserId();
-        EmployeeResponse user = fetchEmployee(userId);
+        UserResponse user = fetchUser(userId);
 
-        if (HR_ROLE.equals(user.role())) {
+        if (HR_ROLE.equals(user.role()) || HRD_ROLE.equals(user.role())) {
             return trainingRepository.findAll().stream()
                     .map(trainingMapper::toResponseDTO)
                     .toList();
@@ -129,15 +122,15 @@ public class TrainingServiceImpl implements TrainingService {
                     .map(trainingMapper::toResponseDTO)
                     .toList();
         } else if (EMPLOYEE_ROLE.equals(user.role())) {
-            return trainingRepository.findByInvitations_EmployeeId(userId).stream()
+            return trainingRepository.findByInvitations_UserId(userId).stream()
                     .peek(training -> training.setInvitations(training.getInvitations().stream()
-                            .filter(invitation -> invitation.getEmployeeId().equals(userId))
+                            .filter(invitation -> invitation.getUserId().equals(userId))
                             .toList()))
                     .map(training -> {
                         TrainingResponseDTO responseDTO = trainingMapper.toResponseDTO(training);
                         responseDTO.setIsConfirmed(
                                 training.getInvitations().stream()
-                                        .anyMatch(invitation -> invitation.getEmployeeId().equals(userId) && invitation.getStatus() == EStatus.CONFIRMED)
+                                        .anyMatch(invitation -> invitation.getUserId().equals(userId) && invitation.getStatus() == EStatus.CONFIRMED)
                         );
                         return responseDTO;
                     })
@@ -165,27 +158,27 @@ public class TrainingServiceImpl implements TrainingService {
         }
     }
 
-    private EmployeeResponse fetchEmployee(String employeeId) {
+    private UserResponse fetchUser(String userId) {
         try {
-            return employeeClient.getEmployeeByDn(employeeId);
+            return userClient.getUserByDn(userId);
         } catch (RuntimeException e) {
-            log.error("Error fetching employee details for ID {}: {}", employeeId, e.getMessage());
-            throw new TrainingException("Error fetching employee details");
+            log.error("Error fetching user details for ID {}: {}", userId, e.getMessage());
+            throw new TrainingException("Error fetching user details");
         }
     }
 
     @Async
-    protected void fetchDepartmentEmployeesAndNotifyAsync(EmployeeResponse manager, Training savedTraining, TrainingRequestDTO request) {
-        CompletableFuture.supplyAsync(employeeClient::getAllEmployees)
-                .thenApply(employees -> employees.stream()
+    protected void fetchDepartmentUsersAndNotifyAsync(UserResponse manager, Training savedTraining, TrainingRequestDTO request) {
+        CompletableFuture.supplyAsync(userClient::getAllUsers)
+                .thenApply(users -> users.stream()
                         .filter(emp -> emp.department().equals(manager.department()))
                         .filter(emp -> !emp.id().equals(manager.id()))
                         .toList())
-                .thenAccept(departmentEmployees -> {
-                    List<Invitation> invitations = departmentEmployees.stream()
+                .thenAccept(departmentUsers -> {
+                    List<Invitation> invitations = departmentUsers.stream()
                             .map(emp -> {
                                 Invitation invitation = new Invitation();
-                                invitation.setEmployeeId(emp.id());
+                                invitation.setUserId(emp.id());
                                 invitation.setStatus(EStatus.PENDING);
                                 invitation.setTraining(savedTraining);
 
@@ -196,7 +189,7 @@ public class TrainingServiceImpl implements TrainingService {
                                         CompletableFuture.runAsync(() -> trainingNotificationService.sendMailNotification(
                                                 emp.email(), "Training Invitation", message))
                                 ).exceptionally(throwable -> {
-                                    log.error("Failed to send notification to employee {}: {}", emp.id(), throwable.getMessage());
+                                    log.error("Failed to send notification to user {}: {}", emp.id(), throwable.getMessage());
                                     return null;
                                 });
 
@@ -204,7 +197,6 @@ public class TrainingServiceImpl implements TrainingService {
                             })
                             .toList();
 
-                    // Save invitations with TransactionTemplate
                     try {
                         transactionTemplate.execute(_ -> {
                             savedTraining.setInvitations(invitations);
@@ -216,35 +208,9 @@ public class TrainingServiceImpl implements TrainingService {
                     }
                 })
                 .exceptionally(throwable -> {
-                    log.error("Failed to fetch employees for training {}: {}", savedTraining.getId(), throwable.getMessage());
+                    log.error("Failed to fetch users for training {}: {}", savedTraining.getId(), throwable.getMessage());
                     return null;
                 });
     }
 
-    @Async
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void sendAsyncEventNotifications(Training training, String eventType) {
-        TrainingResponseDTO trainingResponseDTO = trainingMapper.toResponseDTO(training);
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("training", trainingResponseDTO);
-        CompletableFuture<Void> eventNotification = CompletableFuture.runAsync(() ->
-                notificationEventService.sendEventNotification(
-                        new Event(
-                                eventType,
-                                training.getId().toString(),
-                                "TRAINING",
-                                payload
-                        )
-                ));
-
-        CompletableFuture.allOf(eventNotification)
-                .whenComplete((_, throwable) -> {
-                    if (throwable != null) {
-                        log.error("Failed to send event notifications for training ID {}: {}",
-                                training.getId(), throwable.getMessage());
-                    } else {
-                        log.debug("Event notifications sent successfully for training ID {}", training.getId());
-                    }
-                });
-    }
 }

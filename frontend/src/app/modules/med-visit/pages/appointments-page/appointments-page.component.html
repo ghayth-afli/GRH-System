@@ -1,5 +1,5 @@
 <div class="appointments-page">
-  @if(authService.hasRole("HR")) {
+  @if(authService.hasRole('HRD') || authService.hasRole("HR")) {
   <div class="visits-actions">
     @if(displayedAppointments) {
     <button

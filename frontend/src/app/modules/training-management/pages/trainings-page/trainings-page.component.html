@@ -18,7 +18,7 @@
         />
       </div>
     </div>
-    @if(authService.hasRole("HR")) {
+    @if(authService.hasRole('HRD') || authService.hasRole("HR")) {
     <div class="filter-controls">
       <div class="filter-group">
         <label class="filter-label">Department:</label>
@@ -90,7 +90,8 @@
         >
           <i class="fa-solid fa-square"> </i> Confirm
         </a>
-        } } @if(authService.hasRole("Manager") ||authService.hasRole("HR")) {
+        } } @if(authService.hasRole('HRD') || authService.hasRole("Manager")
+        ||authService.hasRole("HR")) {
         <a
           class="action-btn invitations"
           [routerLink]="['/trainings', training.id, 'invitations']"

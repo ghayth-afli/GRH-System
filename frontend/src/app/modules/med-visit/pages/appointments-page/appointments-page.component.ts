@@ -1,15 +1,10 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Appointment } from '../../models/appointment';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
 import { AppointmentStatus } from '../../models/appointment-status';
 import { AppointmentService } from '../../services/appointment.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { Subscription } from 'rxjs';
-import { SseService } from '../../../../core/services/sse.service';
-import { NotificationData } from '../../../../core/models/NotificationData';
 import { AuthService } from '../../../../core/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';

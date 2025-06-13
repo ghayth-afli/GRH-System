@@ -5,8 +5,8 @@ import com.otbs.training.model.EStatus;
 
 public record InvitationResponseDTO (
     Long id,
-    String employeeName,
+    String userName,
     EStatus status,
-    String employeeId
+    String userId
 ){
 }

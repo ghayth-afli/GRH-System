@@ -170,19 +170,6 @@ export class AuthService {
 
   hasRole(role: string): boolean {
     const user = this.authenticatedUser;
-    if (!user) return false;
-
-    switch (role) {
-      case 'HRD':
-        return user.department === 'HR' && user.role === 'Manager';
-      case 'Manager':
-        return user.department !== 'HR' && user.role === 'Manager';
-      case 'Employee':
-        return user.role === 'Employee';
-      case 'HR':
-        return user.department === 'HR' && user.role === 'HR';
-      default:
-        return false;
-    }
+    return user !== null && user.role === role;
   }
 }

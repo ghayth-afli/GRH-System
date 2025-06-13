@@ -1,8 +1,7 @@
 package com.otbs.medVisit.service;
 
-import com.otbs.common.event.Event;
-import com.otbs.feign.client.employee.EmployeeClient;
-import com.otbs.feign.client.employee.dto.EmployeeResponse;
+import com.otbs.feign.client.user.UserClient;
+import com.otbs.feign.client.user.dto.UserResponse;
 import com.otbs.medVisit.dto.AppointmentRequestDTO;
 import com.otbs.medVisit.dto.AppointmentResponseDTO;
 import com.otbs.medVisit.dto.MedicalVisitResponseDTO;
@@ -21,14 +20,11 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -43,18 +39,17 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final MedicalVisitNotificationService medicalVisitNotificationService;
     private final MedicalVisitRepository medicalVisitRepository;
     private final AppointmentMapper appointmentMapper;
-    private final EmployeeClient employeeClient;
+    private final UserClient userClient;
     private final MedicalVisitMapper medicalVisitMapper;
-    private final MedicalVisitNotificationEventService notificationEventService;
 
     @Override
     @Transactional
     public void createAppointment(AppointmentRequestDTO appointment) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String employeeId = authentication.getName();
+        String userId = authentication.getName();
 
         // Check for existing appointment
-        if (appointmentRepository.existsByEmployeeIdAndMedicalVisitId(employeeId, appointment.medicalVisitId())) {
+        if (appointmentRepository.existsByUserIdAndMedicalVisitId(userId, appointment.medicalVisitId())) {
             throw new AppointmentException("You already have an appointment for this medical visit");
         }
 
@@ -75,7 +70,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         // Create and save appointment
         medicalVisitRepository.findById(appointment.medicalVisitId()).ifPresentOrElse(visit -> {
             Appointment newAppointment = Appointment.builder()
-                    .employeeId(employeeId)
+                    .userId(userId)
                     .medicalVisit(visit)
                     .timeSlot(appointment.timeSlot())
                     .status(EAppointmentStatus.PLANIFIE)
@@ -83,13 +78,12 @@ public class AppointmentServiceImpl implements AppointmentService {
             appointmentRepository.save(newAppointment);
 
             // Asynchronously send notification
-            sendNotificationAsync(employeeId, "Appointment created",
+            sendNotificationAsync(userId, "Appointment created",
                     "Your appointment has been created for " + appointment.timeSlot());
         }, () -> {
             throw new AppointmentException("Medical visit not found");
         });
 
-        sendAsyncEventNotifications(medicalVisit, "UPDATED_MEDICAL_VISIT");
 
     }
 
@@ -117,9 +111,8 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointmentRepository.save(appointment);
 
         // Asynchronously send notification
-        sendNotificationAsync(appointment.getEmployeeId(), "Appointment updated",
+        sendNotificationAsync(appointment.getUserId(), "Appointment updated",
                 "Your appointment has been updated to " + appointmentRequestDTO.timeSlot());
-        sendAsyncEventNotifications(medicalVisit, "UPDATED_MEDICAL_VISIT");
     }
 
     @Override
@@ -138,11 +131,11 @@ public class AppointmentServiceImpl implements AppointmentService {
     public void cancelAppointment(Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        Appointment appointment = appointmentRepository.findByMedicalVisitIdAndEmployeeId(id, authentication.getName())
+        Appointment appointment = appointmentRepository.findByMedicalVisitIdAndUserId(id, authentication.getName())
                 .orElseThrow(() -> new AppointmentException("Appointment not found"));
 
         appointmentRepository.deleteById(appointment.getId());
-        sendNotificationAsync(appointment.getEmployeeId(), "Appointment cancelled",
+        sendNotificationAsync(appointment.getUserId(), "Appointment cancelled",
                 "Your appointment has been cancelled for " + appointment.getTimeSlot());
     }
 
@@ -152,7 +145,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         validateAppointmentAccess(id, authentication);
 
         return appointmentRepository.findById(id)
-                .map(appointment -> mapToResponse(appointment, fetchEmployeeAsync(appointment.getEmployeeId())))
+                .map(appointment -> mapToResponse(appointment, fetchUserAsync(appointment.getUserId())))
                 .orElseThrow(() -> new AppointmentException("Appointment not found"));
     }
 
@@ -162,7 +155,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         List<Appointment> appointments = authentication.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(HR_ROLE))
                 ? appointmentRepository.findAll()
-                : appointmentRepository.findByEmployeeId(authentication.getName());
+                : appointmentRepository.findByUserId(authentication.getName());
 
         return mapToResponses(appointments);
     }
@@ -175,7 +168,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             throw new AppointmentException("You are not allowed to view those appointments");
         }
 
-        return mapToResponses(appointmentRepository.findByEmployeeId(patientId));
+        return mapToResponses(appointmentRepository.findByUserId(patientId));
     }
 
     @Override
@@ -196,47 +189,45 @@ public class AppointmentServiceImpl implements AppointmentService {
     private void validateAppointmentAccess(Long appointmentId, Authentication authentication) {
         if (authentication.getAuthorities().stream().noneMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(HR_ROLE))) {
             appointmentRepository.findById(appointmentId)
-                    .filter(appointment -> appointment.getEmployeeId().equals(authentication.getName()))
+                    .filter(appointment -> appointment.getUserId().equals(authentication.getName()))
                     .orElseThrow(() -> new AppointmentException("You are not allowed to access this appointment"));
         }
     }
 
     @Async
-    protected CompletableFuture<EmployeeResponse> fetchEmployeeAsync(String employeeId) {
-        return CompletableFuture.supplyAsync(() -> employeeClient.getEmployeeByDn(employeeId));
+    protected CompletableFuture<UserResponse> fetchUserAsync(String userId) {
+        return CompletableFuture.supplyAsync(() -> userClient.getUserByDn(userId));
     }
 
     @Async
-    protected void sendNotificationAsync(String employeeId, String subject, String message) {
-        CompletableFuture.runAsync(() -> medicalVisitNotificationService.sendMailNotification(employeeId, subject, message))
+    protected void sendNotificationAsync(String userId, String subject, String message) {
+        CompletableFuture.runAsync(() -> medicalVisitNotificationService.sendMailNotification(userId, subject, message))
                 .exceptionally(throwable -> {
-                    log.error("Failed to send notification for employee {}: {}", employeeId, throwable.getMessage());
+                    log.error("Failed to send notification for user {}: {}", userId, throwable.getMessage());
                     return null;
                 });
     }
 
-    private AppointmentResponseDTO mapToResponse(Appointment appointment, CompletableFuture<EmployeeResponse> employeeFuture) {
+    private AppointmentResponseDTO mapToResponse(Appointment appointment, CompletableFuture<UserResponse> userFuture) {
         try {
-            EmployeeResponse employee = employeeFuture.get();
-            String employeeFullName = employee.firstName() + " " + employee.lastName();
-            return appointmentMapper.toDto(appointment, employeeFullName, employee.email());
+            UserResponse user = userFuture.get();
+            String userFullName = user.firstName() + " " + user.lastName();
+            return appointmentMapper.toDto(appointment, userFullName, user.email());
         } catch (Exception e) {
-            log.error("Failed to fetch employee details for {}: {}", appointment.getEmployeeId(), e.getMessage());
-            throw new AppointmentException("Unable to retrieve employee details");
+            log.error("Failed to fetch user details for {}: {}", appointment.getUserId(), e.getMessage());
+            throw new AppointmentException("Unable to retrieve user details");
         }
     }
 
     private List<AppointmentResponseDTO> mapToResponses(List<Appointment> appointments) {
-        // Fetch employee details in parallel
         List<CompletableFuture<AppointmentResponseDTO>> futures = appointments.stream()
-                .map(appointment -> fetchEmployeeAsync(appointment.getEmployeeId())
-                        .thenApply(employee -> {
-                            String employeeFullName = employee.firstName() + " " + employee.lastName();
-                            return appointmentMapper.toDto(appointment, employeeFullName, employee.email());
+                .map(appointment -> fetchUserAsync(appointment.getUserId())
+                        .thenApply(user -> {
+                            String userFullName = user.firstName() + " " + user.lastName();
+                            return appointmentMapper.toDto(appointment, userFullName, user.email());
                         }))
                 .toList();
 
-        // Collect results
         return futures.stream()
                 .map(future -> {
                     try {
@@ -249,31 +240,6 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .toList();
     }
 
-    @Async
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void sendAsyncEventNotifications(MedicalVisitResponseDTO medVisit, String eventType) {
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("medicalVisit", medVisit);
-        CompletableFuture<Void> eventNotification = CompletableFuture.runAsync(() ->
-                notificationEventService.sendEventNotification(
-                        new Event(
-                                eventType,
-                                medVisit.getId().toString(),
-                                "MEDICAL_VISIT",
-                                payload
-                        )
-                ));
-
-        CompletableFuture.allOf(eventNotification)
-                .whenComplete((_, throwable) -> {
-                    if (throwable != null) {
-                        log.error("Failed to send event notifications for medical visit ID {}: {}",
-                                medVisit.getId(), throwable.getMessage());
-                    } else {
-                        log.debug("Event notifications sent successfully for medical visit ID {}", medVisit.getId());
-                    }
-                });
-    }
 
 
 }

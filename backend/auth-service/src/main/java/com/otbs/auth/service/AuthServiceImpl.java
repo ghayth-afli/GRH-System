@@ -6,9 +6,11 @@ import com.otbs.auth.dto.RefreshRequestDTO;
 import com.otbs.auth.exception.TokenException;
 import com.otbs.auth.exception.UserException;
 import com.otbs.auth.util.JwtUtils;
-import com.otbs.feign.client.employee.EmployeeClient;
-import com.otbs.feign.client.employee.dto.EmployeeResponse;
+import com.otbs.feign.client.user.UserClient;
+import com.otbs.feign.client.user.dto.UserResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,20 +25,26 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService{
 
+    private static final Logger log = LoggerFactory.getLogger(AuthServiceImpl.class);
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
-    private final EmployeeClient employeeClient;
+    private final UserClient userClient;
 
     public JwtResponseDTO authenticateUser(AuthRequestDTO authRequestDTO) {
         try {
-            EmployeeResponse user = employeeClient.getEmployeeByUsername(authRequestDTO.username());
+            log.info("Authenticating user: {}", authRequestDTO.username());
+            UserResponse user = userClient.getUserByUsername(authRequestDTO.username());
+            log.info("User found: {}", user.username());
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequestDTO.username(), authRequestDTO.password()));
 
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            List<String> roles = userDetails.getAuthorities().stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .collect(Collectors.toList());
+//            List<String> roles = userDetails.getAuthorities().stream()
+//                    .map(GrantedAuthority::getAuthority)
+//                    .collect(Collectors.toList());
+            // use user.role() directly instead of roles from UserDetails
+            List<String> roles = List.of(user.role());
+            log.info("User roles: {}", roles);
 
             String accessToken = jwtUtils.generateAccessToken(authRequestDTO.username(), roles);
 
@@ -61,7 +69,7 @@ public class AuthServiceImpl implements AuthService{
         String username = jwtUtils.getUserNameFromJwtToken(refreshRequestDTO.refreshToken());
 
         try {
-            EmployeeResponse user = employeeClient.getEmployeeByUsername(username);
+            UserResponse user = userClient.getUserByUsername(username);
             List<String> roles = List.of(user.role());
             return new JwtResponseDTO(
                     jwtUtils.generateAccessToken(username, roles),
@@ -72,7 +80,7 @@ public class AuthServiceImpl implements AuthService{
             );
         }
         catch (RuntimeException e) {
-            throw new UserException("Unauthorized: Employee not found");
+            throw new UserException("Unauthorized: User not found");
         }
 
     }

@@ -25,7 +25,7 @@ public class Invitation {
     @Enumerated(EnumType.STRING)
     private EStatus status;
 
-    private String employeeId;
+    private String userId;
 
     @ManyToOne
     @JoinColumn(name = "training_id", nullable = false)

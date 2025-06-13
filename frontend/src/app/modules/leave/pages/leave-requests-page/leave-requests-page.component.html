@@ -128,7 +128,7 @@
       >
         <i class="fa-solid fa-paperclip"></i> Attachments
       </button>
-      @if(authService.hasRole('Manager')) {
+      @if(authService.hasRole('HRD') || authService.hasRole('Manager')) {
       <button
         class="action-btn approve"
         *ngIf="request.status === 'PENDING'"

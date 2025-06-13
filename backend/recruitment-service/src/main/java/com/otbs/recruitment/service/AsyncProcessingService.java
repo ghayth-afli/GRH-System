@@ -3,14 +3,11 @@ package com.otbs.recruitment.service;
 import com.otbs.feign.client.candidate.CandidateClient;
 import com.otbs.feign.client.candidate.dto.CandidateRequestDTO;
 import com.otbs.feign.client.candidate.dto.CandidateResponseDTO_;
-import com.otbs.feign.client.employee.EmployeeClient;
 import com.otbs.feign.client.resumeMatcher.ResumeMatcherClient;
 import com.otbs.feign.client.resumeMatcher.dto.*;
 import com.otbs.recruitment.exception.ApplicationException;
-import com.otbs.recruitment.mapper.ApplicationAttributesMapper;
 import com.otbs.recruitment.model.*;
 import com.otbs.recruitment.repository.InternalApplicationRepository;
-import com.otbs.recruitment.repository.JobOfferRepository;
 import com.otbs.recruitment.repository.MatchResultRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -179,13 +176,23 @@ public class AsyncProcessingService {
         internalApplication.setMatchResult(matchResult);
         internalapplicationRepository.save(internalApplication);
     }
+    private final NotificationService notificationService;
 
     @Async("taskExecutor")
-    public void fetchEmployeeAndNotify(String employeeId, EApplicationStatus status, String jobOfferTitle) {
+    public void sendAppNotification(String to, String subject, String body, Long sourceId, String actionUrl) {
         try {
-            // Implementation from the original fetchEmployeeAndNotifyAsync method
+            notificationService.sendAppNotification(to, subject, body, sourceId, actionUrl);
         } catch (Exception e) {
-            log.error("Error in async employee notification: {}", e.getMessage(), e);
+            log.error("Error sending app notification: {}", e.getMessage(), e);
+        }
+    }
+
+    @Async("taskExecutor")
+    public void sendMailNotification(String to, String subject, String body) {
+        try {
+            notificationService.sendMailNotification(to, subject, body);
+        } catch (Exception e) {
+            log.error("Error sending mail notification: {}", e.getMessage(), e);
         }
     }
 }

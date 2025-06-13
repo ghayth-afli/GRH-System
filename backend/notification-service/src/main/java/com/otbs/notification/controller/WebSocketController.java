@@ -1,6 +1,6 @@
 package com.otbs.notification.controller;
 
-import com.otbs.feign.client.employee.dto.EmployeeResponse;
+import com.otbs.feign.client.user.dto.UserResponse;
 import com.otbs.notification.dto.NotificationRequestDTO;
 import com.otbs.notification.dto.NotificationResponseDTO;
 import com.otbs.notification.service.NotificationService;
@@ -53,7 +53,7 @@ public class WebSocketController {
             throw new AuthenticationCredentialsNotFoundException("Not authenticated");
         }
 
-        EmployeeResponse user = (EmployeeResponse) authentication.getPrincipal();
+        UserResponse user = (UserResponse) authentication.getPrincipal();
         log.info("Processing notification from user: {}", user.username());
 
         return notificationService.createNotification(notificationRequest);

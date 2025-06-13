@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface InvitationRepository  extends JpaRepository<Invitation, Long> {
 
-    Optional<Invitation> findByEmployeeIdAndTrainingId(String employeeId, Long trainingId);
-    List<Invitation> findByEmployeeId(String employeeId);
+    Optional<Invitation> findByUserIdAndTrainingId(String userId, Long trainingId);
+    List<Invitation> findByUserId(String userId);
     List<Invitation> findAllByTrainingId(Long training_id);
 }
