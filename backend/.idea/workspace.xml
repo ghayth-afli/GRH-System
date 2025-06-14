@@ -4,28 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8831ef2c-5863-4771-acbe-37c7b2e108e5" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/service/LeaveServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/service/LeaveServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/leave-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/med-visit-service/src/main/java/com/otbs/medVisit/MedVisitApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/med-visit-service/src/main/java/com/otbs/medVisit/MedVisitApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/med-visit-service/src/main/java/com/otbs/medVisit/security/JwtAuthFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/med-visit-service/src/main/java/com/otbs/medVisit/security/JwtAuthFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/med-visit-service/src/main/java/com/otbs/medVisit/service/AppointmentServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/med-visit-service/src/main/java/com/otbs/medVisit/service/AppointmentServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/med-visit-service/src/main/java/com/otbs/medVisit/service/MedicalVisitServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/med-visit-service/src/main/java/com/otbs/medVisit/service/MedicalVisitServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/security/JwtAuthFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/security/JwtAuthFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/service/InternalApplicationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/service/InternalApplicationServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/service/JobOfferServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/service/JobOfferServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/service/RecruitmentNotificationService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training-management-service/src/main/java/com/otbs/training/security/JwtAuthFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/training-management-service/src/main/java/com/otbs/training/security/JwtAuthFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training-management-service/src/main/java/com/otbs/training/service/InvitationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/training-management-service/src/main/java/com/otbs/training/service/InvitationServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training-management-service/src/main/java/com/otbs/training/service/TrainingNotificationService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training-management-service/src/main/java/com/otbs/training/service/TrainingServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/training-management-service/src/main/java/com/otbs/training/service/TrainingServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training-management-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/training-management-service/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/otbs/user/service/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/otbs/user/service/UserServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/resources/application.properties" afterDir="false" />
-    </list>
+    <list default="true" id="8831ef2c-5863-4771-acbe-37c7b2e108e5" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -488,7 +467,7 @@
       <workItem from="1749777659854" duration="685000" />
       <workItem from="1749778365473" duration="2120000" />
       <workItem from="1749780517410" duration="4911000" />
-      <workItem from="1749862044995" duration="8419000" />
+      <workItem from="1749862044995" duration="8562000" />
     </task>
     <servers />
   </component>
