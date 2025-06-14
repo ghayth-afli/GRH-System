@@ -1,6 +1,7 @@
 package com.otbs.training.service;
 
 import com.otbs.feign.client.user.UserClient;
+import com.otbs.feign.client.user.dto.UserResponse;
 import com.otbs.training.dto.InvitationResponseDTO;
 import com.otbs.training.exception.InvitationException;
 import com.otbs.training.mapper.InvitationMapper;
@@ -23,13 +24,12 @@ public class InvitationServiceImpl implements InvitationService {
 
     private final InvitationRepository invitationRepository;
     private final InvitationMapper invitationMapper;
-    private final TrainingNotificationService trainingNotificationService;
-    private final UserClient userClient;
+    private final AsyncProcessingService asyncProcessingService;
 
     @Override
     @Transactional
     public void confirmInvitation(Long invitationId) {
-        String userId = getCurrentUserId();
+        String userId = getCurrentUser().id();
 
         // Find and update invitation
         invitationRepository.findByUserIdAndTrainingId(userId, invitationId)
@@ -37,8 +37,20 @@ public class InvitationServiceImpl implements InvitationService {
                     invitation.setStatus(EStatus.CONFIRMED);
                     invitationRepository.save(invitation);
                     log.info("Invitation with ID {} confirmed for user {}", invitationId, userId);
-                    // Asynchronously fetch user details and send notification
-                    fetchUserAndNotifyAsync(userId, invitationId);
+                    asyncProcessingService.sendAppNotification(
+                            invitation.getTraining().getCreatedBy(),
+                            "Invitation Confirmed",
+                            String.format("User %s has confirmed the invitation for training %s", getCurrentUser().firstName()+" "+getCurrentUser().lastName(), invitation.getTraining().getTitle()),
+                            invitation.getTraining().getId(),
+                            "/trainings"
+                    );
+                    if(getCurrentUser().email() != null && !getCurrentUser().email().isEmpty()) {
+                        asyncProcessingService.sendMailNotification(
+                                getCurrentUser().email(),
+                                "Invitation Confirmed",
+                                String.format("You have successfully confirmed the invitation for training %s", invitation.getTraining().getTitle())
+                        );
+                    }
                 }, () -> {
                     throw new InvitationException("Invitation not found for confirmation");
                 });
@@ -46,7 +58,7 @@ public class InvitationServiceImpl implements InvitationService {
 
     @Override
     public List<InvitationResponseDTO> getAllInvitations() {
-        String userId = getCurrentUserId();
+        String userId = getCurrentUser().id();
         return invitationRepository.findByUserId(userId)
                 .stream()
                 .map(invitationMapper::toResponseDTO)
@@ -62,29 +74,14 @@ public class InvitationServiceImpl implements InvitationService {
     }
 
 
-    private String getCurrentUserId() {
-        return SecurityContextHolder.getContext().getAuthentication().getName();
+    private UserResponse getCurrentUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserResponse userResponse) {
+            return userResponse;
+        }
+        throw new InvitationException( String.format("Current user is not authenticated or does not have a valid user response: %s", principal));
     }
 
-    @Async
-    protected void fetchUserAndNotifyAsync(String userId, Long invitationId) {
-        CompletableFuture.supplyAsync(() -> {
-            try {
-                return userClient.getUserByDn(userId);
-            } catch (RuntimeException e) {
-                log.error("Error fetching user details for ID {}: {}", userId, e.getMessage());
-                throw new InvitationException("Error fetching user details");
-            }
-        }).thenAccept(user -> {
-            trainingNotificationService.sendMailNotification(
-                    user.email(),
-                    "Invitation Confirmation",
-                    "Your invitation for training ID " + invitationId + " has been confirmed successfully."
-            );
-        }).exceptionally(throwable -> {
-            log.error("Failed to send notification for user {}: {}", userId, throwable.getMessage());
-            return null;
-        });
-    }
+
 
 }

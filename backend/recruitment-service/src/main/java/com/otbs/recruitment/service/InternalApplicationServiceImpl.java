@@ -3,6 +3,7 @@ package com.otbs.recruitment.service;
 import com.otbs.feign.client.candidate.CandidateClient;
 import com.otbs.feign.client.user.UserClient;
 import com.otbs.feign.client.resumeMatcher.ResumeMatcherClient;
+import com.otbs.feign.client.user.dto.UserResponse;
 import com.otbs.recruitment.dto.ApplicationDetailsResponseDTO;
 import com.otbs.recruitment.dto.ApplicationResponseDTO;
 import com.otbs.recruitment.exception.ApplicationException;
@@ -34,13 +35,10 @@ public class InternalApplicationServiceImpl implements ApplicationService {
     private final ResumeMatcherClient resumeMatcherClient;
     private final CandidateClient candidateClient;
     private final InternalApplicationRepository internalapplicationRepository;
-    private final MatchResultRepository matchResultRepository;
     private final ApplicationAttributesMapper applicationAttributesMapper;
-    private final RecruitmentNotificationService recruitmentNotificationService;
     private final AsyncProcessingService asyncProcessingService;
 
     private final JobOfferRepository jobOfferRepository;
-    private final UserClient userClient;
 
 
     @Override
@@ -78,7 +76,7 @@ public class InternalApplicationServiceImpl implements ApplicationService {
                 .matchResult(null)
                 .status(EApplicationStatus.PENDING)
                 .attachment(resumeBytes)
-                .userId(getCurrentUserId())
+                .userId(getCurrentUser().id())
                 .build();
 
         internalApplication = internalapplicationRepository.save(internalApplication);
@@ -86,12 +84,20 @@ public class InternalApplicationServiceImpl implements ApplicationService {
         // Asynchronously parse resume and match resume with job offer
         asyncProcessingService.parseAndSaveResume(resumeBase64, resumeType, internalApplication.getId());
         asyncProcessingService.matchResumeAndSaveResult(jobOffer, resumeBase64, resumeType, internalApplication.getId());
+        if (getCurrentUser().email() != null && !getCurrentUser().email().isEmpty()) {
+            asyncProcessingService.sendMailNotification(
+                    getCurrentUser().email(),
+                    "Application Received",
+                    "Your application for the job offer " + jobOffer.getTitle() + " has been received successfully."
+            );
+        }
+
     }
 
     @Override
     @Transactional
     public void deleteApplication(Long applicationId) {
-        internalapplicationRepository.findByIdAndUserId(applicationId, getCurrentUserId())
+        internalapplicationRepository.findByIdAndUserId(applicationId, getCurrentUser().id())
                 .orElseThrow(() -> new ApplicationException("Application not found"));
 
         internalapplicationRepository.deleteById(applicationId);
@@ -146,19 +152,9 @@ public class InternalApplicationServiceImpl implements ApplicationService {
             case SELECTED -> internalApplication.setStatus(EApplicationStatus.SELECTED);
             case REJECTED -> {
                 internalApplication.setStatus(EApplicationStatus.REJECTED);
-                fetchUserAndNotifyAsync(
-                        internalApplication.getUserId(),
-                        EApplicationStatus.REJECTED,
-                        internalApplication.getJobOffer().getTitle()
-                );
             }
             case HIRED -> {
                 internalApplication.setStatus(EApplicationStatus.HIRED);
-                fetchUserAndNotifyAsync(
-                        internalApplication.getUserId(),
-                        EApplicationStatus.HIRED,
-                        internalApplication.getJobOffer().getTitle()
-                );
             }
         }
         internalapplicationRepository.save(internalApplication);
@@ -167,70 +163,18 @@ public class InternalApplicationServiceImpl implements ApplicationService {
     @Override
     @Transactional
     public void deleteApplicationByJobOfferId(Long jobOfferId) {
-        InternalApplication c = internalapplicationRepository.findByJobOfferIdAndUserId(jobOfferId, getCurrentUserId())
+        InternalApplication c = internalapplicationRepository.findByJobOfferIdAndUserId(jobOfferId, getCurrentUser().id())
                 .orElseThrow(() -> new ApplicationException("Application not found"));
 
         internalapplicationRepository.delete(c);
     }
 
-    private String getCurrentUserId() {
-        return SecurityContextHolder.getContext().getAuthentication().getName();
-    }
-
-    private String getCurrentUserDepartment() {
-        return userClient.getUserByDn(getCurrentUserId()).department();
-    }
-
-
-    public void fetchUserAndNotifyAsync(String userId, EApplicationStatus status,String jobOfferTitle) {
-        CompletableFuture.supplyAsync(() -> {
-            try {
-                return userClient.getUserByDn(userId);
-            } catch (RuntimeException e) {
-                log.error("Error fetching user details for ID {}: {}", userId, e.getMessage());
-                throw new UserException("Error fetching user details");
-            }
-        }).thenAccept(user -> {
-            switch (status) {
-                case REJECTED -> {
-                    String mailBody =
-                    "Dear " + user.firstName()+" "+user.lastName() + ",\n\n"
-                    + "Thank you for your interest in the" +jobOfferTitle +". "
-                    + "After careful consideration, we regret to inform you that we have decided to move forward with other candidates at this time.\n\n"
-                    + "We truly appreciate the time and effort you invested in applying and interviewing with us. "
-                    + "Please do not hesitate to apply for future openings that match your skills and experience.\n\n"
-                    + "We wish you the best of luck in your job search and future endeavors.\n\n"
-                    + "Sincerely,\n"
-                    + "Hr Team\n"
-                    + "OTBS";
-                    recruitmentNotificationService.sendMailNotification(
-                            user.email(),
-                            "Application Rejection",
-                            mailBody
-                    );
-                }
-                case HIRED -> {
-                    String mailBody =
-                            "Dear " + user.firstName()+" "+user.lastName() + ",\n\n"
-                                    + "Congratulations! We are pleased to inform you that you have been selected for the position of" +jobOfferTitle +". "
-                                    + "We were impressed with your skills and experience, and we believe you will be a valuable addition to our team.\n\n"
-                                    + "Please find attached the offer letter for your review. If you have any questions or need further information, "
-                                    + "please do not hesitate to reach out.\n\n"
-                                    + "We look forward to welcoming you to our team!\n\n"
-                                    + "Best regards,\n"
-                                    + "Hr Team\n"
-                                    + "OTBS";
-                    recruitmentNotificationService.sendMailNotification(
-                            user.email(),
-                            "Application Acceptance",
-                            mailBody
-                    );
-                }
-            }
-        }).exceptionally(throwable -> {
-            log.error("Failed to send notification for user {}: {}", userId, throwable.getMessage());
-            return null;
-        });
+    private UserResponse getCurrentUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserResponse userResponse) {
+            return userResponse;
+        }
+        throw new JobOfferException( String.format("Current user is not authenticated or does not have a valid user response: %s", principal));
     }
 
 }

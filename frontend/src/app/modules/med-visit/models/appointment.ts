@@ -6,6 +6,6 @@ export interface Appointment {
   doctorName: string;
   timeSlot: Date;
   status: AppointmentStatus;
-  employeeFullName: string;
-  employeeEmail: string;
+  userFullName: string;
+  userEmail: string;
 }

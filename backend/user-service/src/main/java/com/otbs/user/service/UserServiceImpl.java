@@ -111,7 +111,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll().stream()
                 .map(userAttributesMapper)
                 .filter(user -> user.getDepartment().equals(department))
-                .filter(user -> user.getRole().equals("Manager"))
+                .filter(user -> user.getRole().equals("Manager") || user.getRole().equals("HRD"))
                 .findFirst()
                 .map(this::enrichUserRole) // Apply role enrichment to the found manager
                 .orElseThrow(() -> new UserException("Manager not found"));

@@ -8,6 +8,8 @@ import {
 } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { LeaveService } from '../../../leave/services/leave.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { CustomSnackbarComponent } from '../../../../shared/components/custom-snackbar/custom-snackbar.component';
 
 @Component({
   selector: 'app-submit-leave-request-dialog',
@@ -23,7 +25,7 @@ export class SubmitLeaveRequestDialogComponent implements OnInit {
   minDate: string;
   selectedFile: File | null = null;
 
-  constructor() {
+  constructor(private snackBar: MatSnackBar) {
     const today = new Date();
     this.minDate = today.toISOString().split('T')[0];
   }
@@ -194,8 +196,19 @@ export class SubmitLeaveRequestDialogComponent implements OnInit {
       },
       error: (error: { message: string }) => {
         this.isLoading = false;
+        this.showErrorSnackbar(error.message);
         console.error('There was an error!', error.message);
       },
+    });
+  }
+
+  private showErrorSnackbar(message: string) {
+    this.snackBar.openFromComponent(CustomSnackbarComponent, {
+      data: { message, type: 'error' },
+      duration: 5000,
+      panelClass: ['custom-snackbar'],
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
     });
   }
 

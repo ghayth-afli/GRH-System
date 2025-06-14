@@ -121,7 +121,7 @@ export class AppointmentsPageComponent {
         appointment.id,
         appointment.doctorName,
         new Date(appointment.timeSlot).toLocaleDateString(),
-        appointment.employeeFullName,
+        appointment.userFullName,
         AppointmentStatus[appointment.status],
       ]);
 
@@ -137,7 +137,7 @@ export class AppointmentsPageComponent {
         this.displayedAppointments
           .map(
             (appointment) =>
-              `${appointment.id},${appointment.doctorName},${appointment.employeeFullName},${appointment.timeSlot},${appointment.status}`
+              `${appointment.id},${appointment.doctorName},${appointment.userFullName},${appointment.timeSlot},${appointment.status}`
           )
           .join('\n');
 
@@ -186,9 +186,7 @@ export class AppointmentsPageComponent {
 
     if (this.searchTerm) {
       filteredAppointments = filteredAppointments.filter((visit) =>
-        visit.employeeFullName
-          .toLowerCase()
-          .includes(this.searchTerm.toLowerCase())
+        visit.userFullName.toLowerCase().includes(this.searchTerm.toLowerCase())
       );
     }
 

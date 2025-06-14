@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,20 +37,18 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
     private final MedicalVisitService medicalVisitService;
-    private final MedicalVisitNotificationService medicalVisitNotificationService;
     private final MedicalVisitRepository medicalVisitRepository;
     private final AppointmentMapper appointmentMapper;
     private final UserClient userClient;
-    private final MedicalVisitMapper medicalVisitMapper;
+    private final AsyncProcessingService asyncProcessingService;
 
     @Override
     @Transactional
     public void createAppointment(AppointmentRequestDTO appointment) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userId = authentication.getName();
+        UserResponse currentUser = getCurrentUser();
 
         // Check for existing appointment
-        if (appointmentRepository.existsByUserIdAndMedicalVisitId(userId, appointment.medicalVisitId())) {
+        if (appointmentRepository.existsByUserIdAndMedicalVisitId(currentUser.id(), appointment.medicalVisitId())) {
             throw new AppointmentException("You already have an appointment for this medical visit");
         }
 
@@ -70,28 +69,31 @@ public class AppointmentServiceImpl implements AppointmentService {
         // Create and save appointment
         medicalVisitRepository.findById(appointment.medicalVisitId()).ifPresentOrElse(visit -> {
             Appointment newAppointment = Appointment.builder()
-                    .userId(userId)
+                    .userId(currentUser.id())
                     .medicalVisit(visit)
                     .timeSlot(appointment.timeSlot())
                     .status(EAppointmentStatus.PLANIFIE)
                     .build();
             appointmentRepository.save(newAppointment);
 
-            // Asynchronously send notification
-            sendNotificationAsync(userId, "Appointment created",
-                    "Your appointment has been created for " + appointment.timeSlot());
         }, () -> {
             throw new AppointmentException("Medical visit not found");
         });
 
+        asyncProcessingService.sendMailNotification(
+                currentUser.email(),
+                "Appointment Created",
+                String.format("Your appointment for %s on %s at %s has been successfully created.",
+                        medicalVisit.getVisitDate(), medicalVisit.getStartTime(), appointment.timeSlot())
+        );
 
     }
 
     @Override
     @Transactional
     public void updateAppointment(AppointmentRequestDTO appointmentRequestDTO, Long appointmentId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        validateAppointmentAccess(appointmentId, authentication);
+        UserResponse currentUser = getCurrentUser();
+        validateAppointmentAccess(appointmentId, currentUser);
 
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new AppointmentException("Appointment not found"));
@@ -110,16 +112,13 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointment.setTimeSlot(appointmentRequestDTO.timeSlot());
         appointmentRepository.save(appointment);
 
-        // Asynchronously send notification
-        sendNotificationAsync(appointment.getUserId(), "Appointment updated",
-                "Your appointment has been updated to " + appointmentRequestDTO.timeSlot());
     }
 
     @Override
     @Transactional
     public void deleteAppointment(Long id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        validateAppointmentAccess(id, authentication);
+        UserResponse currentUser = getCurrentUser();
+        validateAppointmentAccess(id, currentUser);
 
         if (!appointmentRepository.existsById(id)) {
             throw new AppointmentException("Appointment not found");
@@ -129,20 +128,27 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public void cancelAppointment(Long id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        Appointment appointment = appointmentRepository.findByMedicalVisitIdAndUserId(id, authentication.getName())
+        Appointment appointment = appointmentRepository.findByMedicalVisitIdAndUserId(id, getCurrentUser().id())
                 .orElseThrow(() -> new AppointmentException("Appointment not found"));
 
         appointmentRepository.deleteById(appointment.getId());
-        sendNotificationAsync(appointment.getUserId(), "Appointment cancelled",
-                "Your appointment has been cancelled for " + appointment.getTimeSlot());
+
+        if (getCurrentUser().email() != null && !getCurrentUser().email().isEmpty()) {
+            asyncProcessingService.sendMailNotification(
+                    getCurrentUser().email(),
+                    "Appointment Cancelled",
+                    String.format("Your appointment for %s on %s at %s has been cancelled.",
+                            appointment.getMedicalVisit().getVisitDate(), appointment.getMedicalVisit().getStartTime(), appointment.getTimeSlot())
+            );
+        }
+
     }
 
     @Override
     public AppointmentResponseDTO getAppointmentById(Long id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        validateAppointmentAccess(id, authentication);
+        UserResponse currentUser = getCurrentUser();
+        validateAppointmentAccess(id, currentUser);
 
         return appointmentRepository.findById(id)
                 .map(appointment -> mapToResponse(appointment, fetchUserAsync(appointment.getUserId())))
@@ -151,20 +157,17 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public List<AppointmentResponseDTO> getAllAppointments() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        List<Appointment> appointments = authentication.getAuthorities().stream()
-                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(HR_ROLE))
+        List<Appointment> appointments = getCurrentUser().role().equals(HR_ROLE)
                 ? appointmentRepository.findAll()
-                : appointmentRepository.findByUserId(authentication.getName());
+                : appointmentRepository.findByUserId(getCurrentUser().id());
 
         return mapToResponses(appointments);
     }
 
     @Override
     public List<AppointmentResponseDTO> getAppointmentsByPatientId(String patientId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.getAuthorities().stream().noneMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(HR_ROLE))
-                && !authentication.getName().equals(patientId)) {
+        if (getCurrentUser().role().equals(HR_ROLE)
+                && !getCurrentUser().id().equals(patientId)) {
             throw new AppointmentException("You are not allowed to view those appointments");
         }
 
@@ -186,10 +189,10 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
     }
 
-    private void validateAppointmentAccess(Long appointmentId, Authentication authentication) {
-        if (authentication.getAuthorities().stream().noneMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(HR_ROLE))) {
+    private void validateAppointmentAccess(Long appointmentId, UserResponse currentUser) {
+        if (currentUser.role().equals(HR_ROLE)) {
             appointmentRepository.findById(appointmentId)
-                    .filter(appointment -> appointment.getUserId().equals(authentication.getName()))
+                    .filter(appointment -> appointment.getUserId().equals(currentUser.id()))
                     .orElseThrow(() -> new AppointmentException("You are not allowed to access this appointment"));
         }
     }
@@ -199,14 +202,6 @@ public class AppointmentServiceImpl implements AppointmentService {
         return CompletableFuture.supplyAsync(() -> userClient.getUserByDn(userId));
     }
 
-    @Async
-    protected void sendNotificationAsync(String userId, String subject, String message) {
-        CompletableFuture.runAsync(() -> medicalVisitNotificationService.sendMailNotification(userId, subject, message))
-                .exceptionally(throwable -> {
-                    log.error("Failed to send notification for user {}: {}", userId, throwable.getMessage());
-                    return null;
-                });
-    }
 
     private AppointmentResponseDTO mapToResponse(Appointment appointment, CompletableFuture<UserResponse> userFuture) {
         try {
@@ -240,6 +235,13 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .toList();
     }
 
+    private UserResponse getCurrentUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserResponse userResponse) {
+            return userResponse;
+        }
+        throw new AppointmentException( String.format("Current user is not authenticated or does not have a valid user response: %s", principal));
+    }
 
 
 }

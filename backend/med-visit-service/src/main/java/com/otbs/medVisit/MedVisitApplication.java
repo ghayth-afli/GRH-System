@@ -7,7 +7,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableFeignClients(basePackages = {"com.otbs.feign", "com.otbs.common"})
+@EnableFeignClients(basePackages = {"com.otbs.feign"})
 public class MedVisitApplication {
     public static void main(String[] args) {
         SpringApplication.run(MedVisitApplication.class, args);

@@ -156,7 +156,7 @@ export class InvitationsPageComponent {
     // Apply search filter
     if (this.searchTerm) {
       filteredInvitations = filteredInvitations.filter((invitation) =>
-        invitation.employeeName
+        invitation.userName
           .toLowerCase()
           .includes(this.searchTerm.toLowerCase())
       );

@@ -2,7 +2,7 @@ import { EStatus } from './invitation-status';
 
 export interface Invitation {
   id: number;
-  employeeName: string;
+  userName: string;
   status: string;
-  employeeId: string;
+  userId: string;
 }

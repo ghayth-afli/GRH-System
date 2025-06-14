@@ -1,21 +1,21 @@
 package com.otbs.medVisit.service;
 
 import com.otbs.feign.client.user.UserClient;
+import com.otbs.feign.client.user.dto.UserResponse;
 import com.otbs.medVisit.dto.MedicalVisitRequestDTO;
 import com.otbs.medVisit.dto.MedicalVisitResponseDTO;
+import com.otbs.medVisit.exception.AppointmentException;
 import com.otbs.medVisit.exception.MedicalVisitException;
 import com.otbs.medVisit.mapper.MedicalVisitMapper;
 import com.otbs.medVisit.model.MedicalVisit;
 import com.otbs.medVisit.repository.MedicalVisitRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -24,8 +24,8 @@ public class MedicalVisitServiceImpl implements MedicalVisitService {
 
     private final MedicalVisitRepository medicalVisitRepository;
     private final MedicalVisitMapper medicalVisitMapper;
+    private final AsyncProcessingService asyncProcessingService;
     private final UserClient userClient;
-    private final MedicalVisitNotificationService notificationService;
 
 
     @Override
@@ -43,9 +43,29 @@ public class MedicalVisitServiceImpl implements MedicalVisitService {
         // Save medical visit
         MedicalVisit medVisit = medicalVisitMapper.toEntity(medicalVisitRequestDTO);
         medicalVisitRepository.save(medVisit);
+        userClient.getAllUsers()
+                .forEach(
+                        user -> {
+                            if (user.email() != null && !user.email().isBlank()) {
+                                asyncProcessingService.sendMailNotification(
+                                        user.email(),
+                                        "New Medical Visit Created",
+                                        String.format("A new medical visit has been created by %s on %s. Please check your appointments.",
+                                                medicalVisitRequestDTO.doctorName(), medicalVisitRequestDTO.visitDate())
+                                );
+                            }
 
-        // Asynchronously notify users
-        notifyUsersAsync(medicalVisitRequestDTO, medVisit.getId());
+                            asyncProcessingService.sendAppNotification(
+                                user.id(),
+                                "New Medical Visit Created",
+                                String.format("A new medical visit has been created by %s on %s. Please check your appointments.",
+                                        medicalVisitRequestDTO.doctorName(), medicalVisitRequestDTO.visitDate()),
+                                medVisit.getId(),
+                                "/appointments"
+                            );
+                        }
+
+                );
     }
 
     @Override
@@ -89,7 +109,7 @@ public class MedicalVisitServiceImpl implements MedicalVisitService {
                         medicalVisit -> {
                             MedicalVisitResponseDTO medicalVisitResponseDTO = medicalVisitMapper.toDto(medicalVisit);
                             final boolean didIBookVisit = medicalVisit.getAppointments().stream()
-                                    .anyMatch(appointment -> appointment.getUserId().equals(getCurrentUserDn()));
+                                    .anyMatch(appointment -> appointment.getUserId().equals(getCurrentUser().id()));
                             medicalVisitResponseDTO.setDidIBookVisit(didIBookVisit);
                             return medicalVisitResponseDTO;
                         }
@@ -104,7 +124,7 @@ public class MedicalVisitServiceImpl implements MedicalVisitService {
                         medicalVisit -> {
                             MedicalVisitResponseDTO medicalVisitResponseDTO =medicalVisitMapper.toDto(medicalVisit);
                                     final boolean didIBookVisit = medicalVisit.getAppointments().stream()
-                                            .anyMatch(appointment -> appointment.getUserId().equals(getCurrentUserDn()));
+                                            .anyMatch(appointment -> appointment.getUserId().equals(getCurrentUser().id()));
                             medicalVisitResponseDTO.setDidIBookVisit(didIBookVisit);
                             return medicalVisitResponseDTO;
                         }
@@ -127,34 +147,12 @@ public class MedicalVisitServiceImpl implements MedicalVisitService {
         }
     }
 
-    @Async
-    protected void notifyUsersAsync(MedicalVisitRequestDTO medicalVisitRequestDTO, Long medicalVisitId) {
-        CompletableFuture.supplyAsync(userClient::getAllUsers)
-                .thenAccept(users -> users.forEach(user -> {
-                    String message = String.format(
-                            "A new medical visit has been scheduled with %s on %s from %s to %s",
-                            medicalVisitRequestDTO.doctorName(),
-                            medicalVisitRequestDTO.visitDate(),
-                            medicalVisitRequestDTO.startTime(),
-                            medicalVisitRequestDTO.endTime());
 
-                    CompletableFuture.allOf(
-                            CompletableFuture.runAsync(() -> notificationService.sendMedicalVisitNotification(
-                                    user.id(), "New Medical Visit", message, medicalVisitId)),
-                            CompletableFuture.runAsync(() -> notificationService.sendMailNotification(
-                                    user.email(), "New Medical Visit", message))
-                    ).exceptionally(throwable -> {
-                        log.error("Failed to send notification to user {}: {}", user.id(), throwable.getMessage());
-                        return null;
-                    });
-                }))
-                .exceptionally(throwable -> {
-                    log.error("Failed to fetch users for notification: {}", throwable.getMessage());
-                    return null;
-                });
-    }
-
-    private String getCurrentUserDn() {
-        return (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    private UserResponse getCurrentUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserResponse userResponse) {
+            return userResponse;
+        }
+        throw new AppointmentException( String.format("Current user is not authenticated or does not have a valid user response: %s", principal));
     }
 }

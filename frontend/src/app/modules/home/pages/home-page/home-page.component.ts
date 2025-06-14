@@ -258,6 +258,27 @@ export class HomePageComponent implements OnInit, AfterViewInit {
       });
     }
 
+    // Process Public Holidays
+    if (this.showHolidays && this.holidays) {
+      this.holidays.forEach((holiday) => {
+        if (!this.legendItems.find((item) => item.type === 'holiday')?.visible)
+          return;
+
+        events.push({
+          id: holiday.id,
+          title: holiday.name,
+          start: holiday.date,
+          allDay: true,
+          color: '#ff9800',
+          extendedProps: {
+            type: 'holiday',
+            country: holiday.country,
+            flag: holiday.flag,
+          },
+        });
+      });
+    }
+
     if (this.calendarApi) {
       this.calendarApi.removeAllEvents();
       this.calendarApi.addEventSource(events);

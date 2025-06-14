@@ -49,6 +49,23 @@ public class LeaveServiceImpl implements LeaveService {
                     "Your leave request has been submitted successfully."
             );
         }
+        UserResponse manager = getDepartmentManager(currentUser.department());
+        if (manager.email() != null && !manager.email().isEmpty()) {
+            asyncProcessingService.sendMailNotification(
+                    manager.email(),
+                    "New Leave Request",
+                    String.format("User %s has submitted a new leave request. Please review it.",
+                            currentUser.username())
+            );
+        }
+        asyncProcessingService.sendAppNotification(
+                manager.id(),
+                "New Leave Request",
+                String.format("User %s has submitted a new leave request. Please review it.",
+                        currentUser.username()),
+                leave.getId(),
+                "/leave"
+        );
     }
 
     @Override
@@ -98,6 +115,14 @@ public class LeaveServiceImpl implements LeaveService {
             );
         }
 
+        asyncProcessingService.sendAppNotification(
+                user.id(),
+                "Leave Request Approved",
+                "Your leave request has been approved successfully.",
+                leave.getId(),
+                "/leave"
+        );
+
     }
 
     @Override
@@ -116,6 +141,13 @@ public class LeaveServiceImpl implements LeaveService {
                     "Your leave request has been rejected."
             );
         }
+        asyncProcessingService.sendAppNotification(
+                user.id(),
+                "Leave Request Rejected",
+                "Your leave request has been rejected.",
+                leave.getId(),
+                "/leave"
+        );
     }
 
     @Override
@@ -320,7 +352,7 @@ public class LeaveServiceImpl implements LeaveService {
         if (principal instanceof UserResponse userResponse) {
             return userResponse;
         }
-        throw new LeaveException("Current user is not authenticated or does not have the expected type");
+        throw new LeaveException( String.format("Current user is not authenticated or does not have a valid user response: %s", principal));
     }
 
     private String getRoleByUserDn(String userDn) {
@@ -331,8 +363,16 @@ public class LeaveServiceImpl implements LeaveService {
     private UserResponse getUserByDn(String userDn) {
         UserResponse userResponse = userClient.getUserByDn(userDn);
         if (userResponse == null) {
-            throw new UsernameNotFoundException("User not found for DN: " + userDn);
+            throw new UsernameNotFoundException( String.format("User not found with DN: %s", userDn));
         }
         return userResponse;
+    }
+
+    private UserResponse getDepartmentManager(String department) {
+        UserResponse manager = userClient.getManagerByDepartment(department);
+        if (manager == null) {
+            throw new UserException( String.format("Manager not found for department: %s", department));
+        }
+        return manager;
     }
 }

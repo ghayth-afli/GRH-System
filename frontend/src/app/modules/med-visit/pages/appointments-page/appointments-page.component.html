@@ -44,14 +44,14 @@
     *ngFor="let appointment of displayedAppointments"
   >
     <div class="appointment-info">
-      <h3 class="visit-title">{{ appointment.employeeFullName }}</h3>
+      <h3 class="visit-title">{{ appointment.userFullName }}</h3>
       <div class="appointment-meta">
         <span><strong>ID:</strong> {{ appointment.id }}</span>
         <span
           ><strong>Time Slot:</strong>
           {{ appointment.timeSlot | date : "MMM d, yyyy, h:mm a" }}</span
         >
-        <span><strong>Email:</strong> {{ appointment.employeeEmail }}</span>
+        <span><strong>Email:</strong> {{ appointment.userEmail }}</span>
       </div>
     </div>
     <span

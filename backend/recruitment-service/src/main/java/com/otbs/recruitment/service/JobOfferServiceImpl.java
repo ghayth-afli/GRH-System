@@ -1,6 +1,7 @@
 package com.otbs.recruitment.service;
 
 import com.otbs.feign.client.user.UserClient;
+import com.otbs.feign.client.user.dto.UserResponse;
 import com.otbs.recruitment.dto.JobOfferRequestDTO;
 import com.otbs.recruitment.dto.JobOfferResponseDTO;
 import com.otbs.recruitment.exception.JobOfferException;
@@ -23,19 +24,18 @@ public class JobOfferServiceImpl implements JobOfferService {
 
     private final JobOfferRepository jobOfferRepository;
     private final JobOfferAttributesMapper jobOfferAttributesMapper;
-    private final UserClient userClient;
     private final ApplicationService applicationService;
 
     @Override
     public void createJobOffer(JobOfferRequestDTO jobOfferRequestDTO) {
         var jobOffer = jobOfferAttributesMapper.toEntity(jobOfferRequestDTO);
-        jobOffer.setCreatedBy(getCurrentUserId());
+        jobOffer.setCreatedBy(getCurrentUser().id());
         jobOfferRepository.save(jobOffer);
     }
 
     @Override
     public void updateJobOffer(Long id, JobOfferRequestDTO jobOfferRequestDTO) {
-        var jobOffer = jobOfferRepository.findByIdAndCreatedBy(id, getCurrentUserId())
+        var jobOffer = jobOfferRepository.findByIdAndCreatedBy(id, getCurrentUser().id())
                 .orElseThrow(() -> new JobOfferException("Job offer not found or not created by the current user"));
 
         jobOffer.setTitle(jobOfferRequestDTO.title());
@@ -52,7 +52,7 @@ public class JobOfferServiceImpl implements JobOfferService {
 
     @Override
     public void deleteJobOffer(Long id) {
-        var jobOffer = jobOfferRepository.findByIdAndCreatedBy(id, getCurrentUserId())
+        var jobOffer = jobOfferRepository.findByIdAndCreatedBy(id, getCurrentUser().id())
                 .orElseThrow(() -> new JobOfferException("Job offer not found or not created by the current user"));
         jobOfferRepository.delete(jobOffer);
     }
@@ -62,8 +62,8 @@ public class JobOfferServiceImpl implements JobOfferService {
         var jobOffer = jobOfferRepository.findById(id)
                 .orElseThrow(() -> new JobOfferException("Job offer not found"));
 
-        String currentUserId = getCurrentUserId();
-        String currentUserRole = getCurrentUserRole();
+        String currentUserId = getCurrentUser().id();
+        String currentUserRole = getCurrentUser().role();
 
         boolean isApplied = jobOffer.getInternalApplications().stream()
                 .anyMatch(app -> app.getUserId().equals(currentUserId));
@@ -93,15 +93,15 @@ public class JobOfferServiceImpl implements JobOfferService {
         return jobOfferRepository.findAll().stream()
                 .map(jobOffer -> {
                     boolean isApplied = jobOffer.getInternalApplications().stream()
-                            .anyMatch(app -> app.getUserId().equals(getCurrentUserId()));
+                            .anyMatch(app -> app.getUserId().equals(getCurrentUser().id()));
                     JobOfferResponseDTO responseDTO = jobOfferAttributesMapper.toResponseDTO(jobOffer);
                     responseDTO.setApplied(isApplied);
-                    Integer numberOfApplications = getCurrentUserRole().equals("HR") || getCurrentUserRole().equals("HRD")
+                    Integer numberOfApplications = getCurrentUser().role().equals("HR") || getCurrentUser().role().equals("HRD")
                             ? jobOffer.getInternalApplications().size()
                             : null;
-                    EApplicationStatus applicationStatus = !getCurrentUserRole().equals("HR") && !getCurrentUserRole().equals("HRD")
+                    EApplicationStatus applicationStatus = !getCurrentUser().role().equals("HR") && !getCurrentUser().role().equals("HRD")
                             ? jobOffer.getInternalApplications().stream()
-                            .filter(app -> app.getUserId().equals(getCurrentUserId()))
+                            .filter(app -> app.getUserId().equals(getCurrentUser().id()))
                             .map(InternalApplication::getStatus)
                             .findFirst()
                             .orElse(null)
@@ -115,7 +115,7 @@ public class JobOfferServiceImpl implements JobOfferService {
 
     @Override
     public void toggleStatus(Long id, EJobOfferStatus status) {
-        var jobOffer = jobOfferRepository.findByIdAndCreatedBy(id, getCurrentUserId())
+        var jobOffer = jobOfferRepository.findByIdAndCreatedBy(id, getCurrentUser().id())
                 .orElseThrow(() -> new JobOfferException("Job offer not found or not created by the current user"));
 
         switch (status) {
@@ -139,11 +139,11 @@ public class JobOfferServiceImpl implements JobOfferService {
         jobOfferRepository.save(jobOffer);
         jobOfferAttributesMapper.toResponseDTO(jobOffer);
     }
-
-    private String getCurrentUserId() {
-        return SecurityContextHolder.getContext().getAuthentication().getName();
-    }
-    private String getCurrentUserRole() {
-        return userClient.getUserByDn(getCurrentUserId()).role();
+    private UserResponse getCurrentUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserResponse userResponse) {
+            return userResponse;
+        }
+        throw new JobOfferException( String.format("Current user is not authenticated or does not have a valid user response: %s", principal));
     }
 }

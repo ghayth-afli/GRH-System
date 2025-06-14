@@ -35,10 +35,10 @@
       *ngFor="let invitation of displayedInvitations"
     >
       <div class="invitation-info">
-        <h3 class="invitation-name">{{ invitation.employeeName }}</h3>
+        <h3 class="invitation-name">{{ invitation.userName }}</h3>
         <div class="invitation-meta">
           <span>ID: {{ invitation.id }}</span>
-          <span>Employee ID: {{ invitation.employeeId }}</span>
+          <span>Employee ID: {{ invitation.userId }}</span>
         </div>
       </div>
       <span

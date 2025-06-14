@@ -44,7 +44,8 @@
         [(ngModel)]="training.description"
         #description="ngModel"
         required
-        maxlength="500"
+        maxlength="100"
+        minlength="10"
         placeholder="Enter training description"
         aria-label="Training description"
         [attr.aria-describedby]="
@@ -57,9 +58,13 @@
       <div class="form-error" id="description-errors">
         @if (description.errors?.['required']) {
         <span id="description-error-required"> Description is required. </span>
+        } @if (description.errors?.['minlength']) {
+        <span id="description-error-minlength">
+          Description must be at least 10 characters.
+        </span>
         } @if (description.errors?.['maxlength']) {
         <span id="description-error-maxlength">
-          Description cannot exceed 500 characters.
+          Description cannot exceed 100 characters.
         </span>
         }
       </div>
