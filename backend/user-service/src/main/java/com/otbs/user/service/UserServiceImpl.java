@@ -133,7 +133,9 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setJobTitle(userInfoRequestDTO.jobTitle());
-        user.setEmail(userInfoRequestDTO.email());
+        if(userInfoRequestDTO.email() != null && !userInfoRequestDTO.email().isEmpty()) {
+            user.setEmail(userInfoRequestDTO.email());
+        }
         user.setLastName(userInfoRequestDTO.lastName());
         user.setFirstName(userInfoRequestDTO.firstName());
         user.setPhoneNumber1(userInfoRequestDTO.phoneNumber1());

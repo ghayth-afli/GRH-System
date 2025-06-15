@@ -1,5 +1,4 @@
 <div class="dialog-container">
-  <h2 class="dialog-title">Edit Profile</h2>
   @if (userHasNullAttributes) {
   <div class="alert-container">
     <div class="alert alert-warning">
@@ -17,7 +16,7 @@
     </div>
   </div>
   }
-
+  <h2 class="dialog-title">Edit Profile</h2>
   <form [formGroup]="editForm" (ngSubmit)="onSubmit()">
     <div class="profile-picture-container">
       <img
@@ -66,7 +65,12 @@
             editForm.get('firstName')?.touched
           "
         >
-          First Name is required
+          <span *ngIf="editForm.get('firstName')?.errors?.['required']"
+            >First Name is required</span
+          >
+          <span *ngIf="editForm.get('firstName')?.errors?.['pattern']"
+            >Alphabetic characters only</span
+          >
         </span>
       </div>
       <div class="form-group">
@@ -89,7 +93,12 @@
             editForm.get('lastName')?.touched
           "
         >
-          Last Name is required
+          <span *ngIf="editForm.get('lastName')?.errors?.['required']"
+            >Last Name is required</span
+          >
+          <span *ngIf="editForm.get('lastName')?.errors?.['pattern']"
+            >Alphabetic characters only</span
+          >
         </span>
       </div>
       <div class="form-group">
@@ -142,19 +151,23 @@
           Job Title is required
         </span>
       </div>
-      <div class="form-group">
+      <div class="form-group phone-group">
         <label class="form-label" for="phoneNumber1">Phone Number 1 *</label>
-        <input
-          id="phoneNumber1"
-          type="text"
-          class="form-control"
-          formControlName="phoneNumber1"
-          placeholder="+21612345678"
-          aria-label="Primary phone number"
-          [attr.aria-describedby]="
-            editForm.get('phoneNumber1')?.errors ? 'phoneNumber1-error' : null
-          "
-        />
+        <div class="phone-input-container">
+          <span class="phone-prefix">{{ countryCode }}</span>
+          <input
+            id="phoneNumber1"
+            type="tel"
+            class="form-control"
+            formControlName="phoneNumber1"
+            pattern="[0-9]*"
+            maxlength="8"
+            aria-label="Primary phone number"
+            [attr.aria-describedby]="
+              editForm.get('phoneNumber1')?.errors ? 'phoneNumber1-error' : null
+            "
+          />
+        </div>
         <span
           class="form-error"
           id="phoneNumber1-error"
@@ -167,29 +180,33 @@
             >Phone Number 1 is required</span
           >
           <span *ngIf="editForm.get('phoneNumber1')?.errors?.['pattern']"
-            >Must be a valid Tunisian number (+216 followed by 8 digits)</span
+            >Must be 8 digits</span
           >
         </span>
       </div>
-      <div class="form-group">
+      <div class="form-group phone-group">
         <label class="form-label" for="phoneNumber2">Phone Number 2</label>
-        <input
-          id="phoneNumber2"
-          type="text"
-          class="form-control"
-          formControlName="phoneNumber2"
-          placeholder="+21687654321"
-          aria-label="Secondary phone number"
-          [attr.aria-describedby]="
-            editForm.get('phoneNumber2')?.errors ? 'phoneNumber2-error' : null
-          "
-        />
+        <div class="phone-input-container">
+          <span class="phone-prefix">{{ countryCode }}</span>
+          <input
+            id="phoneNumber2"
+            type="tel"
+            class="form-control"
+            formControlName="phoneNumber2"
+            pattern="[0-9]*"
+            maxlength="8"
+            aria-label="Secondary phone number"
+            [attr.aria-describedby]="
+              editForm.get('phoneNumber2')?.errors ? 'phoneNumber2-error' : null
+            "
+          />
+        </div>
         <span
           class="form-error"
           id="phoneNumber2-error"
           *ngIf="editForm.get('phoneNumber2')?.errors?.['pattern'] && editForm.get('phoneNumber2')?.touched"
         >
-          Must be a valid Tunisian number (+216 followed by 8 digits)
+          Must be 8 digits
         </span>
       </div>
     </div>
@@ -208,7 +225,10 @@
         [disabled]="editForm.invalid"
         aria-label="Submit profile changes"
       >
-        Save
+        @if(isLoading){
+        <span class="loader" aria-label="Loading"></span>
+
+        }@else{ Save}
       </button>
     </div>
   </form>

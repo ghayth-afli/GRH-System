@@ -130,7 +130,7 @@ public class UserController {
     )
     @ApiResponse(responseCode = "400", description = "Invalid input data")
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
-    @PutMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PatchMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAuthority('Manager') or hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('HRD')")
     public ResponseEntity<MessageResponseDTO> updateUserInfo(
             @Parameter(description = "User's first name", example = "John", required = true)

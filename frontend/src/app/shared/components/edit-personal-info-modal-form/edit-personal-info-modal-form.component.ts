@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UserService } from '../../../core/services/user.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { CustomSnackbarComponent } from '../custom-snackbar/custom-snackbar.component';
 
 @Component({
   selector: 'app-edit-personal-info-modal-form',
@@ -17,37 +19,53 @@ export class EditPersonalInfoModalFormComponent implements OnInit {
     profilePicture: '/assets/images/nopicture.png',
   };
   userHasNullAttributes = false;
+  countryCode = '+216';
+  isLoading = false;
 
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
     private authService: AuthService,
+    private snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<EditPersonalInfoModalFormComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.editForm = this.fb.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
+      firstName: [
+        '',
+        [Validators.required, Validators.pattern(/^[a-zA-ZÀ-ÿ\s-']+$/)],
+      ],
+      lastName: [
+        '',
+        [Validators.required, Validators.pattern(/^[a-zA-ZÀ-ÿ\s-']+$/)],
+      ],
+      email: [
+        { value: '', disabled: true },
+        [Validators.required, Validators.email],
+      ],
       jobTitle: ['', Validators.required],
       phoneNumber1: [
         '',
-        [Validators.required, Validators.pattern(/^\+216[0-9]{8}$/)],
+        [Validators.required, Validators.pattern(/^[0-9]{8}$/)],
       ],
-      phoneNumber2: ['', Validators.pattern(/^\+216[0-9]{8}$/)],
+      phoneNumber2: ['', Validators.pattern(/^[0-9]{8}$/)],
     });
   }
 
   ngOnInit(): void {
     this.handleIfUserHasNullAttributes();
     this.user.profilePicture = this.data.imageSrc || this.user.profilePicture;
+    const phoneNumber1 =
+      this.data.user.phoneNumber1?.replace(this.countryCode, '') || '';
+    const phoneNumber2 =
+      this.data.user.phoneNumber2?.replace(this.countryCode, '') || '';
     this.editForm.patchValue({
       firstName: this.data.user.firstName || '',
       lastName: this.data.user.lastName || '',
       email: this.data.user.email || '',
       jobTitle: this.data.user.jobTitle || '',
-      phoneNumber1: this.data.user.phoneNumber1 || '',
-      phoneNumber2: this.data.user.phoneNumber2 || '',
+      phoneNumber1: phoneNumber1,
+      phoneNumber2: phoneNumber2,
     });
   }
 
@@ -72,7 +90,9 @@ export class EditPersonalInfoModalFormComponent implements OnInit {
   }
 
   onSubmit(): void {
+    console.log('Form submitted:', this.editForm.value);
     if (this.editForm.valid) {
+      this.isLoading = true;
       const {
         firstName,
         lastName,
@@ -84,13 +104,12 @@ export class EditPersonalInfoModalFormComponent implements OnInit {
       const formData = {
         firstName,
         lastName,
-        email,
+        email: this.data.user.email || '',
         jobTitle,
         phoneNumber1,
         phoneNumber2,
         profilePicture: this.user.profilePicture,
       };
-
       this.userService
         .updateEmployeeInfo(
           formData.firstName,
@@ -103,13 +122,34 @@ export class EditPersonalInfoModalFormComponent implements OnInit {
         )
         .subscribe({
           next: () => {
+            this.isLoading = false;
+            this.snackBar.openFromComponent(CustomSnackbarComponent, {
+              data: {
+                message: 'Profile updated successfully',
+                type: 'success',
+              },
+              duration: 5000,
+              panelClass: ['custom-snackbar'],
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+            });
             this.dialogRef.close(formData);
             console.log(
               'Profile updated:',
               JSON.stringify({ action: 'update_profile', ...formData }, null, 2)
             );
           },
-          error: (error) => console.error('Update failed:', error),
+          error: (error) => {
+            console.error('Update failed:', error);
+            this.isLoading = false;
+            this.snackBar.openFromComponent(CustomSnackbarComponent, {
+              data: { message: 'Failed to update profile', type: 'error' },
+              duration: 5000,
+              panelClass: ['custom-snackbar'],
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+            });
+          },
         });
     } else {
       this.editForm.markAllAsTouched();
