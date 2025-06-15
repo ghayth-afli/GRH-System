@@ -19,6 +19,7 @@ import { CustomSnackbarComponent } from '../../../../shared/components/custom-sn
 import { LeaveService } from '../../../leave/services/leave.service';
 import { Leave } from '../../../leave/models/leave';
 import { PublicHolidayService } from '../../services/public-holiday.service';
+import interactionPlugin from '@fullcalendar/interaction';
 
 interface Holiday {
   id: string;
@@ -95,7 +96,7 @@ export class HomePageComponent implements OnInit, AfterViewInit {
   animateRequests = false;
 
   calendarOptions: CalendarOptions = {
-    plugins: [dayGridPlugin, timeGridPlugin],
+    plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
     initialView: 'dayGridMonth',
     headerToolbar: false,
     events: [],
@@ -110,6 +111,7 @@ export class HomePageComponent implements OnInit, AfterViewInit {
       meridiem: false,
     },
     displayEventEnd: true,
+    selectable: true, // Ensure dates are selectable
   };
 
   leaveService = inject(LeaveService);
@@ -147,7 +149,6 @@ export class HomePageComponent implements OnInit, AfterViewInit {
     this.leaveService.getLeaveHistory().subscribe({
       next: (allRequests) => {
         this.stats.totalRequests = allRequests.length;
-        // Filter only approved leaves for calendar display
         this.leaveRequests = allRequests.filter(
           (request) => request.status === 'APPROVED'
         );
@@ -198,13 +199,60 @@ export class HomePageComponent implements OnInit, AfterViewInit {
     if (!arg?.dateStr) return;
     const date = arg.dateStr;
     const calendarApi = this.calendarApi;
-    if (!calendarApi) return;
+    if (!calendarApi) {
+      return;
+    }
+
+    const events = calendarApi.getEvents().filter((event) => {
+      let eventStart = event.startStr;
+      let eventEnd = event.endStr;
+
+      if (event.allDay && eventEnd) {
+        const endDate = new Date(eventEnd);
+        endDate.setDate(endDate.getDate() - 1);
+        eventEnd = endDate.toISOString().split('T')[0];
+      }
+
+      if (!eventEnd) eventEnd = eventStart;
+
+      return date >= eventStart && date <= eventEnd;
+    });
+
+    const leaves = events
+      .filter((e) => e.extendedProps['type'] === 'leave')
+      .map((e) => ({
+        name: e.title,
+        type: e.extendedProps['leaveType'],
+        duration: e.extendedProps['duration'],
+        status: e.extendedProps['status'],
+        color:
+          this.legendItems.find(
+            (item) => item.type === e.extendedProps['leaveType']
+          )?.color || '#000000',
+      }));
+
+    const holiday = events.find((e) => e.extendedProps['type'] === 'holiday');
+
+    this.dialog.open(DateDetailsDialogComponent, {
+      width: '400px',
+      data: {
+        date,
+        leaves,
+        holiday: holiday
+          ? {
+              name: holiday.title,
+              date: holiday.startStr,
+              country: holiday.extendedProps['country'],
+              flag: holiday.extendedProps['flag'],
+            }
+          : null,
+      },
+    });
   }
 
   updateCalendarEvents() {
     const events: EventInput[] = [];
 
-    // Process Leave Requests
     if (!this.showOnlyHolidays && this.leaveRequests) {
       this.leaveRequests.forEach((request) => {
         const legendItem = this.legendItems.find(
@@ -258,7 +306,6 @@ export class HomePageComponent implements OnInit, AfterViewInit {
       });
     }
 
-    // Process Public Holidays
     if (this.showHolidays && this.holidays) {
       this.holidays.forEach((holiday) => {
         if (!this.legendItems.find((item) => item.type === 'holiday')?.visible)

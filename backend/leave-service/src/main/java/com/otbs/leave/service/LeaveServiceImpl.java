@@ -49,7 +49,14 @@ public class LeaveServiceImpl implements LeaveService {
                     "Your leave request has been submitted successfully."
             );
         }
-        UserResponse manager = getDepartmentManager(currentUser.department());
+        UserResponse manager;
+        if(currentUser.role().equals("Manager")) {
+            manager = getDepartmentManager("HR");
+        }
+        else{
+            manager = getDepartmentManager(currentUser.department());
+        }
+
         if (manager.email() != null && !manager.email().isEmpty()) {
             asyncProcessingService.sendMailNotification(
                     manager.email(),
