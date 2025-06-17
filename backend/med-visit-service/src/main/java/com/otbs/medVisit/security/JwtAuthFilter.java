@@ -1,7 +1,7 @@
 package com.otbs.medVisit.security;
 
-import com.otbs.feign.client.employee.EmployeeClient;
-import com.otbs.feign.client.employee.dto.EmployeeResponse;
+import com.otbs.feign.client.user.UserClient;
+import com.otbs.feign.client.user.dto.UserResponse;
 import com.otbs.medVisit.util.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
-    private final EmployeeClient employeeClient;
+    private final UserClient userClient;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -39,14 +39,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUserNameFromJwtToken(jwt);
                 List<String> roles = jwtUtils.getRolesFromJwtToken(jwt);
-                EmployeeResponse user = employeeClient.getEmployeeByUsername(username);
+                UserResponse user = userClient.getUserByUsername(username);
 
                 List<GrantedAuthority> authorities = roles.stream()
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
-                        user.id(),
+                        user,
                         null,
                         authorities
                 );

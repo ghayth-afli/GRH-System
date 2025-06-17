@@ -1,7 +1,7 @@
 package com.otbs.training.mapper;
 
-import com.otbs.feign.client.employee.EmployeeClient;
-import com.otbs.feign.client.employee.dto.EmployeeResponse;
+import com.otbs.feign.client.user.UserClient;
+import com.otbs.feign.client.user.dto.UserResponse;
 import com.otbs.training.dto.InvitationResponseDTO;
 import com.otbs.training.model.Invitation;
 import lombok.RequiredArgsConstructor;
@@ -11,15 +11,15 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class InvitationMapper {
 
-    private final EmployeeClient employeeClient;
+    private final UserClient userClient;
 
     public InvitationResponseDTO toResponseDTO(Invitation invitation) {
-        EmployeeResponse employee = employeeClient.getEmployeeByDn(invitation.getEmployeeId());
+        UserResponse user = userClient.getUserByDn(invitation.getUserId());
         return new InvitationResponseDTO(
                 invitation.getId(),
-                employee.firstName() + " " + employee.lastName(),
+                user.firstName() + " " + user.lastName(),
                 invitation.getStatus(),
-                employee.id()
+                user.id()
         );
     }
 

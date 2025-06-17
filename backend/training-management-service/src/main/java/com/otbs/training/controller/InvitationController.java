@@ -30,7 +30,7 @@ public class InvitationController {
 
     @Operation(
             summary = "Confirm a training invitation",
-            description = "Confirms a training invitation by ID. Requires Employee role."
+            description = "Confirms a training invitation by ID. Requires User role."
     )
     @ApiResponse(
             responseCode = "200",
@@ -51,7 +51,7 @@ public class InvitationController {
 
     @Operation(
             summary = "Get all training invitations",
-            description = "Retrieves a list of all training invitations for the authenticated employee. Requires Employee role."
+            description = "Retrieves a list of all training invitations for the authenticated user. Requires User role."
     )
     @ApiResponse(
             responseCode = "200",
@@ -63,5 +63,14 @@ public class InvitationController {
     @PreAuthorize("hasAuthority('Employee')")
     public ResponseEntity<List<InvitationResponseDTO>> getAllInvitations() {
         return ResponseEntity.ok(invitationService.getAllInvitations());
+    }
+
+    //get all invitations by training id
+    @PreAuthorize("hasAuthority('Manager') or hasAuthority('HR') or hasAuthority('HRD')")
+    @GetMapping("/training/{trainingId}")
+    public ResponseEntity<List<InvitationResponseDTO>> getAllInvitationsByTrainingId(
+            @Parameter(description = "ID of the training session", example = "1")
+            @PathVariable("trainingId") Long trainingId) {
+        return ResponseEntity.ok(invitationService.getAllInvitationsByTrainingId(trainingId));
     }
 }

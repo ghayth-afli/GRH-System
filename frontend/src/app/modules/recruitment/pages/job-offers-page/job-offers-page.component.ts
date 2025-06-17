@@ -346,7 +346,6 @@ export class JobOffersPageComponent implements OnInit {
     } else {
       // Always add page 1
       this.visiblePages.push(0);
-
       const startPage = Math.max(1, this.pageIndex - 1);
       const endPage = Math.min(this.totalPages - 2, this.pageIndex + 1);
 

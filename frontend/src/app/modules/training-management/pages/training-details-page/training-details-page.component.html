@@ -1,0 +1,61 @@
+<div class="training-details-page">
+  <div class="training-details-container">
+    <div class="training-details-actions">
+      @if (authService.hasRole('Employee')) { @if (training?.isConfirmed) {
+      <div class="enrolled-status" aria-live="polite">
+        <i class="enrolled-status-icon fa-solid fa-check-circle"></i>
+        Confirmed Enrollment
+      </div>
+      } @else {
+      <button
+        class="action-btn enroll"
+        (click)="onConfirmTraining(training!.id)"
+        aria-label="Enroll in this training"
+      >
+        Confirm Enrollment
+      </button>
+      } }
+    </div>
+    <div class="training-details-header">
+      <h2 class="training-details-title">{{ training?.title }}</h2>
+      <div class="training-details-meta">
+        @if (authService.hasRole('HRD') || authService.hasRole('Manager') ||
+        authService.hasRole('HR')) {
+        <p><strong>ID:</strong> {{ training?.id }}</p>
+        }
+        <p><strong>Department:</strong> {{ training?.department }}</p>
+        <p>
+          <strong>Start Date:</strong>
+          {{ training?.startDate | date : "MMM d, yyyy" }}
+        </p>
+        <p>
+          <strong>End Date:</strong>
+          {{ training?.endDate | date : "MMM d, yyyy" }}
+        </p>
+        @if (authService.hasRole('HRD') || authService.hasRole('Manager') ||
+        authService.hasRole('HR')) {
+        <p><strong>Created By:</strong> {{ training?.createdBy }}</p>
+        } @if (authService.hasRole('HRD') || authService.hasRole('Manager') ||
+        authService.hasRole('HR')) {
+        <p>
+          <strong>Created At:</strong>
+          {{ training?.createdAt | date : "MMM d, yyyy, h:mm a" }}
+        </p>
+        } @if (authService.hasRole('Employee')) {
+        <p>
+          <strong>Status:</strong>
+          {{ training?.isConfirmed ? "Confirmed" : "Not Confirmed" }}
+        </p>
+        } @if (authService.hasRole('HRD') || authService.hasRole('Manager') ||
+        authService.hasRole('HR')) {
+        <p>
+          <strong>Total Invitations:</strong> {{ training?.totalInvitations }}
+        </p>
+        }
+      </div>
+    </div>
+    <div class="training-details-description">
+      <p>{{ training?.description }}</p>
+    </div>
+  </div>
+</div>

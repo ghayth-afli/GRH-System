@@ -14,7 +14,7 @@ public class LeaveAttributesMapper {
                 .startDate(leaveRequestDTO.startDate())
                 .endDate(leaveRequestDTO.endDate())
                 .leaveType(leaveRequestDTO.leaveType())
-                .status(EStatus.EN_ATTENTE)
+                .status(EStatus.PENDING)
                 .startTime(leaveRequestDTO.startHOURLY())
                 .endTime(leaveRequestDTO.endHOURLY())
                 .build();
@@ -22,7 +22,7 @@ public class LeaveAttributesMapper {
 
     public LeaveResponseDTO toDto(Leave leave) {
         return new LeaveResponseDTO(leave.getId(),leave.getUserDn().split(",")[0].split("=")[1], leave.getUserDn().split(",")[1].split("=")[1], leave.getStartDate()
-                ,leave.getEndDate(), leave.getLeaveType(), leave.getStatus());
+                ,leave.getEndDate(), leave.getLeaveType(), leave.getStatus(), leave.getStartTime(), leave.getEndTime());
     }
 
     public void updateEntity(Leave leave, LeaveRequestDTO leaveRequestDTO) {

@@ -29,4 +29,10 @@ export class InvitationService {
       {}
     );
   }
+
+  getAllInvitationsByTrainingId(trainingId: number): Observable<Invitation[]> {
+    return this.http.get<Invitation[]>(
+      `${this.BASE_URL}/training/${trainingId}`
+    );
+  }
 }

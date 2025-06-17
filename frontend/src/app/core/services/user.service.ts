@@ -41,8 +41,8 @@ export class UserService {
       formData.append('picture', picture);
     }
 
-    return this.http.put<{ message: string }>(
-      `${environment.apiUrl}/employee/update`,
+    return this.http.patch<{ message: string }>(
+      `${environment.apiUrl}/users/update`,
       formData
     );
   }

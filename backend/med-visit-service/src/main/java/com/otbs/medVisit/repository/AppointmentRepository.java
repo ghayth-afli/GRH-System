@@ -5,12 +5,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
     //findByPatientId
-    List<Appointment> findByEmployeeId(String employeeId);
+    List<Appointment> findByUserId(String userId);
     List<Appointment> findByMedicalVisitId(Long medicalVisitId);
-    boolean existsByEmployeeIdAndMedicalVisitId(String employeeId, Long medicalVisitId);
+    boolean existsByUserIdAndMedicalVisitId(String userId, Long medicalVisitId);
     boolean existsByTimeSlotAndMedicalVisitId(LocalDateTime timeSlot, Long medicalVisit_id);
     boolean existsByTimeSlotAndMedicalVisitIdAndIdNot(LocalDateTime timeSlot, Long medicalVisit_id, Long id);
+    //findByMedicalVisitIdAndUserId
+    Optional<Appointment> findByMedicalVisitIdAndUserId(Long medicalVisitId, String userId);
 }

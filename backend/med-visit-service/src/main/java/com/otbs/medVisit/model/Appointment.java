@@ -25,7 +25,7 @@ public class Appointment {
     @Enumerated(EnumType.STRING)
     private EAppointmentStatus status;
 
-    private String employeeId;
+    private String userId;
 
     @CreationTimestamp
     @Column(updatable = false)

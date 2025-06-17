@@ -21,7 +21,7 @@ public class InternalApplicationController {
     private final ApplicationService applicationService;
 
     @PostMapping("/job-offer/{jobOfferId}")
-    @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager')")
+    @PreAuthorize("hasAuthority('Employee') or hasAuthority('Manager')")
     public ResponseEntity<Void> createApplication(
             @PathVariable("jobOfferId") Long jobOfferId,
             @RequestParam("resume") MultipartFile resume) {
@@ -29,7 +29,7 @@ public class InternalApplicationController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PreAuthorize("hasAuthority('HR')")
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('HRD')")
     @DeleteMapping("/{applicationId}")
     public ResponseEntity<Void> deleteApplication(@PathVariable("applicationId") Long applicationId) {
         applicationService.deleteApplication(applicationId);
@@ -47,7 +47,7 @@ public class InternalApplicationController {
 
 
 
-    @PreAuthorize("hasAuthority('HR') or hasAuthority('Manager')")
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('Manager') or hasAuthority('HRD')")
     @GetMapping("/job-offer/{jobId}")
     public ResponseEntity<List<ApplicationResponseDTO>> getAllApplications(
             @PathVariable("jobId") Long jobId
@@ -56,7 +56,7 @@ public class InternalApplicationController {
         return ResponseEntity.ok(applications);
     }
 
-    @PreAuthorize("hasAuthority('HR') or hasAuthority('Manager')")
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('Manager') or hasAuthority('HRD')")
     @GetMapping("/details/{applicationId}")
     public ResponseEntity<ApplicationDetailsResponseDTO> getApplicationDetails(@PathVariable("applicationId") Long applicationId) {
         ApplicationDetailsResponseDTO response = applicationService.getApplicationDetails(applicationId);
@@ -64,7 +64,7 @@ public class InternalApplicationController {
     }
 
     //change application status
-    @PreAuthorize("hasAuthority('HR')")
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('HRD')")
     @PutMapping("/{applicationId}/status")
     public ResponseEntity<Void> updateApplicationStatus(
             @PathVariable("applicationId") Long applicationId,

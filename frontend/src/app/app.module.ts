@@ -8,6 +8,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CoreModule } from './core/core.module';
 import { CommonModule } from '@angular/common';
 import { LayoutModule } from './layout/layout.module';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 @NgModule({
   declarations: [AppComponent],
@@ -19,7 +20,11 @@ import { LayoutModule } from './layout/layout.module';
     LayoutModule,
     CoreModule,
   ],
-  providers: [provideHttpClient(withInterceptors([authInterceptor]))],
+  providers: [
+    provideHttpClient(withInterceptors([authInterceptor])),
+    provideCharts(withDefaultRegisterables()),
+    provideCharts(withDefaultRegisterables()),
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

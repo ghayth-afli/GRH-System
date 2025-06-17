@@ -1,7 +1,7 @@
 package com.otbs.recruitment.security;
 
-import com.otbs.feign.client.employee.EmployeeClient;
-import com.otbs.feign.client.employee.dto.EmployeeResponse;
+import com.otbs.feign.client.user.UserClient;
+import com.otbs.feign.client.user.dto.UserResponse;
 import com.otbs.recruitment.util.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -24,10 +25,11 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
-    private final EmployeeClient employeeClient;
+    private final UserClient userClient;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -39,14 +41,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUserNameFromJwtToken(jwt);
                 List<String> roles = jwtUtils.getRolesFromJwtToken(jwt);
-                EmployeeResponse user = employeeClient.getEmployeeByUsername(username);
+                log.debug("Setting authentication for user: {}", roles);
+                UserResponse user = userClient.getUserByUsername(username);
+
 
                 List<GrantedAuthority> authorities = roles.stream()
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
-                        user.id(),
+                        user,
                         null,
                         authorities
                 );
@@ -62,6 +66,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private String parseJwt(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");
         if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+            log.debug("Extracting JWT from request header");
             return headerAuth.substring(7);
         }
         return null;

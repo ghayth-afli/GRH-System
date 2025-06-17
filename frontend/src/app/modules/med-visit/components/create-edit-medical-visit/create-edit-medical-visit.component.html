@@ -1,0 +1,182 @@
+<div class="dialog-container">
+  <h2 class="dialog-title">
+    {{ data.isEdit ? "Edit Medical Visit" : "Create Medical Visit" }}
+  </h2>
+  <form #medicalVisitForm="ngForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="doctorName">Doctor Name *</label>
+      <input
+        id="doctorName"
+        name="doctorName"
+        [(ngModel)]="visitData.doctorName"
+        required
+        maxlength="100"
+        #doctorNameCtrl="ngModel"
+        placeholder="Enter doctor name"
+        aria-label="Doctor name"
+        [attr.aria-describedby]="
+          doctorNameCtrl.invalid &&
+          (doctorNameCtrl.touched || doctorNameCtrl.dirty)
+            ? 'doctorName-error'
+            : null
+        "
+        [class.invalid-input]="
+          doctorNameCtrl.invalid &&
+          (doctorNameCtrl.touched || doctorNameCtrl.dirty)
+        "
+      />
+      <span
+        *ngIf="
+          doctorNameCtrl.invalid &&
+          (doctorNameCtrl.touched || doctorNameCtrl.dirty)
+        "
+        class="form-error"
+        id="doctorName-error"
+      >
+        <span *ngIf="doctorNameCtrl.errors?.['required']"
+          >Doctor Name is required</span
+        >
+        <span *ngIf="doctorNameCtrl.errors?.['maxlength']"
+          >Doctor Name cannot exceed 100 characters</span
+        >
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label for="visitDate">Visit Date *</label>
+      <input
+        id="visitDate"
+        name="visitDate"
+        type="date"
+        [(ngModel)]="visitData.visitDate"
+        required
+        [min]="today"
+        #visitDateCtrl="ngModel"
+        aria-label="Visit date"
+        [attr.aria-describedby]="
+          visitDateCtrl.invalid &&
+          (visitDateCtrl.touched || visitDateCtrl.dirty)
+            ? 'visitDate-error'
+            : null
+        "
+        [class.invalid-input]="
+          visitDateCtrl.invalid &&
+          (visitDateCtrl.touched || visitDateCtrl.dirty)
+        "
+      />
+      <span
+        *ngIf="
+          visitDateCtrl.invalid &&
+          (visitDateCtrl.touched || visitDateCtrl.dirty)
+        "
+        class="form-error"
+        id="visitDate-error"
+      >
+        <span *ngIf="visitDateCtrl.errors?.['required']"
+          >Visit Date is required</span
+        >
+        <span
+          *ngIf="visitDateCtrl.errors?.['min'] || visitDateCtrl.errors?.['minDate']"
+          >Visit Date must be today or later</span
+        >
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label for="startTime">Start Time *</label>
+      <input
+        id="startTime"
+        name="startTime"
+        type="time"
+        [(ngModel)]="visitData.startTime"
+        (ngModelChange)="validateTimeOrder()"
+        required
+        #startTimeCtrl="ngModel"
+        aria-label="Start time"
+        [attr.aria-describedby]="
+          startTimeCtrl.invalid &&
+          (startTimeCtrl.touched || startTimeCtrl.dirty)
+            ? 'startTime-error'
+            : null
+        "
+        [class.invalid-input]="
+          startTimeCtrl.invalid &&
+          (startTimeCtrl.touched || startTimeCtrl.dirty)
+        "
+      />
+      <span
+        *ngIf="
+          startTimeCtrl.invalid &&
+          (startTimeCtrl.touched || startTimeCtrl.dirty)
+        "
+        class="form-error"
+        id="startTime-error"
+      >
+        <span *ngIf="startTimeCtrl.errors?.['required']"
+          >Start Time is required</span
+        >
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label for="endTime">End Time *</label>
+      <input
+        id="endTime"
+        name="endTime"
+        type="time"
+        [(ngModel)]="visitData.endTime"
+        (ngModelChange)="validateTimeOrder()"
+        required
+        #endTimeCtrl="ngModel"
+        aria-label="End time"
+        [attr.aria-describedby]="
+          endTimeCtrl.invalid && (endTimeCtrl.touched || endTimeCtrl.dirty)
+            ? 'endTime-error'
+            : null
+        "
+        [class.invalid-input]="
+          endTimeCtrl.invalid && (endTimeCtrl.touched || endTimeCtrl.dirty)
+        "
+      />
+      <span
+        *ngIf="
+          endTimeCtrl.invalid && (endTimeCtrl.touched || endTimeCtrl.dirty)
+        "
+        class="form-error"
+        id="endTime-error"
+      >
+        <span *ngIf="endTimeCtrl.errors?.['required']"
+          >End Time is required</span
+        >
+        <span *ngIf="endTimeCtrl.errors?.['timeOrder']"
+          >End Time must be after Start Time</span
+        >
+      </span>
+    </div>
+
+    <div class="dialog-actions">
+      <button
+        type="button"
+        class="dialog-btn cancel"
+        (click)="onCancel()"
+        aria-label="Cancel"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="dialog-btn save"
+        [disabled]="medicalVisitForm.invalid && medicalVisitForm.submitted"
+        aria-label="Save medical visit"
+      >
+        @if(isLoading){
+        <span class="loader" aria-label="Loading"></span>
+
+        }@else{ @if(isEditMode){
+        <i class="form-btn-icon fa-solid fa-pen-to-square"></i>
+        Update } @else{ <i class="form-btn-icon fa-solid fa-save"></i>
+        Create } }
+      </button>
+    </div>
+  </form>
+</div>

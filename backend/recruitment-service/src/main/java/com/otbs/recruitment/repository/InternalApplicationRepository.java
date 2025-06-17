@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface InternalApplicationRepository extends JpaRepository<InternalApplication, Long> {
-    //findByIdAndEmployeeId
-    Optional<InternalApplication> findByIdAndEmployeeId(Long id, String employeeId);
+    //findByIdAndUserId
+    Optional<InternalApplication> findByIdAndUserId(Long id, String userId);
     List<InternalApplication> findAllByJobOfferId(Long jobOffer_id);
-    //findByJobOfferIdAndEmployeeId
-    Optional<InternalApplication> findByJobOfferIdAndEmployeeId(Long jobOfferId, String employeeId);
+    //findByJobOfferIdAndUserId
+    Optional<InternalApplication> findByJobOfferIdAndUserId(Long jobOfferId, String userId);
 }
 

@@ -1,102 +1,243 @@
-import { Component, inject, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatTableDataSource } from '@angular/material/table';
+import { Component, inject } from '@angular/core';
 import { Invitation } from '../../models/invitation';
-import { ActivatedRoute } from '@angular/router';
-import { TrainingService } from '../../services/training.service';
-import { SseService } from '../../../../core/services/sse.service';
-import { NotificationData } from '../../../../core/models/NotificationData';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../../../../core/services/auth.service';
+import { InvitationService } from '../../services/invitation.service';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-invitations-page',
   standalone: false,
-
   templateUrl: './invitations-page.component.html',
   styleUrl: './invitations-page.component.css',
 })
 export class InvitationsPageComponent {
-  private trainingService = inject(TrainingService);
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  route = inject(ActivatedRoute);
-  trainingId: string | null = null;
-  dataSource!: MatTableDataSource<Invitation>;
-  pageSize = 10;
-  pageSizeOptions = [10, 50, 100];
-  displayedColumns = ['id', 'employeeName', 'status'];
   invitations: Invitation[] = [];
+  // Pagination settings
+  pageSize = 10;
+  pageIndex = 0;
+  pageSizeOptions = [5, 10, 25, 100];
+  totalItems = 0;
+  totalPages = 0;
+  pages: number[] = [];
+  visiblePages: (number | string)[] = [];
 
-  ngOnInit(): void {
-    this.fetchRouteParams();
-    this.loadInvitations();
+  // Filter settings
+  searchTerm: string = '';
+  selectedStatus: string = 'all';
+  displayedInvitations: Invitation[] = [];
+
+  // Inject services
+  authService = inject(AuthService);
+  private invitationService = inject(InvitationService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+
+  // To hold subscriptions
+  private queryParamsSubscription: Subscription | undefined;
+  private invitationsSubscription: Subscription | undefined;
+
+  ngOnInit() {
+    this.queryParamsSubscription = this.route.queryParamMap.subscribe(
+      (params) => {
+        const pageSize = params.get('pageSize');
+
+        if (pageSize) {
+          this.pageSize = parseInt(pageSize, 10);
+        }
+
+        this.loadInvitations();
+      }
+    );
   }
 
-  private sseService = inject(SseService<NotificationData<Invitation>>);
-  private newInvitationSubscription: Subscription | null = null;
-  private updateInvitationSubscription: Subscription | null = null;
-  subscribeToEventNotifications(): void {
-    this.subscribeToUpdatedInvitationEvent();
-  }
-  ngOnDestroy(): void {
-    if (this.newInvitationSubscription) {
-      this.newInvitationSubscription.unsubscribe();
+  ngOnDestroy() {
+    if (this.queryParamsSubscription) {
+      this.queryParamsSubscription.unsubscribe();
     }
-    this.sseService.disconnect();
-  }
-  //updatedLeaveRequestEvent
-
-  private subscribeToUpdatedInvitationEvent(): void {
-    this.updateInvitationSubscription = this.sseService
-      .connect('CONFIRMED_INVITATION')
-      .subscribe({
-        next: (Event: NotificationData<Invitation>) => {
-          const index = this.dataSource.data.findIndex(
-            (training) => training.id === Event.payload['invitation'].id
-          );
-          if (index !== -1) {
-            this.dataSource.data[index] = Event.payload['invitation'];
-            this.dataSource._updateChangeSubscription();
-          }
-        },
-      });
+    if (this.invitationsSubscription) {
+      this.invitationsSubscription.unsubscribe();
+    }
   }
 
-  private fetchRouteParams(): void {
-    this.route.paramMap.subscribe({
-      next: (params) => {
-        this.trainingId = params.get('id');
+  // Filter handlers
+  onPageSizeChange() {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        pageSize: this.pageSize,
       },
-      error: (error) => {
-        console.error('Error fetching route params:', error);
-      },
+      queryParamsHandling: 'merge',
     });
   }
-  private loadInvitations(): void {
-    if (this.trainingId) {
-      const trainingId = Number(this.trainingId);
-      if (!isNaN(trainingId)) {
-        this.trainingService.getTrainingById(trainingId).subscribe({
-          next: (training) => {
-            this.invitations = training.invitations;
-            this.initializeDataSource();
-            console.log('Invitations:', this.invitations);
-          },
-          error: (error) => {
-            console.error('Error loading invitations:', error);
-          },
-        });
-      } else {
-        console.error('Invalid training ID:', this.trainingId);
-      }
+
+  onSearchTermChange() {
+    this.pageIndex = 0;
+    this.applyFilters();
+  }
+
+  onStatusChange() {
+    this.pageIndex = 0;
+    this.applyFilters();
+  }
+
+  onTypeChange() {
+    this.pageIndex = 0;
+    this.applyFilters();
+  }
+
+  // Pagination methods
+  goToPage(page: number): void {
+    if (page >= 0 && page < this.totalPages && page !== this.pageIndex) {
+      this.pageIndex = page;
+      this.updateVisiblePages();
+      this.updateDisplayedInvitations(this.invitations);
     }
   }
 
-  private initializeDataSource(): void {
-    this.dataSource = new MatTableDataSource<Invitation>(this.invitations);
-    this.dataSource.paginator = this.paginator;
+  previousPage(): void {
+    if (this.pageIndex > 0) {
+      this.pageIndex--;
+      this.updateVisiblePages();
+      this.updateDisplayedInvitations(this.invitations);
+    }
   }
-  applyFilter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+  nextPage(): void {
+    if (this.pageIndex < this.totalPages - 1) {
+      this.pageIndex++;
+      this.updateVisiblePages();
+      this.updateDisplayedInvitations(this.invitations);
+    }
+  }
+
+  changePageSize(size: number): void {
+    this.pageSize = size;
+    this.pageIndex = 0;
+    this.calculatePagination();
+    this.updateDisplayedInvitations(this.invitations);
+    this.onPageSizeChange();
+  }
+
+  isPrevDisabled(): boolean {
+    return this.pageIndex === 0;
+  }
+
+  isNextDisabled(): boolean {
+    return this.pageIndex === this.totalPages - 1 || this.totalPages === 0;
+  }
+
+  private loadInvitations() {
+    const id = this.route.snapshot.params['id'];
+    if (id) {
+      if (this.invitationsSubscription) {
+        this.invitationsSubscription.unsubscribe();
+      }
+      this.invitationsSubscription = this.invitationService
+        .getAllInvitationsByTrainingId(+id)
+        .subscribe({
+          next: (invitations) => {
+            this.invitations = invitations;
+            this.totalItems = invitations.length;
+            this.applyFilters();
+          },
+          error: (error) => {
+            console.error('Failed to load invitations:', error);
+          },
+        });
+    } else {
+      console.error('Training ID is missing');
+    }
+  }
+
+  private applyFilters() {
+    let filteredInvitations = [...this.invitations];
+
+    // Apply search filter
+    if (this.searchTerm) {
+      filteredInvitations = filteredInvitations.filter((invitation) =>
+        invitation.userName
+          .toLowerCase()
+          .includes(this.searchTerm.toLowerCase())
+      );
+    }
+
+    // Apply status filter
+    if (this.selectedStatus && this.selectedStatus !== 'all') {
+      filteredInvitations = filteredInvitations.filter(
+        (invitation) => invitation.status === this.selectedStatus
+      );
+    }
+
+    this.totalItems = filteredInvitations.length;
+
+    this.calculatePagination();
+    if (this.pageIndex >= this.totalPages && this.totalPages > 0) {
+      this.pageIndex = this.totalPages - 1;
+    } else if (this.totalPages === 0) {
+      this.pageIndex = 0;
+    }
+
+    this.updateDisplayedInvitations(filteredInvitations);
+  }
+
+  private updateDisplayedInvitations(sourceList: Invitation[]): void {
+    // Renamed from updateDisplayedTrainings for clarity
+    const startIndex = this.pageIndex * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.displayedInvitations = sourceList.slice(startIndex, endIndex);
+  }
+
+  private calculatePagination(): void {
+    this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+    if (this.totalPages === 0) {
+      // Handle case with no items
+      this.pages = [];
+    } else {
+      this.pages = Array.from({ length: this.totalPages }, (_, i) => i);
+    }
+    this.updateVisiblePages();
+  }
+
+  private updateVisiblePages(): void {
+    this.visiblePages = [];
+
+    if (this.totalPages <= 0) {
+      return;
+    }
+
+    if (this.totalPages <= 7) {
+      this.visiblePages = this.pages;
+    } else {
+      this.visiblePages.push(0);
+      const currentPageIndex = this.pageIndex;
+
+      let startPage = Math.max(1, currentPageIndex - 1);
+      let endPage = Math.min(this.totalPages - 2, currentPageIndex + 1);
+
+      // Adjust window if near the beginning
+      if (currentPageIndex < 3) {
+        endPage = Math.min(this.totalPages - 2, 3);
+      }
+
+      // Adjust window if near the end
+      if (currentPageIndex > this.totalPages - 4) {
+        startPage = Math.max(1, this.totalPages - 4);
+      }
+
+      if (startPage > 1) {
+        this.visiblePages.push('...');
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        this.visiblePages.push(i);
+      }
+
+      if (endPage < this.totalPages - 2) {
+        this.visiblePages.push('...');
+      }
+
+      this.visiblePages.push(this.totalPages - 1);
+    }
   }
 }

@@ -1,0 +1,62 @@
+<div class="take-appointment-dialog">
+  <h2 class="dialog-title">Take Appointment</h2>
+  <form #takeSlotForm="ngForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="timeSlot">Time Slot *</label>
+      <select
+        id="timeSlot"
+        name="timeSlot"
+        [(ngModel)]="selectedTimeSlot"
+        required
+        aria-label="Select time slot"
+        [attr.aria-describedby]="
+          timeSlotInput.invalid &&
+          (timeSlotInput.touched || timeSlotInput.dirty)
+            ? 'timeSlot-error'
+            : null
+        "
+        #timeSlotInput="ngModel"
+      >
+        <option value="" disabled>Select a time slot</option>
+        @for (slot of timeSlots; track slot) {
+        <option [value]="slot">
+          {{ slot }}
+        </option>
+        }
+      </select>
+
+      @if (timeSlotInput.invalid && (timeSlotInput.touched ||
+      timeSlotInput.dirty)) {
+      <span class="form-error" id="timeSlot-error">
+        @if (timeSlotInput.errors?.['required']) {
+        <span>Time Slot is required</span>
+        }
+      </span>
+      }
+    </div>
+
+    <div class="dialog-actions">
+      <button
+        type="button"
+        class="dialog-btn cancel"
+        (click)="onCancel()"
+        aria-label="Cancel"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="dialog-btn save"
+        [disabled]="takeSlotForm.invalid || isLoadingTimeSlots"
+        aria-label="Book appointment"
+      >
+        @if (isLoadingTimeSlots) {
+        <span>Loading...</span>
+        } @else {
+        <i class="fa-solid fa-calendar-check"></i>
+        <span>&nbsp;Book</span>
+        }
+      </button>
+    </div>
+  </form>
+</div>

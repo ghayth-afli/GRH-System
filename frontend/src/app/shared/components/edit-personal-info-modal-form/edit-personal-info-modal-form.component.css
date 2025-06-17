@@ -1,0 +1,51 @@
+.dialog-container {
+  position: relative;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.phone-group {
+  position: relative;
+}
+
+.phone-input-container {
+  display: flex;
+  align-items: center;
+}
+
+.phone-prefix {
+  padding: 8px;
+  background-color: var(--silver);
+  border: 1px solid var(--silver);
+  border-right: none;
+  border-radius: var(--border-radius) 0 0 var(--border-radius);
+  font-family: "Open Sans", sans-serif;
+  font-size: 14px;
+  color: var(--primary-dark);
+}
+
+.phone-group .form-control {
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
+  flex: 1;
+}
+
+.form-control:disabled {
+  background-color: #f1f1f1;
+  color: var(--primary-dark);
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .phone-prefix {
+    font-size: 13px;
+    padding: 6px;
+  }
+}

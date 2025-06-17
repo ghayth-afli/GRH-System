@@ -16,51 +16,90 @@
   </div>
   <div class="sidebar-nav">
     <div class="sidebar-nav-top">
-      <a routerLink="/dashboard" class="nav-item">
+      <!-- @if (authService.hasRole('HR') || authService.hasRole('Manager')) {
+      <a routerLink="/dashboard" class="nav-item" routerLinkActive="active">
         <i class="nav-icon-fa fa-solid fa-gauge"></i>
         <span class="nav-text">Dashboard</span>
       </a>
-      <a routerLink="/employees" class="nav-item">
+      }  -->
+
+      @if (!authService.hasRole('HRD') ) {
+      <a routerLink="/home" class="nav-item" routerLinkActive="active">
+        <i class="nav-icon-fa fa-solid fa-house"></i>
+        <span class="nav-text">Home</span>
+      </a>
+      }
+      <!-- @if (authService.hasRole('HR')) {
+      <a routerLink="/employees" class="nav-item" routerLinkActive="active">
         <i class="nav-icon-fa fa-solid fa-users"></i>
         <span class="nav-text">Employees</span>
       </a>
-      <a routerLink="/attendance" class="nav-item">
+      } -->
+
+      <!-- <a routerLink="/attendance" class="nav-item" routerLinkActive="active">
         <i class="nav-icon-fa fa-solid fa-clock"></i>
         <span class="nav-text">Attendance</span>
-      </a>
-      <a routerLink="/recruitment" class="nav-item" routerLinkActive="active">
+      </a> -->
+      @if (authService.hasRole('HRD') || authService.hasRole('HR')) {
+      <a
+        routerLink="/recruitment/job-offers"
+        class="nav-item"
+        routerLinkActive="active"
+      >
         <i class="nav-icon-fa fa-solid fa-user-plus"></i>
         <span class="nav-text">Recruitment</span>
       </a>
-
-      <a routerLink="/leave-request" class="nav-item">
+      } @if (authService.hasRole('Employee')) {
+      <a
+        routerLink="/recruitment/job-offers"
+        class="nav-item"
+        routerLinkActive="active"
+      >
+        <i class="nav-icon-fa fa-solid fa-briefcase"> </i>
+        <span class="nav-text">Job offers</span>
+      </a>
+      } @if (authService.hasRole('HRD') || authService.hasRole('HR') ||
+      authService.hasRole('Manager')) {
+      <a routerLink="/leave" class="nav-item" routerLinkActive="active">
         <i class="nav-icon-fa fa-solid fa-calendar-check"></i>
         <span class="nav-text">Leave Request</span>
       </a>
-      <a routerLink="/medical-visit" class="nav-item">
+      }
+
+      <a
+        routerLink="/medical-visits"
+        class="nav-item"
+        routerLinkActive="active"
+      >
         <i class="nav-icon-fa fa-solid fa-briefcase-medical"></i>
         <span class="nav-text">Medical Visit</span>
       </a>
-      <a routerLink="/training" class="nav-item">
+      <a routerLink="/trainings" class="nav-item" routerLinkActive="active">
         <i class="nav-icon-fa fa-solid fa-graduation-cap"></i>
         <span class="nav-text">Training</span>
       </a>
-
-      <a routerLink="/payroll" class="nav-item">
+      <!-- @if (authService.hasRole('HR')) {
+      <a routerLink="/payroll" class="nav-item" routerLinkActive="active">
         <i class="nav-icon-fa fa-solid fa-wallet"></i>
         <span class="nav-text">Payroll</span>
       </a>
-
-      <a routerLink="/reports" class="nav-item">
-        <i class="nav-icon-fa fa-solid fa-chart-bar"></i>
-        <span class="nav-text">Reports</span>
+      }  -->
+      <!-- @if (authService.hasRole('Employee')) {
+      <a routerLink="/documents" class="nav-item" routerLinkActive="active">
+        <i class="nav-icon-fa fa-solid fa-folder-open"></i>
+        <span class="nav-text">Documents</span>
       </a>
+      } -->
+      <!-- <a routerLink="/documents" class="nav-item" routerLinkActive="active">
+        <i class="nav-icon-fa fa-solid fa-gift"></i>
+        <span class="nav-text">Perks & Benefits</span>
+      </a> -->
     </div>
     <div class="sidebar-nav-bottom">
-      <a routerLink="/settings" class="nav-item">
+      <!-- <a routerLink="/settings" class="nav-item" routerLinkActive="active">
         <i class="nav-icon-fa fa-solid fa-sliders"></i>
         <span class="nav-text">Settings</span>
-      </a>
+      </a> -->
       <a href="#" class="nav-item" (click)="logout()">
         <i class="nav-icon-fa fa-solid fa-right-from-bracket"></i>
         <span class="nav-text">Logout</span>

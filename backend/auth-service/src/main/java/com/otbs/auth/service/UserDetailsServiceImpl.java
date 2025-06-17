@@ -1,7 +1,7 @@
 package com.otbs.auth.service;
 
-import com.otbs.feign.client.employee.EmployeeClient;
-import com.otbs.feign.client.employee.dto.EmployeeResponse;
+import com.otbs.feign.client.user.UserClient;
+import com.otbs.feign.client.user.dto.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,12 +12,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final EmployeeClient employeeClient;
+    private final UserClient userClient;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try {
-            EmployeeResponse user = employeeClient.getEmployeeByUsername(username);
+            UserResponse user = userClient.getUserByUsername(username);
             return UserDetailsImpl.build(user);
         }
         catch (Exception e) {

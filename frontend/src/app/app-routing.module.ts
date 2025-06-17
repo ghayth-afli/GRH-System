@@ -31,7 +31,7 @@ const routes: Routes = [
         loadChildren: () =>
           import('./modules/home/home.module').then((m) => m.HomeModule),
         canActivate: [RoleGuard],
-        data: { roles: ['Employee'] },
+        data: { roles: ['Employee', 'HR', 'Manager'] },
       },
       {
         path: 'leave',
@@ -39,7 +39,7 @@ const routes: Routes = [
         loadChildren: () =>
           import('./modules/leave/leave.module').then((m) => m.LeaveModule),
         canActivate: [RoleGuard],
-        data: { roles: ['Manager', 'HR'] },
+        data: { roles: ['Manager', 'HR', 'HRD'] },
       },
       {
         path: 'medical-visits',
@@ -48,7 +48,7 @@ const routes: Routes = [
             (m) => m.MedVisitModule
           ),
         canActivate: [RoleGuard],
-        data: { roles: ['Manager', 'HR', 'Employee'] },
+        data: { roles: ['Manager', 'HR', 'Employee', 'HRD'] },
       },
       {
         path: 'trainings',
@@ -57,7 +57,7 @@ const routes: Routes = [
             './modules/training-management/training-management.module'
           ).then((m) => m.TrainingManagementModule),
         canActivate: [RoleGuard],
-        data: { roles: ['Manager', 'HR', 'Employee'] },
+        data: { roles: ['Manager', 'HR', 'Employee', 'HRD'] },
       },
       {
         path: 'recruitment',

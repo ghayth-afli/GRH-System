@@ -1,20 +1,18 @@
-import { ChangeDetectorRef, Component, inject, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
+import { Component, inject } from '@angular/core';
 import { MedicalVisit } from '../../models/medical-visit';
-import { MatTableDataSource } from '@angular/material/table';
 import { MedicalVisitService } from '../../services/medical-visit.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { MedicalVisitFormModalComponent } from '../../components/medical-visit-form-modal/medical-visit-form-modal.component';
+
+import { AuthService } from '../../../../core/services/auth.service';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { AuthService } from '../../../../core/services/auth.service';
+import { CustomSnackbarComponent } from '../../../../shared/components/custom-snackbar/custom-snackbar.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { CreateEditMedicalVisitComponent } from '../../components/create-edit-medical-visit/create-edit-medical-visit.component';
+import { TakeRegistrationDialogComponent } from '../../components/take-registration-dialog/take-registration-dialog.component';
+import { ConfirmationModalComponent } from '../../../../shared/components/confirmation-modal/confirmation-modal.component';
 import { AppointmentService } from '../../services/appointment.service';
-import { AppointmentModalComponent } from '../../components/appointment-modal/appointment-modal.component';
-import { Appointment } from '../../models/appointment';
-import { catchError, map, Observable, of, Subscription } from 'rxjs';
-import { NotificationData } from '../../../../core/models/NotificationData';
-import { SseService } from '../../../../core/services/sse.service';
 
 @Component({
   selector: 'app-medical-visits-page',
@@ -23,422 +21,394 @@ import { SseService } from '../../../../core/services/sse.service';
   styleUrl: './medical-visits-page.component.css',
 })
 export class MedicalVisitsPageComponent {
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  medicalVisitService = inject(MedicalVisitService);
-  appointmentService = inject(AppointmentService);
-  private cdr = inject(ChangeDetectorRef);
-  route = inject(Router);
-  authService = inject(AuthService);
-  public dialog = inject(MatDialog);
-  private sseService = inject(SseService);
-  dataSource!: MatTableDataSource<MedicalVisit>;
+  // Pagination
   pageSize = 10;
-  pageSizeOptions = [10, 50, 100];
-  displayedColumns: string[] = [];
-  medicalVisits: MedicalVisit[] = [];
-  private newVisitSubscription: Subscription | null = null;
-  private updateVisitSubscription: Subscription | null = null;
-  private deletedVisitSubscription: Subscription | null = null;
+  pageIndex = 0;
+  pageSizeOptions = [5, 10, 25, 100];
+  totalItems = 0;
+  totalPages = 0;
+  pages: number[] = [];
+  visiblePages: (number | string)[] = [];
 
-  ngOnInit(): void {
-    this.setDisplayedColumns();
-    this.loadMedicalVisits();
-    this.loadAppointmentsForEmployeeOrManager();
-    this.subscribeToEventNotifications();
-  }
+  // Filter properties
+  searchTerm: string = '';
+  visitDateFilter = '';
 
-  subscribeToEventNotifications(): void {
-    this.subscribeToNewMedicalVisitEvent();
-    this.subscribeToUpdatedMedicalVisitEvent();
-    this.subscribeToDeletedMedicalVisitEvent();
-  }
+  // Data properties
+  visits: MedicalVisit[] = [];
+  displayedVisits: MedicalVisit[] = [];
 
-  private subscribeToDeletedMedicalVisitEvent(): void {
-    this.deletedVisitSubscription = this.sseService
-      .connect('DELETED_MEDICAL_VISIT')
-      .subscribe({
-        next: (event: NotificationData<MedicalVisit>) => {
-          console.log(
-            'Raw deleted medical visit event:',
-            event.payload['medicalVisit']
-          );
-          this.removeVisitFromDataSource(event.payload['medicalVisit']);
-        },
-        error: (error) => {
-          console.error('Error in DELETED_MEDICAL_VISIT subscription:', error);
-        },
-      });
-  }
+  // Inject services
+  authService = inject(AuthService);
+  private medicalVisitService = inject(MedicalVisitService);
+  private appointmentService = inject(AppointmentService);
+  private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
-  private subscribeToNewMedicalVisitEvent(): void {
-    this.newVisitSubscription = this.sseService
-      .connect('CREATED_MEDICAL_VISIT')
-      .subscribe({
-        next: (event: NotificationData<MedicalVisit>) => {
-          const transformedVisit = this.transformMedicalVisit(
-            event.payload['medicalVisit']
-          );
-          this.medicalVisits = [transformedVisit, ...this.medicalVisits];
-          this.initializeDataSource();
-          console.log('New medical visit event received:', transformedVisit);
-          console.log('Data source data:', this.dataSource.data);
-        },
-        error: (error) => {
-          console.error('Error in CREATED_MEDICAL_VISIT subscription:', error);
-        },
-      });
-  }
-
-  private subscribeToUpdatedMedicalVisitEvent(): void {
-    console.log('Subscribing to updated medical visit event...');
-    this.updateVisitSubscription = this.sseService
-      .connect('UPDATED_MEDICAL_VISIT')
-      .subscribe({
-        next: (event: NotificationData<MedicalVisit>) => {
-          console.log(
-            'Raw updated medical visit event:',
-            event.payload['medicalVisit']
-          );
-          const transformedVisit = this.transformMedicalVisit(
-            event.payload['medicalVisit']
-          );
-          console.log('Transformed updated medical visit:', transformedVisit);
-          this.updateVisitInDataSource(transformedVisit);
-        },
-        error: (error) => {
-          console.error('Error in UPDATED_MEDICAL_VISIT subscription:', error);
-        },
-      });
-  }
-
-  ngOnDestroy(): void {
-    // Unsubscribe from all subscriptions
-    if (this.newVisitSubscription) {
-      this.newVisitSubscription.unsubscribe();
-    }
-    if (this.updateVisitSubscription) {
-      this.updateVisitSubscription.unsubscribe();
-    }
-    if (this.deletedVisitSubscription) {
-      this.deletedVisitSubscription.unsubscribe();
-    }
-    // Close the SSE connection
-    this.sseService.disconnect();
-  }
-
-  private transformMedicalVisit(visit: any): MedicalVisit {
-    return {
-      id: visit.id,
-      doctorName: visit.doctorName,
-      visitDate: new Date(this.formatDate(visit.visitDate)),
-      startTime: this.formatTime(visit.startTime),
-      endTime: this.formatTime(visit.endTime),
-      numberOfAppointments: visit.numberOfAppointments,
-    };
-  }
-
-  private formatDate(dateArray: number[]): string {
-    if (!Array.isArray(dateArray) || dateArray.length !== 3) {
-      console.error('Invalid date array:', dateArray);
-      return new Date().toISOString().split('T')[0]; // Fallback to current date
-    }
-    const [year, month, day] = dateArray;
-    return `${year}-${month.toString().padStart(2, '0')}-${day
-      .toString()
-      .padStart(2, '0')}`;
-  }
-
-  private formatTime(timeArray: number[]): string {
-    if (!Array.isArray(timeArray) || timeArray.length !== 2) {
-      console.error('Invalid time array:', timeArray);
-      return '00:00:00'; // Fallback
-    }
-    const [hour, minute] = timeArray;
-    return `${hour.toString().padStart(2, '0')}:${minute
-      .toString()
-      .padStart(2, '0')}:00`;
-  }
-
-  makeAppointment(element: MedicalVisit): void {
-    this.dialog.open(AppointmentModalComponent, {
-      width: '35%',
-      height: 'auto',
-      data: element,
+  ngOnInit() {
+    this.route.queryParamMap.subscribe((params) => {
+      const pageSize = params.get('pageSize');
+      if (pageSize) {
+        this.pageSize = parseInt(pageSize, 10);
+      }
+      this.loadVisits();
     });
   }
 
-  cancelAppointment(element: MedicalVisit): void {
-    const user = localStorage.getItem('user');
-    const parsedUser = user ? JSON.parse(user) : null;
-    const appointment = this.findAppointmentByEmployeeId(
-      parsedUser.id,
-      element.id
-    );
-    appointment.subscribe((appointment) => {
-      if (appointment) {
-        this.appointmentService.deleteAppointment(appointment.id).subscribe({
-          next: () => {
-            this.loadMedicalVisits();
+  onPageSizeChange() {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        pageSize: this.pageSize,
+      },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  onSearchTermChange() {
+    this.pageIndex = 0;
+    this.applyFilters();
+  }
+
+  onVisitDateChange() {
+    this.pageIndex = 0;
+    this.applyFilters();
+  }
+
+  onTypeChange() {
+    this.pageIndex = 0;
+    this.applyFilters();
+  }
+
+  goToPage(page: number): void {
+    if (page >= 0 && page < this.totalPages && page !== this.pageIndex) {
+      this.pageIndex = page;
+      this.updateVisiblePages();
+      this.updateDisplayedTrainings(this.visits); // Re-evaluate if this should use filtered list or full list then filter
+    }
+  }
+
+  previousPage(): void {
+    if (this.pageIndex > 0) {
+      this.pageIndex--;
+      this.updateVisiblePages();
+      this.updateDisplayedTrainings(this.visits);
+    }
+  }
+
+  nextPage(): void {
+    if (this.pageIndex < this.totalPages - 1) {
+      this.pageIndex++;
+      this.updateVisiblePages();
+      this.updateDisplayedTrainings(this.visits);
+    }
+  }
+
+  changePageSize(size: number): void {
+    this.pageSize = size;
+    this.pageIndex = 0;
+    this.onPageSizeChange();
+  }
+
+  isPrevDisabled(): boolean {
+    return this.pageIndex === 0;
+  }
+
+  isNextDisabled(): boolean {
+    return this.pageIndex === this.totalPages - 1 || this.totalPages === 0;
+  }
+
+  openCreateDialog() {
+    const dialogRef = this.dialog.open(CreateEditMedicalVisitComponent, {
+      width: '500px',
+      data: { isEdit: false },
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loadVisits();
+
+        this.snackBar.openFromComponent(CustomSnackbarComponent, {
+          data: {
+            message: 'Medical visit created successfully!',
+            type: 'success',
           },
-          error: (error) => {
-            console.error('Error deleting appointment:', error);
-          },
+          duration: 5000,
+          panelClass: ['custom-snackbar'],
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
         });
-      } else {
-        console.error('No appointment found for the given medical visit ID');
       }
     });
   }
 
-  filter($event: KeyboardEvent): void {
-    this.dataSource.filter = ($event.target as HTMLInputElement).value
-      .trim()
-      .toLowerCase();
+  openEditDialog(visit: MedicalVisit) {
+    const dialogRef = this.dialog.open(CreateEditMedicalVisitComponent, {
+      width: '500px',
+      data: { isEdit: true, visit },
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loadVisits();
+
+        this.snackBar.openFromComponent(CustomSnackbarComponent, {
+          data: {
+            message: 'Medical visit updated successfully!',
+            type: 'success',
+          },
+          duration: 5000,
+          panelClass: ['custom-snackbar'],
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+        });
+      }
+    });
   }
 
-  deleteVisit(element: MedicalVisit): void {
-    this.medicalVisitService.deleteMedicalVisit(element.id).subscribe({
-      next: () => {
-        //this.removeVisitFromDataSource(element);
+  deleteVisit(id: number) {
+    this.medicalVisitService.deleteMedicalVisit(id).subscribe({
+      next: (response) => {
+        this.visits = this.visits.filter((visit) => visit.id !== id);
+        this.applyFilters();
+        this.snackBar.openFromComponent(CustomSnackbarComponent, {
+          data: {
+            message: 'Medical visit deleted successfully!',
+            type: 'success',
+          },
+          duration: 5000,
+          panelClass: ['custom-snackbar'],
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+        });
       },
       error: (error) => {
         console.error('Error deleting medical visit:', error);
+        this.launchSnackbar('Failed to delete medical visit', 'error');
       },
     });
   }
 
-  addVisit(): void {
-    this.dialog.open(MedicalVisitFormModalComponent, {
-      width: '35%',
-      height: 'auto',
+  openTakeAppointmentDialog(visit: MedicalVisit) {
+    const dialogRef = this.dialog.open(TakeRegistrationDialogComponent, {
+      width: '400px',
+      data: { visit },
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loadVisits();
+        this.snackBar.openFromComponent(CustomSnackbarComponent, {
+          data: {
+            message: 'Appointment booked successfully!',
+            type: 'success',
+          },
+          duration: 5000,
+          panelClass: ['custom-snackbar'],
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+        });
+      }
     });
   }
 
-  editVisit(element: MedicalVisit): void {
-    const dialogRef = this.dialog.open(MedicalVisitFormModalComponent, {
-      width: '35%',
-      height: 'auto',
-      data: element,
+  onCancelAppointment(id: number) {
+    const dialogRef = this.dialog.open(ConfirmationModalComponent, {
+      data: {
+        title: 'Cancel Appointment',
+        message: 'Are you sure you want to cancel this appointment?',
+        confirmButtonText: 'Cancel Appointment',
+        cancelButtonText: 'No, Keep Appointment',
+      },
     });
-  }
 
-  exportcsv(): void {
-    if (!this.medicalVisits || this.medicalVisits.length === 0) {
-      alert('No data to export');
-      return;
-    }
-
-    const csvContent = this.generateCsvContent();
-    this.downloadFile(
-      csvContent,
-      'medical_visits.csv',
-      'text/csv;charset=utf-8;'
-    );
-  }
-
-  exportPdf(): void {
-    if (!this.medicalVisits || this.medicalVisits.length === 0) {
-      alert('No data to export');
-      return;
-    }
-
-    const doc = new jsPDF();
-    this.generatePdfContent(doc);
-    doc.save('medical_visits.pdf');
-  }
-
-  findAppointmentByEmployeeId(
-    employeeId: string,
-    medicalVisitId: number
-  ): Observable<Appointment | null> {
-    return this.appointmentService.getAppointmentsByEmployeeId(employeeId).pipe(
-      map(
-        (appointments) =>
-          appointments.find(
-            (appointment) => appointment.medicalVisitId === medicalVisitId
-          ) || null
-      ),
-      catchError((error) => {
-        console.error('Error fetching appointments:', error);
-        return of(null);
-      })
-    );
-  }
-
-  private setDisplayedColumns(): void {
-    if (this.authService.hasRole('HR')) {
-      this.displayedColumns = [
-        'doctorName',
-        'visitDate',
-        'startTime',
-        'endTime',
-        'numberOfAppointments',
-        'actions',
-        'choosenSlot',
-        'TakeAppointment',
-      ];
-    } else if (
-      this.authService.hasRole('Employee') ||
-      this.authService.hasRole('Manager')
-    ) {
-      this.displayedColumns = [
-        'doctorName',
-        'visitDate',
-        'choosenSlot',
-        'TakeAppointment',
-      ];
-    }
-  }
-
-  private loadMedicalVisits(): void {
-    this.medicalVisitService.getMedicalVisits().subscribe({
-      next: (medicalVisits) => {
-        this.medicalVisits = medicalVisits;
-        this.initializeDataSource();
+    dialogRef.afterClosed().subscribe({
+      next: (confirmed) => {
+        if (confirmed) {
+          this.appointmentService.cancelAppointment(id).subscribe({
+            next: () => {
+              this.loadVisits();
+              this.launchSnackbar(
+                'Appointment cancelled successfully',
+                'success'
+              );
+            },
+            error: (error) => {
+              console.error('Error cancelling appointment:', error);
+              this.launchSnackbar('Failed to cancel appointment', 'error');
+            },
+          });
+        }
       },
       error: (error) => {
-        console.error('Error fetching medical visits:', error);
+        console.error('Error in confirmation dialog:', error);
+        this.launchSnackbar('Failed to confirm cancellation', 'error');
       },
     });
   }
 
-  private loadAppointmentsForEmployeeOrManager(): void {
-    const user = localStorage.getItem('user');
-    if (user) {
-      const userId = JSON.parse(user)?.id;
-      this.appointmentService.getAppointmentsByEmployeeId(userId).subscribe({
-        next: (appointments) => {
-          this.updateMedicalVisitsWithAppointments(appointments);
-        },
-        error: (error) => {
-          console.error('Error fetching appointments:', error);
-        },
-      });
-    }
-  }
+  openDeleteConfirmation(id: number) {
+    const dialogRef = this.dialog.open(ConfirmationModalComponent, {
+      data: {
+        title: 'Delete Medical Visit',
+        message: 'Are you sure you want to delete this medical visit?',
+        confirmButtonText: 'Delete',
+        cancelButtonText: 'Cancel',
+      },
+    });
 
-  private updateMedicalVisitsWithAppointments(appointments: any[]): void {
-    this.medicalVisits = this.medicalVisits.map((visit) => {
-      const appointment = appointments.find(
-        (appointment) => appointment.medicalVisitId === visit.id
-      );
-      if (appointment) {
-        return { ...visit, choosenSlot: appointment.timeSlot };
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.confirmed) {
+        this.deleteVisit(id);
       }
-      return visit;
     });
-    this.initializeDataSource();
   }
 
-  private initializeDataSource(): void {
-    this.dataSource = new MatTableDataSource(this.medicalVisits);
-    this.dataSource.paginator = this.paginator;
-  }
+  export(type: 'pdf' | 'csv') {
+    if (type === 'pdf') {
+      const doc = new jsPDF();
+      doc.setFontSize(16);
+      doc.text('Medical Visits Report', 14, 16);
 
-  private removeVisitFromDataSource(element: MedicalVisit): void {
-    this.medicalVisits = this.medicalVisits.filter(
-      (visit) => visit.id !== element.id
-    );
-    this.dataSource.data = this.medicalVisits;
-  }
+      const tableData = this.displayedVisits.map((visit) => [
+        visit.id.toString(),
+        visit.doctorName,
+        visit.visitDate,
+      ]);
 
-  private updateVisitInDataSource(updatedVisit: MedicalVisit): void {
-    const index = this.medicalVisits.findIndex(
-      (visit) => visit.id === updatedVisit.id
-    );
-    if (index !== -1) {
-      this.medicalVisits[index] = updatedVisit;
-      this.dataSource.data = this.medicalVisits;
-      this.cdr.detectChanges();
-      console.log('Updated medical visit in data source:', updatedVisit);
+      autoTable(doc, {
+        head: [['ID', 'Doctor Name', 'Visit Date', 'Patient Name', 'Status']],
+        body: tableData,
+      });
+
+      doc.save('medical_visits_report.pdf');
+    } else if (type === 'csv') {
+      const csvContent =
+        'data:text/csv;charset=utf-8,' +
+        this.displayedVisits
+          .map((visit) => `${visit.id},${visit.doctorName},${visit.visitDate}`)
+          .join('\n');
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', 'medical_visits_report.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } else {
-      console.warn('Medical visit not found for update:', updatedVisit.id);
+      this.launchSnackbar('Invalid export type', 'error');
     }
   }
 
-  private generateCsvContent(): string {
-    const csvHeaders = [
-      'Doctor Name',
-      'Visit Date',
-      'Start Time',
-      'End Time',
-      'Number of Appointments',
-    ];
-    const rows = this.medicalVisits.map((visit) => {
-      const formattedDate =
-        visit.visitDate instanceof Date
-          ? visit.visitDate.toLocaleDateString()
-          : new Date(visit.visitDate).toLocaleDateString();
-      const escapedDoctorName = `"${visit.doctorName.replace(/"/g, '""')}"`;
-      return [
-        escapedDoctorName,
-        formattedDate,
-        visit.startTime,
-        visit.endTime,
-        visit.numberOfAppointments,
-      ].join(',');
-    });
-
-    return [csvHeaders.join(','), ...rows].join('\n');
-  }
-
-  private downloadFile(
-    content: string,
-    fileName: string,
-    mimeType: string
-  ): void {
-    const blob = new Blob([content], { type: mimeType });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', fileName);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  }
-
-  private generatePdfContent(doc: jsPDF): void {
-    const headers = [
-      [
-        'Doctor Name',
-        'Visit Date',
-        'Start Time',
-        'End Time',
-        'Number of Appointments',
-      ],
-    ];
-    const data = this.medicalVisits.map((visit) => {
-      const formattedDate =
-        visit.visitDate instanceof Date
-          ? visit.visitDate.toLocaleDateString()
-          : new Date(visit.visitDate).toLocaleDateString();
-      return [
-        visit.doctorName,
-        formattedDate,
-        visit.startTime,
-        visit.endTime,
-        visit.numberOfAppointments.toString(),
-      ];
-    });
-
-    autoTable(doc, {
-      head: headers,
-      body: data,
-      startY: 20,
-      theme: 'grid',
-      styles: { fontSize: 10 },
-      headStyles: { fillColor: [41, 128, 185], textColor: 255 },
-      columnStyles: {
-        0: { cellWidth: 40 },
-        1: { cellWidth: 30 },
-        2: { cellWidth: 30 },
-        3: { cellWidth: 30 },
-        4: { cellWidth: 20 },
+  private loadVisits() {
+    this.medicalVisitService.getMedicalVisits().subscribe({
+      next: (visits) => {
+        this.visits = visits;
+        this.totalItems = visits.length;
+        this.applyFilters();
+      },
+      error: (error) => {
+        console.error('Error loading medical visits:', error);
+        this.launchSnackbar('Failed to load medical visits', 'error');
       },
     });
+  }
 
-    doc.text('Medical Visits Report', 14, 15);
+  private launchSnackbar(message: string, type: 'success' | 'error') {
+    this.snackBar.openFromComponent(CustomSnackbarComponent, {
+      data: {
+        message: message,
+        type: type,
+      },
+      duration: 5000,
+      panelClass: ['custom-snackbar'],
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+    });
+  }
+
+  private applyFilters() {
+    let filteredVisits = [...this.visits];
+
+    if (this.searchTerm) {
+      filteredVisits = filteredVisits.filter((visit) =>
+        visit.doctorName.toLowerCase().includes(this.searchTerm.toLowerCase())
+      );
+    }
+
+    filteredVisits = filteredVisits.filter((visit) => {
+      const matchesDate = this.visitDateFilter
+        ? new Date(visit.visitDate).toISOString().split('T')[0] ===
+          this.visitDateFilter
+        : true;
+      return matchesDate;
+    });
+
+    filteredVisits = filteredVisits.sort(
+      (a, b) =>
+        new Date(b.visitDate).getTime() - new Date(a.visitDate).getTime()
+    );
+
+    this.totalItems = filteredVisits.length;
+    this.calculatePagination();
+
+    if (this.pageIndex >= this.totalPages && this.totalPages > 0) {
+      this.pageIndex = this.totalPages - 1;
+    } else if (this.totalPages === 0) {
+      this.pageIndex = 0;
+    }
+
+    this.updateDisplayedTrainings(filteredVisits);
+  }
+
+  private updateDisplayedTrainings(sourceList: MedicalVisit[]): void {
+    const startIndex = this.pageIndex * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.displayedVisits = sourceList.slice(startIndex, endIndex);
+  }
+
+  private calculatePagination(): void {
+    this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+    if (this.totalPages === 0) {
+      this.pages = [];
+    } else {
+      this.pages = Array.from({ length: this.totalPages }, (_, i) => i);
+    }
+    this.updateVisiblePages();
+  }
+
+  private updateVisiblePages(): void {
+    this.visiblePages = [];
+    if (this.totalPages <= 0) {
+      return;
+    }
+
+    if (this.totalPages <= 7) {
+      this.visiblePages = this.pages;
+    } else {
+      this.visiblePages.push(0);
+      const currentPageIndex = this.pageIndex;
+
+      let startPage = Math.max(1, currentPageIndex - 1);
+      let endPage = Math.min(this.totalPages - 2, currentPageIndex + 1);
+
+      if (currentPageIndex < 3) {
+        endPage = Math.min(this.totalPages - 2, 3);
+      }
+      if (currentPageIndex > this.totalPages - 4) {
+        startPage = Math.max(1, this.totalPages - 4);
+      }
+
+      if (startPage > 1) {
+        this.visiblePages.push('...');
+      }
+      for (let i = startPage; i <= endPage; i++) {
+        this.visiblePages.push(i);
+      }
+      if (endPage < this.totalPages - 2) {
+        this.visiblePages.push('...');
+      }
+      this.visiblePages.push(this.totalPages - 1);
+    }
   }
 }

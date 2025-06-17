@@ -58,42 +58,83 @@ export class JobOfferFormComponent {
   onSubmit() {
     this.submitted = true;
     if (this.jobOfferForm.valid) {
-      const jsonRequest = JSON.stringify(this.jobOffer, null, 2);
-      console.log('Submitting job offer:', jsonRequest);
-      // Simulate backend request
-      // In a real app, send to backend via HttpClient
-      // this.router.navigate(['/recruitment/job-offers']);
-      this.jobOfferService.createJobOffer(this.jobOfferForm.value).subscribe({
-        next: (response) => {
-          console.log('Job offer created successfully:', response);
-          this.snackBar.openFromComponent(CustomSnackbarComponent, {
-            data: {
-              message: 'Job offer created successfully.',
-              type: 'success',
+      if (this.isEditMode) {
+        const id = this.route.snapshot.paramMap.get('id');
+        const jsonRequest = JSON.stringify(this.jobOffer, null, 2);
+        console.log('Updating job offer:', jsonRequest);
+        // Simulate backend request
+        // In a real app, send to backend via HttpClient
+        this.jobOfferService
+          .updateJobOffer(Number(id), this.jobOfferForm.value)
+          .subscribe({
+            next: (response) => {
+              console.log('Job offer updated successfully:', response);
+              this.snackBar.openFromComponent(CustomSnackbarComponent, {
+                data: {
+                  message: 'Job offer updated successfully.',
+                  type: 'success',
+                },
+                duration: 5000,
+                panelClass: ['custom-snackbar'],
+                horizontalPosition: 'end',
+                verticalPosition: 'top',
+              });
+              this.router.navigate(['/recruitment/job-offers']);
             },
-            duration: 5000,
-            panelClass: ['custom-snackbar'],
-            horizontalPosition: 'end',
-            verticalPosition: 'top',
-          });
-          this.router.navigate(['/recruitment/job-offers']);
-        },
-        error: (error) => {
-          this.snackBar.openFromComponent(CustomSnackbarComponent, {
-            data: {
-              message:
-                error.message === ''
-                  ? 'Job offer creation failed. Please try again.'
-                  : error.message,
-              type: 'error',
+            error: (error) => {
+              this.snackBar.openFromComponent(CustomSnackbarComponent, {
+                data: {
+                  message:
+                    error.message === ''
+                      ? 'Job offer update failed. Please try again.'
+                      : error.message,
+                  type: 'error',
+                },
+                duration: 5000,
+                panelClass: ['custom-snackbar'],
+                horizontalPosition: 'end',
+                verticalPosition: 'top',
+              });
             },
-            duration: 5000,
-            panelClass: ['custom-snackbar'],
-            horizontalPosition: 'end',
-            verticalPosition: 'top',
           });
-        },
-      });
+      } else {
+        const jsonRequest = JSON.stringify(this.jobOffer, null, 2);
+        console.log('Submitting job offer:', jsonRequest);
+        // Simulate backend request
+        // In a real app, send to backend via HttpClient
+        // this.router.navigate(['/recruitment/job-offers']);
+        this.jobOfferService.createJobOffer(this.jobOfferForm.value).subscribe({
+          next: (response) => {
+            console.log('Job offer created successfully:', response);
+            this.snackBar.openFromComponent(CustomSnackbarComponent, {
+              data: {
+                message: 'Job offer created successfully.',
+                type: 'success',
+              },
+              duration: 5000,
+              panelClass: ['custom-snackbar'],
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+            });
+            this.router.navigate(['/recruitment/job-offers']);
+          },
+          error: (error) => {
+            this.snackBar.openFromComponent(CustomSnackbarComponent, {
+              data: {
+                message:
+                  error.message === ''
+                    ? 'Job offer creation failed. Please try again.'
+                    : error.message,
+                type: 'error',
+              },
+              duration: 5000,
+              panelClass: ['custom-snackbar'],
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+            });
+          },
+        });
+      }
     }
   }
 }

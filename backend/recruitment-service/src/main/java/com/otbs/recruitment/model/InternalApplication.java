@@ -35,8 +35,8 @@ public class InternalApplication {
     @Column(name = "candidate_id", nullable = true, length = 100)
     private Long candidateId;
 
-    @Column(name = "employee_id", nullable = false, length = 100)
-    private String employeeId;
+    @Column(name = "user_id", nullable = false, length = 100)
+    private String userId;
 
     @Lob
     @Column(name = "attachment")

@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Training } from '../models/training';
 import { map, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { TrainingRequest } from '../models/trainingRequest';
 
 @Injectable({
   providedIn: 'root',
@@ -12,13 +13,13 @@ export class TrainingService {
 
   constructor(private http: HttpClient) {}
 
-  createTraining(training: Training): Observable<{ message: string }> {
+  createTraining(training: TrainingRequest): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(this.BASE_URL, training);
   }
 
   updateTraining(
     id: number,
-    training: Training
+    training: TrainingRequest
   ): Observable<{ message: string }> {
     return this.http.put<{ message: string }>(
       `${this.BASE_URL}/${id}`,

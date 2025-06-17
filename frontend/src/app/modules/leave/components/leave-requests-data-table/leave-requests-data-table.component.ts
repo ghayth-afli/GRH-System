@@ -13,7 +13,6 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
-import { SseService } from '../../../../core/services/sse.service';
 import { NotificationData } from '../../../../core/models/NotificationData';
 
 interface ApiResponse {
@@ -30,7 +29,6 @@ export class LeaveRequestsDataTableComponent implements OnDestroy {
   dataSource = new MatTableDataSource<Leave>();
   private leaveService = inject(LeaveService);
   private snackBar = inject(MatSnackBar);
-  private sseService = inject(SseService<NotificationData<Leave>>);
   private cdr = inject(ChangeDetectorRef);
   authService = inject(AuthService);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -49,7 +47,6 @@ export class LeaveRequestsDataTableComponent implements OnDestroy {
   ngOnInit(): void {
     this.initializeColumns();
     this.refreshLeaveRequests();
-    this.subscribeToEventNotifications();
   }
 
   ngOnDestroy(): void {
@@ -57,8 +54,6 @@ export class LeaveRequestsDataTableComponent implements OnDestroy {
     if (this.newLeaveSubscription) {
       this.newLeaveSubscription.unsubscribe();
     }
-    // Close the SSE connection
-    this.sseService.disconnect();
   }
   initializeColumns(): void {
     if (this.authService.hasRole('HR') || this.authService.hasRole('Manager')) {
@@ -77,29 +72,6 @@ export class LeaveRequestsDataTableComponent implements OnDestroy {
       },
       error: (error) => this.showError(error.message),
     });
-  }
-
-  subscribeToEventNotifications(): void {
-    this.subscribeToNewLeaveRequestEvent();
-  }
-
-  //updatedLeaveRequestEvent
-  private subscribeToNewLeaveRequestEvent(): void {
-    this.newLeaveSubscription = this.sseService
-      .connect('CREATED_LEAVE')
-      .subscribe({
-        next: (Event: NotificationData<Leave>) => {
-          this.dataSource.data = [
-            Event.payload['leave'],
-            ...this.dataSource.data,
-          ];
-          this.checkForActionsColumn(this.dataSource.data);
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          this.showError('Failed to receive leave request updates');
-        },
-      });
   }
 
   checkForActionsColumn(data: Leave[]): void {

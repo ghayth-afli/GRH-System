@@ -9,21 +9,24 @@ import org.springframework.stereotype.Service;
 @Service
 public class MedicalVisitMapper {
     public MedicalVisit toEntity(MedicalVisitRequestDTO medicalVisitRequestDTO) {
-        return new MedicalVisit(
-                medicalVisitRequestDTO.doctorName(),
-                medicalVisitRequestDTO.visitDate(),
-                medicalVisitRequestDTO.startTime(),
-                medicalVisitRequestDTO.endTime()
-        );
+        return MedicalVisit.builder()
+                .doctorName(medicalVisitRequestDTO.doctorName())
+                .visitDate(medicalVisitRequestDTO.visitDate())
+                .startTime(medicalVisitRequestDTO.startTime())
+                .endTime(medicalVisitRequestDTO.endTime())
+                .build();
     }
 
     public MedicalVisitResponseDTO toDto(MedicalVisit medicalVisit) {
-        return new MedicalVisitResponseDTO(
-                medicalVisit.getId(),
-                medicalVisit.getDoctorName(),
-                medicalVisit.getVisitDate(),
-                medicalVisit.getStartTime(),
-                medicalVisit.getEndTime(),
-                (medicalVisit.getAppointments() != null ? medicalVisit.getAppointments().size() : 0)        );
+        return MedicalVisitResponseDTO.builder()
+                .id(medicalVisit.getId())
+                .doctorName(medicalVisit.getDoctorName())
+                .visitDate(medicalVisit.getVisitDate())
+                .startTime(medicalVisit.getStartTime())
+                .endTime(medicalVisit.getEndTime())
+                .numberOfAppointments(
+                    medicalVisit.getAppointments() != null ? medicalVisit.getAppointments().size() : 0
+                )
+                .build();
     }
 }

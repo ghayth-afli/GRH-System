@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableAsync
-@EnableFeignClients(basePackages = {"com.otbs.feign", "com.otbs.common"})
+@EnableFeignClients(basePackages = {"com.otbs.feign"})
 public class RecruitmentApplication {
     public static void main(String[] args) {
         SpringApplication.run(RecruitmentApplication.class, args);

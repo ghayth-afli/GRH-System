@@ -64,6 +64,7 @@ public class JwtUtils {
                         log.warn("Non-string role found in JWT: {}", item);
                     }
                 }
+                log.debug("Extracted roles from JWT: {}", result);
                 return result;
             }
             log.error("Roles claim is not a list: {}", roles);

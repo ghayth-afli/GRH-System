@@ -36,11 +36,13 @@ export class LoginComponent {
       next: () => {
         this.isLoading = false;
         if (this.authService.hasRole('Employee')) {
-          this.router.navigate(['/recruitment/job-offers']);
+          this.router.navigate(['/home']);
         } else if (
           this.authService.hasRole('Manager') ||
           this.authService.hasRole('HR')
         ) {
+          this.router.navigate(['/home']);
+        } else if (this.authService.hasRole('HRD')) {
           this.router.navigate(['/recruitment/job-offers']);
         }
       },
@@ -61,46 +63,5 @@ export class LoginComponent {
         });
       },
     });
-
-    // Simulate async login (e.g., API call) with 2-second delay
-    // setTimeout(() => {
-    //   console.log('Login attempt:', JSON.stringify(credentials, null, 2));
-    //   // In a real app, authenticate with backend
-    //   this.isLoading = false;
-    //   this.router.navigate(['/recruitment/job-offers']);
-    // }, 2000);
   }
-
-  // username: string = '';
-  // password: string = '';
-  // responseMessage: string = '';
-  // sending = false;
-
-  // private authService = inject(AuthService);
-  // private router = inject(Router);
-
-  // onSubmit(): void {
-  //   if (!this.username || !this.password) return;
-
-  //   this.sending = true;
-
-  //   this.authService.login(this.username, this.password).subscribe({
-  //     next: () => {
-  //       this.sending = false;
-  //       if (this.authService.hasRole('Employee')) {
-  //         this.router.navigate(['/home']);
-  //       } else if (
-  //         this.authService.hasRole('Manager') ||
-  //         this.authService.hasRole('HR')
-  //       ) {
-  //         this.router.navigate(['/leave']);
-  //       }
-  //     },
-  //     error: (error: Error) => {
-  //       this.sending = false;
-  //       console.error(error);
-  //       this.responseMessage = "Couldn't log in. Please try again.";
-  //     },
-  //   });
-  // }
 }

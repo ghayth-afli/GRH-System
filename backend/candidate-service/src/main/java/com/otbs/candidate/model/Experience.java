@@ -23,12 +23,10 @@ public class Experience {
     @ElementCollection
     private List<String> achievements;
 
-    @Column(nullable = false)
     private String company;
     @JsonProperty("end_date")
     private String endDate;
 
-    @Column(nullable = false)
     private String location;
 
     @ElementCollection
@@ -36,7 +34,6 @@ public class Experience {
     @JsonProperty("start_date")
     private String startDate;
 
-    @Column(nullable = false)
     private String title;
 
     @ManyToOne(fetch = FetchType.LAZY)

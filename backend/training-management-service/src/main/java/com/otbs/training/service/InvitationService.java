@@ -7,4 +7,5 @@ import java.util.List;
 public interface InvitationService {
     void confirmInvitation(Long invitationId);
     List<InvitationResponseDTO> getAllInvitations();
+    List<InvitationResponseDTO> getAllInvitationsByTrainingId(Long trainingId);
 }

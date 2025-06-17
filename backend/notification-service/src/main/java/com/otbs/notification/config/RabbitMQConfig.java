@@ -26,9 +26,6 @@ public class RabbitMQConfig {
     @Value("${notification.rabbitmq.medical-visit-routing-key}")
     private String medicalVisitRoutingKey;
 
-    @Value("${notification.rabbitmq.events-routing-key}")
-    private String eventsRoutingKey;
-
     @Value("${notification.rabbitmq.training-queue}")
     private String trainingQueue;
 
@@ -63,11 +60,6 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Queue eventsQueue() {
-        return new Queue(eventsRoutingKey, true);
-    }
-
-    @Bean
     public Queue mailQueue() {
         return new Queue(mailQueue, true);
     }
@@ -96,13 +88,6 @@ public class RabbitMQConfig {
                 .with(medicalVisitRoutingKey);
     }
 
-    @Bean
-    public Binding eventsBinding() {
-        return BindingBuilder
-                .bind(eventsQueue())
-                .to(notificationExchange())
-                .with(eventsRoutingKey);
-    }
 
     @Bean
     public Binding mailBinding() {

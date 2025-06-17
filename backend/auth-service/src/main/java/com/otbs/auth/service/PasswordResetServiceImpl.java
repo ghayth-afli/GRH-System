@@ -4,8 +4,8 @@
 //import com.otbs.auth.repositories.PasswordResetTokenRepository;
 //import com.otbs.auth.exception.TokenException;
 //import com.otbs.auth.model.PasswordResetToken;
-//import com.otbs.feign.client.employee.EmployeeClient;
-//import com.otbs.feign.client.employee.dto.EmployeeResponse;
+//import com.otbs.feign.client.user.UserClient;
+//import com.otbs.feign.client.user.dto.UserResponse;
 //import lombok.RequiredArgsConstructor;
 //import org.springframework.ldap.core.LdapTemplate;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,13 +25,13 @@
 //    private final PasswordResetTokenRepository passwordResetTokenRepository;
 //    private final LdapTemplate ldapTemplate;
 //    private final BCryptPasswordEncoder passwordEncoder;
-//    private final EmployeeClient employeeClient;
+//    private final UserClient userClient;
 //    private final AuthNotificationService authNotificationService;
 //
 //    @Override
 //    public void createPasswordResetTokenForUser(String email) {
 //        try{
-//            EmployeeResponse user = employeeClient.getEmployeeByEmail(email);
+//            UserResponse user = userClient.getUserByEmail(email);
 //            if (user == null) {
 //                throw new UserException("User not found");
 //            }
@@ -62,7 +62,7 @@
 //        }
 //
 //        try{
-//            EmployeeResponse user = employeeClient.getEmployeeByEmail(resetToken.getEmail());
+//            UserResponse user = userClient.getUserByEmail(resetToken.getEmail());
 //
 //            ModificationItem item = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("unicodePwd",
 //                    passwordEncoder.encode(newPassword).getBytes(StandardCharsets.UTF_16LE)));

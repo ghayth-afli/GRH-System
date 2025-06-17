@@ -23,7 +23,7 @@ public record LeaveRequestDTO(
         @Schema(description = "Start date of the leave", example = "2025-06-01")
         LocalDate startDate,
 
-        @NotNull(message = "Start date is required")
+        @NotNull(message = "End date is required")
         @FutureOrPresent(message = "End date must be today or in the future")
         @Schema(description = "End date of the leave", example = "2025-06-05")
         LocalDate endDate,
@@ -37,7 +37,8 @@ public record LeaveRequestDTO(
     public LeaveRequestDTO {
         validateDates(startDate, endDate);
         validateTimes(startHOURLY, endHOURLY);
-        validateAuthorizationLeave(leaveType, startHOURLY, endHOURLY);
+        // CHANGED: Updated validation for authorization leave
+        validateAuthorizationLeave(leaveType, startDate, endDate, startHOURLY, endHOURLY);
     }
 
     private void validateDates(LocalDate startDate, LocalDate endDate) {
@@ -57,9 +58,16 @@ public record LeaveRequestDTO(
         }
     }
 
-    private void validateAuthorizationLeave(ELeaveType leaveType, LocalTime startHOURLY, LocalTime endHOURLY) {
-        if (leaveType == ELeaveType.AUTORISATION && (startHOURLY == null || endHOURLY == null)) {
-            throw new MissingTimeForAuthorizationException("Start and end time are required for authorization leave type");
+    // CHANGED: Added startDate and endDate to the validation method
+    private void validateAuthorizationLeave(ELeaveType leaveType, LocalDate startDate, LocalDate endDate, LocalTime startHOURLY, LocalTime endHOURLY) {
+        if (leaveType == ELeaveType.AUTORISATION) {
+            if (startHOURLY == null || endHOURLY == null) {
+                throw new MissingTimeForAuthorizationException("Start and end time are required for authorization leave type");
+            }
+            // NEW: Enforce that for authorization leave, start and end dates must be the same
+            if (!startDate.equals(endDate)) {
+                throw new DateRangeException("For AUTORISATION leave, start date and end date must be the same day.");
+            }
         }
     }
 }

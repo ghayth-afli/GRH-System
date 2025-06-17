@@ -1,15 +1,10 @@
-<div class="form-modal-container">
-  <div class="form-modal-header">
-    <h5>Edit Personal Information</h5>
-    <button class="close-button" (click)="closeModal()">
-      <i class="icofont-close-line"></i>
-    </button>
-  </div>
-  @if(userhasNullAttributes){
+<div class="dialog-container">
+  @if (userHasNullAttributes) {
   <div class="alert-container">
     <div class="alert alert-warning">
       <div class="alert-icon">
         <i class="icofont-warning-alt"></i>
+        <!-- Fallback: <i class="fa-solid fa-exclamation-circle"></i> -->
       </div>
       <div class="alert-content">
         <div class="alert-title">Complete Your Profile</div>
@@ -21,78 +16,220 @@
     </div>
   </div>
   }
-
-  <form (ngSubmit)="onSubmit()" [formGroup]="editForm">
-    <div class="modal-body">
-      <div class="profile-picture-container">
-        <img
-          [src]="user.profilePicture"
-          class="profile-picture"
+  <h2 class="dialog-title">Edit Profile</h2>
+  <form [formGroup]="editForm" (ngSubmit)="onSubmit()">
+    <div class="profile-picture-container">
+      <img
+        [src]="user.profilePicture || '/assets/images/nopicture.png'"
+        alt="Profile Picture Preview"
+        class="profile-picture-preview"
+      />
+      <div>
+        <button
+          type="button"
+          class="upload-btn"
           (click)="triggerFileInput()"
-        />
+          aria-label="Upload profile picture"
+        >
+          Upload Photo
+        </button>
         <input
           id="profilePicture"
           type="file"
+          accept="image/*"
+          class="form-control"
+          style="display: none"
           (change)="onFileChange($event)"
-          hidden
+          aria-label="Profile picture upload"
         />
       </div>
-
-      <div class="form-controller-container">
-        <div class="form-controller">
-          <div class="label-container">
-            <label for="firstName">First Name</label>
-          </div>
-          <input id="firstName" formControlName="firstName" type="text" />
-        </div>
-        <div class="form-controller">
-          <div class="label-container">
-            <label for="lastName">Last Name</label>
-          </div>
-          <input id="lastName" formControlName="lastName" type="text" />
-        </div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label" for="firstName">First Name *</label>
+        <input
+          id="firstName"
+          type="text"
+          class="form-control"
+          formControlName="firstName"
+          aria-label="First name"
+          [attr.aria-describedby]="
+            editForm.get('firstName')?.errors ? 'firstName-error' : null
+          "
+        />
+        <span
+          class="form-error"
+          id="firstName-error"
+          *ngIf="
+            editForm.get('firstName')?.errors &&
+            editForm.get('firstName')?.touched
+          "
+        >
+          <span *ngIf="editForm.get('firstName')?.errors?.['required']"
+            >First Name is required</span
+          >
+          <span *ngIf="editForm.get('firstName')?.errors?.['pattern']"
+            >Alphabetic characters only</span
+          >
+        </span>
       </div>
-
-      <div class="form-controller-container">
-        <div class="form-controller">
-          <div class="label-container">
-            <label for="email">Email</label>
-          </div>
-          <input id="email" formControlName="email" type="email" />
-        </div>
-        <div class="form-controller">
-          <div class="label-container">
-            <label for="jobTitle">Job Title</label>
-          </div>
-          <input id="jobTitle" formControlName="jobTitle" type="text" />
-        </div>
+      <div class="form-group">
+        <label class="form-label" for="lastName">Last Name *</label>
+        <input
+          id="lastName"
+          type="text"
+          class="form-control"
+          formControlName="lastName"
+          aria-label="Last name"
+          [attr.aria-describedby]="
+            editForm.get('lastName')?.errors ? 'lastName-error' : null
+          "
+        />
+        <span
+          class="form-error"
+          id="lastName-error"
+          *ngIf="
+            editForm.get('lastName')?.errors &&
+            editForm.get('lastName')?.touched
+          "
+        >
+          <span *ngIf="editForm.get('lastName')?.errors?.['required']"
+            >Last Name is required</span
+          >
+          <span *ngIf="editForm.get('lastName')?.errors?.['pattern']"
+            >Alphabetic characters only</span
+          >
+        </span>
       </div>
-
-      <div class="form-controller-container">
-        <div class="form-controller">
-          <div class="label-container">
-            <label for="phoneNumber1">Phone Number 1</label>
-          </div>
-          <input id="phoneNumber1" formControlName="phoneNumber1" type="text" />
-        </div>
-        <div class="form-controller">
-          <div class="label-container">
-            <label for="phoneNumber2">Phone Number 2 (optional)</label>
-          </div>
-          <input id="phoneNumber2" formControlName="phoneNumber2" type="text" />
-        </div>
+      <div class="form-group">
+        <label class="form-label" for="email">Email *</label>
+        <input
+          id="email"
+          type="email"
+          class="form-control"
+          formControlName="email"
+          aria-label="Email"
+          [attr.aria-describedby]="
+            editForm.get('email')?.errors ? 'email-error' : null
+          "
+        />
+        <span
+          class="form-error"
+          id="email-error"
+          *ngIf="
+            editForm.get('email')?.errors && editForm.get('email')?.touched
+          "
+        >
+          <span *ngIf="editForm.get('email')?.errors?.['required']"
+            >Email is required</span
+          >
+          <span *ngIf="editForm.get('email')?.errors?.['email']"
+            >Invalid email format</span
+          >
+        </span>
       </div>
-
-      <div class="form-buttons">
-        <div class="button-submit">
-          <button type="submit" [disabled]="editForm.invalid" class="primary">
-            Save
-          </button>
-        </div>
-        <div class="button-cancel">
-          <button type="button" (click)="closeModal()">Cancel</button>
-        </div>
+      <div class="form-group">
+        <label class="form-label" for="jobTitle">Job Title *</label>
+        <input
+          id="jobTitle"
+          type="text"
+          class="form-control"
+          formControlName="jobTitle"
+          aria-label="Job title"
+          [attr.aria-describedby]="
+            editForm.get('jobTitle')?.errors ? 'jobTitle-error' : null
+          "
+        />
+        <span
+          class="form-error"
+          id="jobTitle-error"
+          *ngIf="
+            editForm.get('jobTitle')?.errors &&
+            editForm.get('jobTitle')?.touched
+          "
+        >
+          Job Title is required
+        </span>
       </div>
+      <div class="form-group phone-group">
+        <label class="form-label" for="phoneNumber1">Phone Number 1 *</label>
+        <div class="phone-input-container">
+          <span class="phone-prefix">{{ countryCode }}</span>
+          <input
+            id="phoneNumber1"
+            type="tel"
+            class="form-control"
+            formControlName="phoneNumber1"
+            pattern="[0-9]*"
+            maxlength="8"
+            aria-label="Primary phone number"
+            [attr.aria-describedby]="
+              editForm.get('phoneNumber1')?.errors ? 'phoneNumber1-error' : null
+            "
+          />
+        </div>
+        <span
+          class="form-error"
+          id="phoneNumber1-error"
+          *ngIf="
+            editForm.get('phoneNumber1')?.errors &&
+            editForm.get('phoneNumber1')?.touched
+          "
+        >
+          <span *ngIf="editForm.get('phoneNumber1')?.errors?.['required']"
+            >Phone Number 1 is required</span
+          >
+          <span *ngIf="editForm.get('phoneNumber1')?.errors?.['pattern']"
+            >Must be 8 digits</span
+          >
+        </span>
+      </div>
+      <div class="form-group phone-group">
+        <label class="form-label" for="phoneNumber2">Phone Number 2</label>
+        <div class="phone-input-container">
+          <span class="phone-prefix">{{ countryCode }}</span>
+          <input
+            id="phoneNumber2"
+            type="tel"
+            class="form-control"
+            formControlName="phoneNumber2"
+            pattern="[0-9]*"
+            maxlength="8"
+            aria-label="Secondary phone number"
+            [attr.aria-describedby]="
+              editForm.get('phoneNumber2')?.errors ? 'phoneNumber2-error' : null
+            "
+          />
+        </div>
+        <span
+          class="form-error"
+          id="phoneNumber2-error"
+          *ngIf="editForm.get('phoneNumber2')?.errors?.['pattern'] && editForm.get('phoneNumber2')?.touched"
+        >
+          Must be 8 digits
+        </span>
+      </div>
+    </div>
+    <div class="dialog-actions">
+      <button
+        type="button"
+        class="dialog-btn cancel"
+        (click)="closeModal()"
+        aria-label="Cancel"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="dialog-btn submit"
+        [disabled]="editForm.invalid"
+        aria-label="Submit profile changes"
+      >
+        @if(isLoading){
+        <span class="loader" aria-label="Loading"></span>
+
+        }@else{ Save}
+      </button>
     </div>
   </form>
 </div>

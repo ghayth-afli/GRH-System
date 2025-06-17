@@ -1,0 +1,58 @@
+<div class="date-details">
+  <h2 class="dialog-title">
+    Details for {{ data.date | date : "MMM d, yyyy" }}
+  </h2>
+  <div *ngIf="data.leaves.length">
+    <h3 class="section-title">Leaves</h3>
+    <div class="detail-item" *ngFor="let leave of data.leaves">
+      <span class="leave-type" [style.backgroundColor]="leave.color">{{
+        leave.type
+      }}</span>
+      <span
+        ><strong>{{ leave.name }}</strong> ({{ leave.duration }}) -
+        {{ leave.status }}</span
+      >
+    </div>
+  </div>
+  <div *ngIf="data.holiday">
+    <h3 class="section-title">Holiday</h3>
+    <div class="detail-item">
+      <span
+        >{{ data.holiday.flag }} <strong>{{ data.holiday.name }}</strong></span
+      >
+      <span
+        >{{ data.holiday.country }} -
+        {{ data.holiday.date | date : "MMM d, yyyy" }}</span
+      >
+    </div>
+  </div>
+  <div *ngIf="data.userLeave">
+    <h3 class="section-title">Your Leave</h3>
+    <div class="detail-item">
+      <span class="leave-type" [style.backgroundColor]="data.userLeave.color">{{
+        data.userLeave.type
+      }}</span>
+      <span
+        ><strong>{{ data.userLeave.name }}</strong> ({{
+          data.userLeave.duration
+        }}) - {{ data.userLeave.status }}</span
+      >
+    </div>
+  </div>
+  <div
+    class="empty-state"
+    *ngIf="!data.leaves.length && !data.holiday && !data.userLeave"
+    aria-live="polite"
+  >
+    No events on this date.
+  </div>
+  <div class="dialog-actions">
+    <button
+      class="dialog-btn cancel"
+      (click)="dialogRef.close()"
+      aria-label="Close dialog"
+    >
+      Close
+    </button>
+  </div>
+</div>

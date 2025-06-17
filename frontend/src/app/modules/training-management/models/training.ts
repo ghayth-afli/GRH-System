@@ -5,9 +5,10 @@ export interface Training {
   title: string;
   description: string;
   department: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   createdBy: string;
-  invitations: Invitation[];
   createdAt: string;
+  isConfirmed: boolean;
+  totalInvitations: number;
 }

@@ -34,6 +34,10 @@ export class AuthService {
     return user ? JSON.parse(user) : null;
   }
 
+  set authenticatedUser(user: User) {
+    this._setUser(user);
+  }
+
   // login method to get access token and refresh token
   login(username: string, password: string): Observable<LoginResponse> {
     return this.http
@@ -165,6 +169,7 @@ export class AuthService {
   }
 
   hasRole(role: string): boolean {
-    return localStorage.getItem('user')?.includes(role) ?? false;
+    const user = this.authenticatedUser;
+    return user !== null && user.role === role;
   }
 }

@@ -32,7 +32,7 @@ public class AppointmentController {
 
     @Operation(
             summary = "Get all appointments",
-            description = "Retrieves a list of all medical appointments. Requires HR, Employee, or Manager role."
+            description = "Retrieves a list of all medical appointments. Requires HR, User, or Manager role."
     )
     @ApiResponse(
             responseCode = "200",
@@ -41,14 +41,14 @@ public class AppointmentController {
     )
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @GetMapping
-    @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager')")
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager') or hasAuthority('HRD')")
     public ResponseEntity<List<AppointmentResponseDTO>> getAppointments() {
         return ResponseEntity.ok(appointmentService.getAllAppointments());
     }
 
     @Operation(
             summary = "Get appointment by ID",
-            description = "Retrieves details of a specific appointment by ID. Requires HR, Employee, or Manager role."
+            description = "Retrieves details of a specific appointment by ID. Requires HR, User, or Manager role."
     )
     @ApiResponse(
             responseCode = "200",
@@ -58,7 +58,7 @@ public class AppointmentController {
     @ApiResponse(responseCode = "404", description = "Appointment not found")
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager')")
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager') or hasAuthority('HRD')")
     public ResponseEntity<AppointmentResponseDTO> getAppointment(
             @Parameter(description = "ID of the appointment", example = "1")
             @PathVariable("id") Long id
@@ -67,28 +67,28 @@ public class AppointmentController {
     }
 
     @Operation(
-            summary = "Get appointments by employee ID",
-            description = "Retrieves a list of appointments for a specific employee. Requires HR, Employee, or Manager role."
+            summary = "Get appointments by user ID",
+            description = "Retrieves a list of appointments for a specific user. Requires HR, User, or Manager role."
     )
     @ApiResponse(
             responseCode = "200",
-            description = "List of appointments for the employee",
+            description = "List of appointments for the user",
             content = @Content(schema = @Schema(implementation = AppointmentResponseDTO.class))
     )
-    @ApiResponse(responseCode = "404", description = "Employee not found")
+    @ApiResponse(responseCode = "404", description = "User not found")
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
-    @GetMapping("/employee/{employeeId}")
-    @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager')")
-    public ResponseEntity<List<AppointmentResponseDTO>> getAppointmentsByEmployeeId(
-            @Parameter(description = "ID of the employee", example = "emp123")
-            @PathVariable("employeeId") String employeeId
+    @GetMapping("/user/{userId}")
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager') or hasAuthority('HRD')")
+    public ResponseEntity<List<AppointmentResponseDTO>> getAppointmentsByUserId(
+            @Parameter(description = "ID of the user", example = "emp123")
+            @PathVariable("userId") String userId
     ) {
-        return ResponseEntity.ok(appointmentService.getAppointmentsByPatientId(employeeId));
+        return ResponseEntity.ok(appointmentService.getAppointmentsByPatientId(userId));
     }
 
     @Operation(
             summary = "Get appointments by medical visit ID",
-            description = "Retrieves a list of appointments for a specific medical visit. Requires HR, Employee, or Manager role."
+            description = "Retrieves a list of appointments for a specific medical visit. Requires HR, User, or Manager role."
     )
     @ApiResponse(
             responseCode = "200",
@@ -98,7 +98,7 @@ public class AppointmentController {
     @ApiResponse(responseCode = "404", description = "Medical visit not found")
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @GetMapping("/medVisit/{medVisitId}")
-    @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager')")
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager') or hasAuthority('HRD')")
     public ResponseEntity<List<AppointmentResponseDTO>> getAppointmentsByMedVisitId(
             @Parameter(description = "ID of the medical visit", example = "6")
             @PathVariable("medVisitId") String medVisitId
@@ -108,7 +108,7 @@ public class AppointmentController {
 
     @Operation(
             summary = "Create a new appointment",
-            description = "Creates a new medical appointment with the specified details. Requires HR, Employee, or Manager role."
+            description = "Creates a new medical appointment with the specified details. Requires HR, User, or Manager role."
     )
     @ApiResponse(
             responseCode = "200",
@@ -118,7 +118,7 @@ public class AppointmentController {
     @ApiResponse(responseCode = "400", description = "Invalid input data (e.g., past time slot)")
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @PostMapping
-    @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager')")
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager') or hasAuthority('HRD')")
     public ResponseEntity<MessageResponseDTO> createAppointment(
             @Valid @RequestBody AppointmentRequestDTO appointmentRequestDTO
     ) {
@@ -128,7 +128,7 @@ public class AppointmentController {
 
     @Operation(
             summary = "Update an appointment",
-            description = "Updates an existing appointment with the specified details. Requires HR, Employee, or Manager role."
+            description = "Updates an existing appointment with the specified details. Requires HR, User, or Manager role."
     )
     @ApiResponse(
             responseCode = "200",
@@ -139,7 +139,7 @@ public class AppointmentController {
     @ApiResponse(responseCode = "404", description = "Appointment not found")
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager')")
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager') or hasAuthority('HRD')")
     public ResponseEntity<MessageResponseDTO> updateAppointment(
             @Parameter(description = "ID of the appointment", example = "1")
             @PathVariable("id") Long id,
@@ -151,7 +151,7 @@ public class AppointmentController {
 
     @Operation(
             summary = "Delete an appointment",
-            description = "Deletes an existing appointment by ID. Requires HR, Employee, or Manager role."
+            description = "Deletes an existing appointment by ID. Requires HR, User, or Manager role."
     )
     @ApiResponse(
             responseCode = "200",
@@ -161,12 +161,35 @@ public class AppointmentController {
     @ApiResponse(responseCode = "404", description = "Appointment not found")
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager')")
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager') or hasAuthority('HRD')")
     public ResponseEntity<MessageResponseDTO> deleteAppointment(
             @Parameter(description = "ID of the appointment", example = "1")
             @PathVariable("id") Long id
     ) {
         appointmentService.deleteAppointment(id);
         return ResponseEntity.ok(new MessageResponseDTO("Appointment deleted successfully"));
+    }
+
+
+    //cancel appointment by medical visit id
+    @Operation(
+            summary = "Cancel an appointment",
+            description = "Cancels an existing appointment by ID. Requires HR, User, or Manager role."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Appointment cancelled successfully",
+            content = @Content(schema = @Schema(implementation = MessageResponseDTO.class))
+    )
+    @ApiResponse(responseCode = "404", description = "Appointment not found")
+    @ApiResponse(responseCode = "403", description = "Unauthorized access")
+    @DeleteMapping("/cancel/{id}")
+    @PreAuthorize("hasAuthority('HR') or hasAuthority('Employee') or hasAuthority('Manager') or hasAuthority('HRD')")
+    public ResponseEntity<MessageResponseDTO> cancelAppointment(
+            @Parameter(description = "ID of the appointment", example = "1")
+            @PathVariable("id") Long id
+    ) {
+        appointmentService.cancelAppointment(id);
+        return ResponseEntity.ok(new MessageResponseDTO("Appointment cancelled successfully"));
     }
 }
