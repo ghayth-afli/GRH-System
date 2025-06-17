@@ -27,6 +27,8 @@
       class="stat-card requests"
       role="region"
       aria-labelledby="requests-label"
+      (click)="openLeaveRequestsDialog()"
+      style="cursor: pointer"
     >
       <i class="fa-solid fa-file-alt stat-icon" aria-hidden="true"></i>
       <div class="stat-label" id="requests-label">Total Leave Requests</div>

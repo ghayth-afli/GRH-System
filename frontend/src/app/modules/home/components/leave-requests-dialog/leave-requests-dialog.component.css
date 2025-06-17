@@ -1,0 +1,143 @@
+.leave-requests-dialog {
+  max-width: 800px;
+  padding: 20px;
+  font-family: "Open Sans", sans-serif;
+  color: var(--primary-dark);
+}
+
+.dialog-title {
+  font-family: "Kode Mono", monospace;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin: 0 0 16px;
+}
+
+.table-container {
+  max-height: 400px;
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  font-family: "Kode Mono", monospace;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-dark);
+  background-color: var(--silver);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+td {
+  font-size: 14px;
+  padding: 12px;
+  border-bottom: 1px solid var(--silver);
+}
+
+.status-tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--white);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.status-pending {
+  background-color: var(--warning); /* #ffc107 */
+}
+
+.status-approved {
+  background-color: var(--success); /* #28a745 */
+}
+
+.status-rejected {
+  background-color: var(--danger); /* #dc3545 */
+}
+
+.leave-type-tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--white);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.empty-state {
+  font-size: 14px;
+  color: var(--gray);
+  text-align: center;
+  padding: 20px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.dialog-btn {
+  padding: 8px 16px;
+  border-radius: var(--border-radius);
+  font-family: "Kode Mono", monospace;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dialog-btn.cancel {
+  background-color: transparent;
+  color: var(--primary-dark);
+  border: 1px solid var(--silver);
+}
+
+.dialog-btn.cancel:hover {
+  background-color: var(--silver);
+}
+
+@media (max-width: 768px) {
+  .leave-requests-dialog {
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  .dialog-title {
+    font-size: 18px;
+  }
+
+  th,
+  td {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .status-tag,
+  .leave-type-tag {
+    font-size: 10px;
+    padding: 3px 6px;
+  }
+
+  .empty-state {
+    font-size: 12px;
+  }
+
+  .dialog-btn {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+
+  .table-container {
+    max-height: 300px;
+  }
+}

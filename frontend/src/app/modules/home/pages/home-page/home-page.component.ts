@@ -20,6 +20,7 @@ import { LeaveService } from '../../../leave/services/leave.service';
 import { Leave } from '../../../leave/models/leave';
 import { PublicHolidayService } from '../../services/public-holiday.service';
 import interactionPlugin from '@fullcalendar/interaction';
+import { LeaveRequestsDialogComponent } from '../../components/leave-requests-dialog/leave-requests-dialog.component';
 
 interface Holiday {
   id: string;
@@ -247,6 +248,25 @@ export class HomePageComponent implements OnInit, AfterViewInit {
             }
           : null,
       },
+    });
+  }
+
+  openLeaveRequestsDialog() {
+    this.leaveService.getLeaveHistory().subscribe({
+      next: (allRequests) => {
+        this.dialog.open(LeaveRequestsDialogComponent, {
+          width: '800px',
+          maxWidth: '90vw',
+          data: {
+            leaves: allRequests,
+            legendItems: this.legendItems.map((item) => ({
+              type: item.type,
+              color: item.color,
+            })),
+          },
+        });
+      },
+      error: (err) => this.showErrorSnackbar('Failed to load leave requests'),
     });
   }
 
