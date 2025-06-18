@@ -234,4 +234,24 @@ public class LeaveController {
         headers.setContentDispositionFormData("attachment", "leave-attachment.pdf");
         return new ResponseEntity<>(attachment, headers, HttpStatus.OK);
     }
+
+    //leave exist by userDn and date
+    @Operation(
+            summary = "Check if leave exists for user on a specific date",
+            description = "Checks if a leave request exists for the authenticated user on a specific date. Requires User role."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Leave exists for the user on the specified date",
+            content = @Content(schema = @Schema(implementation = Boolean.class))
+    )
+    @GetMapping("/exists")
+    public ResponseEntity<Boolean> leaveExists(
+            @Parameter(description = "Date to check for leave existence", example = "2025-06-01", required = true)
+            @RequestParam("userDn") String userDn,
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+    ) {
+        boolean exists = leaveService.isUserOnLeave(userDn, date);
+        return ResponseEntity.ok(exists);
+    }
 }

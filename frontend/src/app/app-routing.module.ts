@@ -66,6 +66,13 @@ const routes: Routes = [
             (m) => m.RecruitmentModule
           ),
       },
+      {
+        path: 'attendance',
+        loadChildren: () =>
+          import('./modules/attendance/attendance.module').then(
+            (m) => m.AttendanceModule
+          ),
+      },
     ],
   },
   { path: '**', redirectTo: '/not-found' },

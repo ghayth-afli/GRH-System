@@ -22,6 +22,7 @@
       <module>training-management-service</module>
     <module>recruitment-service</module>
       <module>candidate-service</module>
+    <module>attendance-service</module>
   </modules>
 
   <properties>

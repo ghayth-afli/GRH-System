@@ -11,6 +11,7 @@
         <module name="feign-clients" />
         <module name="candidate-service" />
         <module name="auth-service" />
+        <module name="attendance-service" />
         <module name="api-gateway" />
         <module name="leave-service" />
         <module name="med-visit-service" />

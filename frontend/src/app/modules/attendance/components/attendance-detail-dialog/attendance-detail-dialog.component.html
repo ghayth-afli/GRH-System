@@ -1,0 +1,65 @@
+<div class="dialog">
+  <h2 class="dialog-title">Attendance Details</h2>
+  <div class="employee-card">
+    <div>
+      <h3>{{ data.employeeName }}</h3>
+      <p>ID: {{ data.employeeId }}</p>
+      <p>Date: {{ data.date | date : "MMM d, yyyy" }}</p>
+      <p>
+        Status:
+        <span
+          class="status-tag"
+          [ngClass]="{
+            'status-on-time': data.status === 'On-Time',
+            'status-late': data.status === 'Late',
+            'status-absent': data.status === 'Absent'
+          }"
+          >{{ data.status }}</span
+        >
+      </p>
+    </div>
+  </div>
+  <div class="timeline">
+    <h3>Punch Timeline</h3>
+    <div class="timeline-item" *ngFor="let punch of punches">
+      <div class="timeline-dot"></div>
+      <div class="timeline-content">
+        <span>{{ punch.time }}</span>
+        <span>{{ punch.type }}</span>
+      </div>
+    </div>
+    <div class="empty-state" *ngIf="!punches.length">No punches recorded.</div>
+  </div>
+  <div class="punch-form">
+    <h3>Add Manual Punch</h3>
+    <form [formGroup]="punchForm">
+      <div class="form-group">
+        <label for="punchTime">Punch Time (HH:MM)</label>
+        <input
+          type="text"
+          id="punchTime"
+          formControlName="punchTime"
+          class="custom-input"
+          placeholder="e.g., 08:00"
+        />
+      </div>
+      <button
+        class="dialog-btn"
+        (click)="addPunch()"
+        [disabled]="punchForm.invalid"
+        aria-label="Add punch"
+      >
+        Add Punch
+      </button>
+    </form>
+  </div>
+  <div class="dialog-actions">
+    <button
+      class="dialog-btn cancel"
+      (click)="close()"
+      aria-label="Close dialog"
+    >
+      Close
+    </button>
+  </div>
+</div>

@@ -1,0 +1,319 @@
+.attendance-page {
+  padding: 20px;
+  font-family: "Open Sans", sans-serif;
+  color: var(--primary-dark);
+}
+
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: #fff;
+  border: 1px solid var(--silver);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon {
+  font-size: 24px;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-family: "Kode Mono", monospace;
+  font-size: 14px;
+  color: var(--primary-dark);
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+.controls {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.view-toggle {
+  display: flex;
+  border: 1px solid var(--silver);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+.view-toggle button {
+  padding: 8px 16px;
+  font-family: "Kode Mono", monospace;
+  font-size: 14px;
+  background: #fff;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-toggle button.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.filter-btn,
+.report-btn {
+  padding: 8px 16px;
+  font-family: "Kode Mono", monospace;
+  font-size: 14px;
+  background: #fff;
+  border: 1px solid var(--silver);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover,
+.report-btn:hover {
+  background: var(--silver);
+}
+
+.filter-panel {
+  background: #fff;
+  border: 1px solid var(--silver);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  margin-bottom: 16px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.filter-panel.open {
+  max-height: 500px;
+}
+
+.filter-group {
+  margin-bottom: 12px;
+}
+
+.filter-group label {
+  display: block;
+  font-family: "Kode Mono", monospace;
+  font-size: 12px;
+  color: var(--primary-dark);
+  margin-bottom: 4px;
+}
+
+.custom-input,
+.custom-select {
+  width: 100%;
+  padding: 8px;
+  font-family: "Open Sans", sans-serif;
+  font-size: 14px;
+  border: 1px solid var(--silver);
+  border-radius: var(--border-radius);
+  background: #fff;
+  color: var(--primary-dark);
+}
+
+.table-container {
+  background: #fff;
+  border: 1px solid var(--silver);
+  border-radius: var(--border-radius);
+  overflow: auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  font-family: "Kode Mono", monospace;
+  font-size: 14px;
+  color: var(--primary-dark);
+  background: var(--silver);
+  padding: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.data-table td {
+  font-size: 14px;
+  padding: 12px;
+  border-bottom: 1px solid var(--silver);
+}
+
+.employee-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.employee-photo {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.status-tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.status-on-time {
+  background: var(--success);
+}
+
+.status-late {
+  background: var(--danger);
+}
+
+.status-absent {
+  background: var(--gray);
+}
+
+.action-btn {
+  padding: 8px 16px;
+  font-family: "Kode Mono", monospace;
+  font-size: 12px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-btn:hover {
+  background: darken(var(--accent), 10%);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
+  color: var(--gray);
+}
+
+.exceptions-section h2 {
+  font-family: "Kode Mono", monospace;
+  font-size: 18px;
+  color: var(--primary-dark);
+  margin: 20px 0 12px;
+}
+
+.exception-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--danger);
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-top: 1px solid var(--silver);
+}
+
+.page-size {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-size label {
+  font-family: "Kode Mono", monospace;
+  font-size: 12px;
+  color: var(--primary-dark);
+}
+
+.page-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-btn {
+  padding: 6px;
+  font-size: 14px;
+  background: #fff;
+  border: 1px solid var(--silver);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: var(--silver);
+}
+
+.page-info {
+  font-family: "Open Sans", sans-serif;
+  font-size: 14px;
+  color: var(--primary-dark);
+}
+
+@media (max-width: 768px) {
+  .stat-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .controls {
+    flex-direction: column;
+  }
+
+  .filter-panel {
+    padding: 12px;
+  }
+
+  .data-table th,
+  .data-table td {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .employee-photo {
+    width: 24px;
+    height: 24px;
+  }
+
+  .status-tag,
+  .action-btn {
+    font-size: 10px;
+    padding: 3px 6px;
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

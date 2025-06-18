@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -187,6 +188,14 @@ public class LeaveServiceImpl implements LeaveService {
     public LeaveBalance getLeaveBalance() {
         return leaveBalanceRepository.findByUserDn(getCurrentUser().id())
                 .orElseGet(() -> leaveBalanceRepository.save(new LeaveBalance(getCurrentUser().id(), 0.0, 0.0, 0.0)));
+    }
+
+    @Override
+    public boolean isUserOnLeave(String userDn, LocalDate date) {
+        List<Leave> approvedLeaves = leaveRepository.findByUserDnAndStartDateLessThanEqualAndEndDateGreaterThanEqualAndStatus(
+                userDn, date, date, EStatus.APPROVED);
+
+        return !approvedLeaves.isEmpty();
     }
 
     @Scheduled(cron = "0 0 0 1 * *")

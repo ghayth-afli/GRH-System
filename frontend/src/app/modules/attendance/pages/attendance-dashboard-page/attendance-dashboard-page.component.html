@@ -1,0 +1,303 @@
+<div class="attendance-page">
+  <!-- KPI Stat Cards -->
+  <div class="stat-cards">
+    <div class="stat-card">
+      <i class="fa-solid fa-users stat-icon"></i>
+      <div class="stat-label">Present</div>
+      <div class="stat-value">{{ kpis.present }}</div>
+    </div>
+    <div class="stat-card">
+      <i class="fa-solid fa-clock stat-icon"></i>
+      <div class="stat-label">Late</div>
+      <div class="stat-value">{{ kpis.late }}</div>
+    </div>
+    <div class="stat-card">
+      <i class="fa-solid fa-user-slash stat-icon"></i>
+      <div class="stat-label">Absent</div>
+      <div class="stat-value">{{ kpis.absent }}</div>
+    </div>
+    <div class="stat-card">
+      <i class="fa-solid fa-hourglass stat-icon"></i>
+      <div class="stat-label">Total Hours</div>
+      <div class="stat-value">{{ kpis.totalHours }}</div>
+    </div>
+  </div>
+
+  <!-- Filters and Controls -->
+  <div class="controls">
+    <div class="view-toggle">
+      <button
+        [class.active]="viewMode === 'daily'"
+        (click)="toggleView('daily')"
+      >
+        Daily
+      </button>
+      <button
+        [class.active]="viewMode === 'monthly'"
+        (click)="toggleView('monthly')"
+      >
+        Monthly
+      </button>
+    </div>
+    <button
+      class="filter-btn"
+      (click)="toggleFilter()"
+      aria-label="Toggle filters"
+    >
+      <i class="fa-solid fa-filter"></i> Filters
+    </button>
+    <button
+      class="report-btn"
+      (click)="generateReport()"
+      aria-label="Generate report"
+    >
+      <i class="fa-solid fa-download"></i> Report
+    </button>
+  </div>
+
+  <!-- Filter Panel -->
+  <div class="filter-panel" [class.open]="filterOpen">
+    <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+      @if (viewMode === 'daily') {
+      <div class="filter-group">
+        <label for="date">Date</label>
+        <input
+          type="date"
+          id="date"
+          formControlName="date"
+          class="custom-input"
+        />
+      </div>
+      } @if (viewMode !== 'daily') {
+      <div class="filter-group">
+        <label for="month">Month</label>
+        <input
+          type="month"
+          id="month"
+          formControlName="month"
+          class="custom-input"
+        />
+      </div>
+      }
+
+      <div class="filter-group">
+        <label for="department">Department</label>
+        <select
+          id="department"
+          formControlName="department"
+          class="custom-select"
+        >
+          <option value="">All</option>
+          <option *ngFor="let dept of departments" [value]="dept">
+            {{ dept }}
+          </option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="status">Status</label>
+        <select id="status" formControlName="status" class="custom-select">
+          <option value="">All</option>
+          <option *ngFor="let stat of statuses" [value]="stat">
+            {{ stat }}
+          </option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="search">Search</label>
+        <input
+          type="text"
+          id="search"
+          formControlName="search"
+          class="custom-input"
+          placeholder="Name or ID"
+        />
+      </div>
+      <div class="filter-actions">
+        <button type="submit" class="submit-btn">
+          <i class="fa-solid fa-filter"></i> Apply Filters
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Attendance Table -->
+  <div
+    class="table-container"
+    (drop)="onFileDrop($event)"
+    (dragover)="onDragOver($event)"
+  >
+    <table class="data-table" aria-label="Attendance records">
+      <thead>
+        <tr>
+          <th>Employee</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>First Punch</th>
+          <th>Last Punch</th>
+          <th>Total Hours</th>
+          <th>Punches</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let record of paginatedAttendanceRecords">
+          <td>
+            <div class="employee-cell">
+              {{ record.employeeName }}
+            </div>
+          </td>
+          <td>{{ record.date | date : "MMM d, yyyy" }}</td>
+          <td>
+            <span
+              class="status-tag"
+              [ngClass]="{
+                'status-on-time': record.status === 'PRESENT',
+                'status-late': record.status === 'LATE',
+                'status-absent': record.status === 'ABSENT'
+              }"
+              >{{ record.status }}</span
+            >
+          </td>
+          <td>{{ record.firstPunch || "-" }}</td>
+          <td>{{ record.lastPunch || "-" }}</td>
+          <td>{{ record.totalHours }}</td>
+          <td>{{ record.punches }}</td>
+          <td>
+            <button
+              class="action-btn"
+              (click)="openAttendanceDetail(record)"
+              [attr.aria-label]="
+                'View attendance details for ' + record.employeeName
+              "
+            >
+              <i class="fa-solid fa-eye"></i> View
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div
+      class="empty-state"
+      *ngIf="!attendanceRecords.length"
+      aria-live="polite"
+    >
+      No attendance records found.
+    </div>
+    <div class="pagination" *ngIf="attendanceRecords.length">
+      <div class="page-size">
+        <label for="attendancePageSize">Rows per page:</label>
+        <select
+          id="attendancePageSize"
+          [(ngModel)]="attendancePageSize"
+          class="custom-select"
+          aria-label="Select rows per page for attendance"
+        >
+          <option *ngFor="let size of attendancePageSizes" [value]="size">
+            {{ size }}
+          </option>
+        </select>
+      </div>
+      <div class="page-controls">
+        <button
+          class="page-btn"
+          (click)="changeAttendancePage(attendanceCurrentPage - 1)"
+          [disabled]="attendanceCurrentPage === 1"
+          aria-label="Previous page"
+        >
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <span class="page-info"
+          >Page {{ attendanceCurrentPage }} of {{ attendanceTotalPages }}</span
+        >
+        <button
+          class="page-btn"
+          (click)="changeAttendancePage(attendanceCurrentPage + 1)"
+          [disabled]="attendanceCurrentPage === attendanceTotalPages"
+          aria-label="Next page"
+        >
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exceptions Section -->
+  <div class="exceptions-section">
+    <h2>Attendance Exceptions</h2>
+    <div class="table-container">
+      <table class="data-table" aria-label="Attendance exceptions">
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Issue</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let exception of paginatedExceptions">
+            <td>{{ exception.employee }}</td>
+            <td>
+              <span class="exception-badge"
+                ><i class="fa-solid {{ exception.icon }}"></i>
+                {{ exception.issue }}</span
+              >
+            </td>
+            <td>{{ exception.date | date : "MMM d, yyyy" }}</td>
+            <td>
+              <button
+                class="action-btn"
+                (click)="openExceptionDetail(exception)"
+                [attr.aria-label]="
+                  'View exception details for ' + exception.employee
+                "
+              >
+                <i class="fa-solid fa-eye"></i> View
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="empty-state" *ngIf="!exceptions.length" aria-live="polite">
+        No exceptions found.
+      </div>
+      <div class="pagination" *ngIf="exceptions.length">
+        <div class="page-size">
+          <label for="exceptionsPageSize">Rows per page:</label>
+          <select
+            id="exceptionsPageSize"
+            [(ngModel)]="exceptionsPageSize"
+            class="custom-select"
+            aria-label="Select rows per page for exceptions"
+          >
+            <option *ngFor="let size of exceptionsPageSizes" [value]="size">
+              {{ size }}
+            </option>
+          </select>
+        </div>
+        <div class="page-controls">
+          <button
+            class="page-btn"
+            (click)="changeExceptionsPage(exceptionsCurrentPage - 1)"
+            [disabled]="exceptionsCurrentPage === 1"
+            aria-label="Previous page"
+          >
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <span class="page-info"
+            >Page {{ exceptionsCurrentPage }} of
+            {{ exceptionsTotalPages }}</span
+          >
+          <button
+            class="page-btn"
+            (click)="changeExceptionsPage(exceptionsCurrentPage + 1)"
+            [disabled]="exceptionsCurrentPage === exceptionsTotalPages"
+            aria-label="Next page"
+          >
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

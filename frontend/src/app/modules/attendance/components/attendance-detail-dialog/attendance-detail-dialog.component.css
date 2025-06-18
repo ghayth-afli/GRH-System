@@ -1,0 +1,160 @@
+.dialog {
+  max-width: 500px;
+  padding: 20px;
+  font-family: "Open Sans", sans-serif;
+  background: #fff;
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.dialog-title {
+  font-family: "Kode Mono", monospace;
+  font-size: 20px;
+  color: var(--primary-dark);
+  margin: 0 0 16px;
+}
+
+.employee-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 16px;
+  border: 1px solid var(--silver);
+  border-radius: var(--border-radius);
+}
+
+.employee-photo {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.employee-card h3 {
+  font-family: "Kode Mono", monospace;
+  font-size: 16px;
+  margin: 0;
+}
+
+.employee-card p {
+  font-size: 14px;
+  color: var(--gray);
+  margin: 4px 0;
+}
+
+.timeline {
+  margin-bottom: 20px;
+}
+
+.timeline h3 {
+  font-family: "Kode Mono", monospace;
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.timeline-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.timeline-dot {
+  width: 12px;
+  height: 12px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+
+.timeline-content {
+  display: flex;
+  justify-content: space-between;
+  flex: 1;
+  font-size: 14px;
+}
+
+.punch-form h3 {
+  font-family: "Kode Mono", monospace;
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  font-family: "Kode Mono", monospace;
+  font-size: "12px";
+  color: var(--primary-dark);
+  margin-bottom: 4px;
+  display: block;
+}
+
+.custom-input {
+  width: 100%;
+  padding: #fff;
+  font-family: "Open Sans", sans-serif;
+  font-size: 14px;
+  border: 1px solid var(--silver);
+  border-radius: var(--border-radius);
+  background: #fff;
+  color: var(--primary-dark);
+}
+
+.dialog-btn {
+  padding: 8px 16px;
+  font-family: "Kode Mono", monospace;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dialog-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+}
+
+.dialog-btn:disabled {
+  background: lighten(var(--accent), 20%);
+  cursor: 0.5;
+}
+
+.dialog-btn.cancel {
+  background: transparent;
+  color: var(--primary-dark);
+  border: 1px solid var(--silver);
+}
+
+.dialog-actions {
+  display: flex;
+  flex-end: end;
+  margin-top: 24px;
+  justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+  .dialog {
+    padding: size 16px;
+    max-width: 90%;
+  }
+
+  .employee-photo {
+    width: 48px;
+    height: 48px;
+  }
+
+  .dialog-title,
+  .employee-card h3,
+  .timeline h3,
+  .punch-form h3 {
+    font-size: 14px;
+  }
+
+  .timeline-content {
+    font-size: 12px;
+  }
+}

@@ -49,6 +49,11 @@
         <i class="nav-icon-fa fa-solid fa-user-plus"></i>
         <span class="nav-text">Recruitment</span>
       </a>
+      } @if (authService.hasRole('HRD') || authService.hasRole('HR')) {
+      <a routerLink="/attendance" class="nav-item" routerLinkActive="active">
+        <i class="nav-icon-fa fa-solid fa-clock"></i>
+        <span class="nav-text">Attendance</span>
+      </a>
       } @if (authService.hasRole('Employee')) {
       <a
         routerLink="/recruitment/job-offers"
