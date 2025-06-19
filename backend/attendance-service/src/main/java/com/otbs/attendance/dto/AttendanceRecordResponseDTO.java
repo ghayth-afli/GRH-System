@@ -16,6 +16,7 @@ import java.util.List;
 public class AttendanceRecordResponseDTO {
     private String employeeId;
     private String employeeName;
+    private String employeeDepartment;
     private LocalDate date;
     private EStatus status;
     private LocalTime firstPunch;

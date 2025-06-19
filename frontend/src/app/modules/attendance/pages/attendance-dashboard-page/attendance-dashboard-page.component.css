@@ -92,12 +92,14 @@
   border-radius: var(--border-radius);
   padding: 16px;
   margin-bottom: 16px;
-  max-height: 0;
+  max-height: 0px;
   overflow: hidden;
   transition: max-height 0.3s ease;
+  display: none;
 }
 
 .filter-panel.open {
+  display: block;
   max-height: 500px;
 }
 
@@ -131,6 +133,49 @@
   border-radius: var(--border-radius);
   overflow: auto;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.table-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--silver);
+  border-top: 4px solid var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
 }
 
 .data-table {
@@ -177,7 +222,7 @@
   border-radius: 4px;
 }
 
-.status-on-time {
+.status-present {
   background: var(--success);
 }
 
@@ -187,6 +232,22 @@
 
 .status-absent {
   background: var(--gray);
+}
+
+.status-awaiting {
+  background: var(--warning);
+}
+
+.status-half-day {
+  background: var(--info);
+}
+
+.status-weekend {
+  background: var(--silver);
+}
+
+.status-on-leave {
+  background: var(--primary);
 }
 
 .action-btn {
@@ -315,5 +376,11 @@
   .pagination {
     flex-direction: column;
     gap: 8px;
+  }
+
+  .spinner {
+    width: 32px;
+    height: 32px;
+    border-width: 3px;
   }
 }

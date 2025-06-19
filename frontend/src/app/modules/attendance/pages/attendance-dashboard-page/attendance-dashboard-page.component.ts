@@ -1,21 +1,32 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { AttendanceRecord } from '../../models/attendance-record';
 import { Exception } from '../../models/exception';
-import { BehaviorSubject, combineLatest } from 'rxjs';
-import { debounceTime, map } from 'rxjs/operators';
+import { combineLatest, of } from 'rxjs';
+import { startWith, debounceTime } from 'rxjs/operators';
 import { AttendanceService } from '../../service/attendance.service';
+
+// NOTE: Dialog component imports are unused in this logic but kept for context.
+import { AttendanceDetailDialogComponent } from '../../components/attendance-detail-dialog/attendance-detail-dialog.component';
+import { ExceptionDetailDialogComponent } from '../../components/exception-detail-dialog/exception-detail-dialog.component';
 
 @Component({
   selector: 'app-attendance-dashboard-page',
   standalone: false,
   templateUrl: './attendance-dashboard-page.component.html',
-  styleUrl: './attendance-dashboard-page.component.css',
+  styleUrls: ['./attendance-dashboard-page.component.css'],
 })
-export class AttendanceDashboardPageComponent {
+export class AttendanceDashboardPageComponent implements OnInit {
   filterForm: FormGroup;
-  attendanceRecords: AttendanceRecord[] = [];
-  exceptions: Exception[] = [];
+
+  // Master lists to hold the original data
+  private masterAttendanceRecords: AttendanceRecord[] = [];
+  private masterExceptions: Exception[] = [];
+
+  // Arrays for displaying filtered data
+  filteredAttendanceRecords: AttendanceRecord[] = [];
+  filteredExceptions: Exception[] = [];
+
   kpis = {
     present: 0,
     late: 0,
@@ -24,9 +35,18 @@ export class AttendanceDashboardPageComponent {
   };
   viewMode = 'daily';
   filterOpen = false;
-  today = '2025-06-17';
+  today = '2025-06-19';
   departments = ['HR', 'IT', 'Finance'];
-  statuses = ['On-Time', 'Late', 'Absent'];
+  statuses = [
+    'Present',
+    'Awaiting',
+    'Late',
+    'Absent',
+    'Half-Day',
+    'On-Leave',
+    'Weekend',
+  ];
+  isDataLoading = false; // Single, unified loading state
 
   // Pagination for attendance records
   attendancePageSize = 5;
@@ -42,14 +62,14 @@ export class AttendanceDashboardPageComponent {
   exceptionsTotalPages = 1;
   paginatedExceptions: Exception[] = [];
 
-  private filterSubject = new BehaviorSubject<any>({ date: this.today });
-
   constructor(
     private fb: FormBuilder,
     private attendanceService: AttendanceService
   ) {
     this.filterForm = this.fb.group({
       date: [this.today],
+      dateRangeStart: [''],
+      dateRangeEnd: [''],
       month: [''],
       department: [''],
       status: [''],
@@ -58,172 +78,194 @@ export class AttendanceDashboardPageComponent {
   }
 
   ngOnInit() {
-    this.loadAttendance(this.today);
-    this.loadExceptions(this.today);
-  }
+    this.isDataLoading = true;
+    // Fetch initial data once. Use `of([])` for mock/non-existent services.
+    combineLatest([
+      this.attendanceService.getAttendanceRecords(),
+      of([] as Exception[]), // FIX: Correctly handle mock exceptions as an observable
+    ]).subscribe({
+      next: ([attendanceRecords, exceptions]) => {
+        this.masterAttendanceRecords = attendanceRecords;
+        this.masterExceptions = exceptions;
 
-  loadAttendance(date: string) {
-    this.attendanceService.getAttendanceRecords(date).subscribe((records) => {
-      this.attendanceRecords = records;
-      this.updateAttendancePagination();
-      this.kpis.present = records.filter(
-        (r) => r.status === 'PRESENT' || r.status === 'LATE'
-      ).length;
-      this.kpis.late = records.filter((r) => r.status === 'LATE').length;
-      this.kpis.absent = records.filter((r) => r.status === 'ABSENT').length;
-      this.kpis.totalHours =
-        records
-          .reduce(
-            (total, record) =>
-              total + (record.totalHours ? parseFloat(record.totalHours) : 0),
-            0
-          )
-          .toFixed(2) + 'h';
+        // Start listening to filter changes only after data is loaded
+        this.filterForm.valueChanges
+          .pipe(startWith(this.filterForm.value), debounceTime(300))
+          .subscribe((filters) => {
+            this.applyFilters(filters);
+          });
+
+        this.isDataLoading = false;
+      },
+      error: (err) => {
+        console.error('Error fetching initial data', err);
+        this.isDataLoading = false;
+      },
     });
   }
 
-  applyFilters() {
-    if (this.viewMode === 'daily') {
-      const date = this.filterForm.value.date;
-      this.loadAttendance(date);
-    }
-    if (this.viewMode === 'monthly') {
-      const month = this.filterForm.value.month;
-      this.attendanceService
-        .getAttendanceRecordsByMonth(month)
-        .subscribe((records) => {
-          this.attendanceRecords = records;
-          this.kpis.present = records.filter(
-            (r) => r.status === 'PRESENT' || r.status === 'LATE'
-          ).length;
-          this.kpis.late = records.filter((r) => r.status === 'LATE').length;
-          this.kpis.absent = records.filter(
-            (r) => r.status === 'ABSENT'
-          ).length;
-          this.kpis.totalHours =
-            records
-              .reduce(
-                (total, record) =>
-                  total +
-                  (record.totalHours ? parseFloat(record.totalHours) : 0),
-                0
-              )
-              .toFixed(2) + 'h';
-          this.updateAttendancePagination();
-        });
-    }
-    //apply other filters like department and status
-    const department = this.filterForm.value.department;
-    const status = this.filterForm.value.status;
-    const search = this.filterForm.value.search.toLowerCase();
-    this.attendanceRecords = this.attendanceRecords.filter((record) => {
-      return (
-        (!department || record.employeeDepartment === department) &&
-        (!status || record.status === status) &&
-        (!search ||
-          record.employeeName.toLowerCase().includes(search) ||
-          record.employeeId.toLowerCase().includes(search))
-      );
+  applyFilters(filters: any): void {
+    // Filter attendance records from the master list
+    this.filteredAttendanceRecords = this.masterAttendanceRecords.filter(
+      (record) => {
+        const searchStr = filters.search?.toLowerCase() || '';
+        const matchesSearch =
+          !searchStr || record.employeeName.toLowerCase().includes(searchStr);
+        const matchesDept =
+          !filters.department ||
+          record.employeeDepartment === filters.department;
+        const matchesStatus =
+          !filters.status || record.status === filters.status.toUpperCase();
+
+        let matchesDate = true;
+        if (this.viewMode === 'daily' && filters.date) {
+          matchesDate = record.date === filters.date;
+        } else if (this.viewMode === 'monthly' && filters.month) {
+          matchesDate = record.date.startsWith(filters.month);
+        } else if (filters.dateRangeStart && filters.dateRangeEnd) {
+          matchesDate =
+            record.date >= filters.dateRangeStart &&
+            record.date <= filters.dateRangeEnd;
+        }
+
+        return matchesSearch && matchesDept && matchesStatus && matchesDate;
+      }
+    );
+
+    // Filter exceptions from the master list
+    this.filteredExceptions = this.masterExceptions.filter((exception) => {
+      let matchesDate = true;
+      if (this.viewMode === 'daily' && filters.date) {
+        matchesDate = exception.date === filters.date;
+      } else if (this.viewMode === 'monthly' && filters.month) {
+        matchesDate = exception.date.startsWith(filters.month);
+      }
+      return matchesDate;
     });
+
+    this.updateKpis();
     this.updateAttendancePagination();
-    // this.exceptions = this.exceptions.filter((exception) => {
-    //   return (
-    //     (!department || exception.department === department) &&
-    //     (!status || exception.status === status) &&
-    //     (!search ||
-    //       exception.employeeName.toLowerCase().includes(search) ||
-    //       exception.employeeId.toLowerCase().includes(search))
-    //   );
-    // });
     this.updateExceptionsPagination();
   }
 
-  loadExceptions(date: string) {}
+  updateKpis(): void {
+    this.kpis.present = this.filteredAttendanceRecords.filter(
+      (r) => r.status === 'PRESENT'
+    ).length;
+    this.kpis.late = this.filteredAttendanceRecords.filter(
+      (r) => r.status === 'LATE'
+    ).length;
+    this.kpis.absent = this.filteredAttendanceRecords.filter(
+      (r) => r.status === 'ABSENT'
+    ).length;
+    this.kpis.totalHours =
+      this.filteredAttendanceRecords
+        .reduce(
+          (total, record) =>
+            total + (record.totalHours ? parseFloat(record.totalHours) : 0),
+          0
+        )
+        .toFixed(2) + 'h';
+  }
 
-  updateAttendancePagination() {
+  updateAttendancePagination(): void {
     this.attendanceTotalPages = Math.ceil(
-      this.attendanceRecords.length / this.attendancePageSize
+      this.filteredAttendanceRecords.length / this.attendancePageSize
     );
+    if (this.attendanceTotalPages === 0) this.attendanceTotalPages = 1;
+
     this.attendanceCurrentPage = Math.min(
       this.attendanceCurrentPage,
-      this.attendanceTotalPages || 1
+      this.attendanceTotalPages
     );
+
     const start = (this.attendanceCurrentPage - 1) * this.attendancePageSize;
-    this.paginatedAttendanceRecords = this.attendanceRecords.slice(
+    this.paginatedAttendanceRecords = this.filteredAttendanceRecords.slice(
       start,
       start + this.attendancePageSize
     );
   }
 
-  updateExceptionsPagination() {
+  updateExceptionsPagination(): void {
     this.exceptionsTotalPages = Math.ceil(
-      this.exceptions.length / this.exceptionsPageSize
+      this.filteredExceptions.length / this.exceptionsPageSize
     );
+    if (this.exceptionsTotalPages === 0) this.exceptionsTotalPages = 1;
+
     this.exceptionsCurrentPage = Math.min(
       this.exceptionsCurrentPage,
-      this.exceptionsTotalPages || 1
+      this.exceptionsTotalPages
     );
+
     const start = (this.exceptionsCurrentPage - 1) * this.exceptionsPageSize;
-    this.paginatedExceptions = this.exceptions.slice(
+    this.paginatedExceptions = this.filteredExceptions.slice(
       start,
       start + this.exceptionsPageSize
     );
   }
 
-  changeAttendancePage(page: number) {
+  changeAttendancePage(page: number): void {
     if (page >= 1 && page <= this.attendanceTotalPages) {
       this.attendanceCurrentPage = page;
       this.updateAttendancePagination();
     }
   }
 
-  changeExceptionsPage(page: number) {
+  changeExceptionsPage(page: number): void {
     if (page >= 1 && page <= this.exceptionsTotalPages) {
       this.exceptionsCurrentPage = page;
       this.updateExceptionsPagination();
     }
   }
 
-  changeAttendancePageSize(size: number) {
-    this.attendancePageSize = size;
+  changeAttendancePageSize(size: string | number): void {
+    this.attendancePageSize = Number(size);
     this.attendanceCurrentPage = 1;
     this.updateAttendancePagination();
   }
 
-  changeExceptionsPageSize(size: number) {
-    this.exceptionsPageSize = size;
+  changeExceptionsPageSize(size: string | number): void {
+    this.exceptionsPageSize = Number(size);
     this.exceptionsCurrentPage = 1;
     this.updateExceptionsPagination();
   }
 
-  toggleView(mode: string) {
+  toggleView(mode: string): void {
     this.viewMode = mode;
-    this.filterForm.reset({ date: this.today });
+    const initialFilters = {
+      date: this.today,
+      month: '',
+      dateRangeStart: '',
+      dateRangeEnd: '',
+    };
+    this.filterForm.reset(initialFilters);
   }
 
-  toggleFilter() {
+  toggleFilter(): void {
     this.filterOpen = !this.filterOpen;
   }
 
-  generateReport() {}
+  generateReport(): void {
+    console.log('Generating report...');
+  }
 
-  onFileDrop(event: DragEvent) {
+  onFileDrop(event: DragEvent): void {
     event.preventDefault();
     const file = event.dataTransfer?.files[0];
     if (file && file.type === 'text/csv') {
-      alert('CSV upload feature not implemented in mock service');
+      console.log('CSV upload feature not implemented in mock service');
     }
   }
 
-  onDragOver(event: DragEvent) {
+  onDragOver(event: DragEvent): void {
     event.preventDefault();
   }
 
-  openAttendanceDetail(record: AttendanceRecord) {
-    // Dialog logic (unchanged)
+  openAttendanceDetail(record: AttendanceRecord): void {
+    console.log('Opening attendance detail for:', record);
   }
 
-  openExceptionDetail(exception: Exception) {
-    // Dialog logic (unchanged)
+  openExceptionDetail(exception: Exception): void {
+    console.log('Opening exception detail for:', exception);
   }
 }

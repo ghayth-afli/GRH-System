@@ -24,15 +24,5 @@ export class AttendanceService {
       }
     );
   }
-  getAttendanceRecordsByMonth(month: string): Observable<AttendanceRecord[]> {
-    let params = {
-      month: month || '',
-    };
-    return this.http.get<AttendanceRecord[]>(
-      `${this.apiUrl}/attendance-records-by-month`,
-      {
-        params,
-      }
-    );
-  }
+  getExceptions() {}
 }

@@ -57,8 +57,8 @@
 
   <!-- Filter Panel -->
   <div class="filter-panel" [class.open]="filterOpen">
-    <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
-      @if (viewMode === 'daily') {
+    <form [formGroup]="filterForm">
+      @if(viewMode==='daily'){
       <div class="filter-group">
         <label for="date">Date</label>
         <input
@@ -68,7 +68,25 @@
           class="custom-input"
         />
       </div>
-      } @if (viewMode !== 'daily') {
+      } @if(viewMode==='monthly'){
+      <div class="filter-group">
+        <label for="dateRangeStart">Date Range Start</label>
+        <input
+          type="date"
+          id="dateRangeStart"
+          formControlName="dateRangeStart"
+          class="custom-input"
+        />
+      </div>
+      <div class="filter-group">
+        <label for="dateRangeEnd">Date Range End</label>
+        <input
+          type="date"
+          id="dateRangeEnd"
+          formControlName="dateRangeEnd"
+          class="custom-input"
+        />
+      </div>
       <div class="filter-group">
         <label for="month">Month</label>
         <input
@@ -112,11 +130,6 @@
           placeholder="Name or ID"
         />
       </div>
-      <div class="filter-actions">
-        <button type="submit" class="submit-btn">
-          <i class="fa-solid fa-filter"></i> Apply Filters
-        </button>
-      </div>
     </form>
   </div>
 
@@ -126,7 +139,17 @@
     (drop)="onFileDrop($event)"
     (dragover)="onDragOver($event)"
   >
-    <table class="data-table" aria-label="Attendance records">
+    <div class="table-overlay" *ngIf="isDataLoading" aria-hidden="true">
+      <div class="spinner"></div>
+      <span class="visually-hidden" aria-live="polite"
+        >Loading attendance records...</span
+      >
+    </div>
+    <table
+      class="data-table"
+      [attr.aria-busy]="isDataLoading"
+      aria-label="Attendance records"
+    >
       <thead>
         <tr>
           <th>Employee</th>
@@ -151,9 +174,13 @@
             <span
               class="status-tag"
               [ngClass]="{
-                'status-on-time': record.status === 'PRESENT',
+                'status-present': record.status === 'PRESENT',
                 'status-late': record.status === 'LATE',
-                'status-absent': record.status === 'ABSENT'
+                'status-absent': record.status === 'ABSENT',
+                'status-awaiting': record.status === 'AWAITING',
+                'status-half-day': record.status === 'HALF_DAY',
+                'status-weekend': record.status === 'WEEKEND',
+                'status-on-leave': record.status === 'ON_LEAVE'
               }"
               >{{ record.status }}</span
             >
@@ -163,6 +190,7 @@
           <td>{{ record.totalHours }}</td>
           <td>{{ record.punches }}</td>
           <td>
+            <!-- FIX: Changed [aria-label] to [attr.aria-label] for dynamic accessibility labels -->
             <button
               class="action-btn"
               (click)="openAttendanceDetail(record)"
@@ -178,17 +206,23 @@
     </table>
     <div
       class="empty-state"
-      *ngIf="!attendanceRecords.length"
+      *ngIf="!filteredAttendanceRecords.length && !isDataLoading"
       aria-live="polite"
     >
       No attendance records found.
     </div>
-    <div class="pagination" *ngIf="attendanceRecords.length">
+    <div
+      class="pagination"
+      *ngIf="filteredAttendanceRecords.length && !isDataLoading"
+    >
       <div class="page-size">
         <label for="attendancePageSize">Rows per page:</label>
+        <!-- FIX: Cast $event.target to HTMLSelectElement to properly access value -->
         <select
+          #attendanceSelect
           id="attendancePageSize"
           [(ngModel)]="attendancePageSize"
+          (change)="changeAttendancePageSize(attendanceSelect.value)"
           class="custom-select"
           aria-label="Select rows per page for attendance"
         >
@@ -225,7 +259,17 @@
   <div class="exceptions-section">
     <h2>Attendance Exceptions</h2>
     <div class="table-container">
-      <table class="data-table" aria-label="Attendance exceptions">
+      <div class="table-overlay" *ngIf="isDataLoading" aria-hidden="true">
+        <div class="spinner"></div>
+        <span class="visually-hidden" aria-live="polite"
+          >Loading filteredExceptions...</span
+        >
+      </div>
+      <table
+        class="data-table"
+        [attr.aria-busy]="isDataLoading"
+        aria-label="Attendance exceptions"
+      >
         <thead>
           <tr>
             <th>Employee</th>
@@ -245,6 +289,7 @@
             </td>
             <td>{{ exception.date | date : "MMM d, yyyy" }}</td>
             <td>
+              <!-- FIX: Changed [aria-label] to [attr.aria-label] for dynamic accessibility labels -->
               <button
                 class="action-btn"
                 (click)="openExceptionDetail(exception)"
@@ -258,15 +303,25 @@
           </tr>
         </tbody>
       </table>
-      <div class="empty-state" *ngIf="!exceptions.length" aria-live="polite">
+      <div
+        class="empty-state"
+        *ngIf="!filteredExceptions.length && !isDataLoading"
+        aria-live="polite"
+      >
         No exceptions found.
       </div>
-      <div class="pagination" *ngIf="exceptions.length">
+      <div
+        class="pagination"
+        *ngIf="filteredExceptions.length && !isDataLoading"
+      >
         <div class="page-size">
           <label for="exceptionsPageSize">Rows per page:</label>
+          <!-- FIX: Cast $event.target to HTMLSelectElement to properly access value -->
           <select
+            #exceptionsSelect
             id="exceptionsPageSize"
             [(ngModel)]="exceptionsPageSize"
+            (change)="changeExceptionsPageSize(exceptionsSelect.value)"
             class="custom-select"
             aria-label="Select rows per page for exceptions"
           >
