@@ -7,7 +7,6 @@
     <list default="true" id="8831ef2c-5863-4771-acbe-37c7b2e108e5" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/attendance-service/src/main/java/com/otbs/attendance/dto/AttendanceRecordResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/attendance-service/src/main/java/com/otbs/attendance/dto/AttendanceRecordResponseDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/attendance-service/src/main/java/com/otbs/attendance/model/EStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/attendance-service/src/main/java/com/otbs/attendance/model/EStatus.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/attendance-service/src/main/java/com/otbs/attendance/service/AttendanceTransactionServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/attendance-service/src/main/java/com/otbs/attendance/service/AttendanceTransactionServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -22,9 +21,9 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Record" />
-        <option value="Enum" />
         <option value="Interface" />
         <option value="Class" />
+        <option value="Enum" />
       </list>
     </option>
   </component>
@@ -513,7 +512,8 @@
       <workItem from="1750212369344" duration="56000" />
       <workItem from="1750212669331" duration="2645000" />
       <workItem from="1750227251349" duration="1459000" />
-      <workItem from="1750330885441" duration="9071000" />
+      <workItem from="1750330885441" duration="9831000" />
+      <workItem from="1750433461414" duration="5032000" />
     </task>
     <servers />
   </component>

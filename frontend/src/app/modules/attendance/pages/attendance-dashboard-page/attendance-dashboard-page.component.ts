@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { AttendanceRecord } from '../../models/attendance-record';
 import { Exception } from '../../models/exception';
 import { combineLatest, of } from 'rxjs';
-import { startWith, debounceTime } from 'rxjs/operators';
+import { startWith, debounceTime, map } from 'rxjs/operators';
 import { AttendanceService } from '../../service/attendance.service';
 
 // NOTE: Dialog component imports are unused in this logic but kept for context.
@@ -35,7 +35,7 @@ export class AttendanceDashboardPageComponent implements OnInit {
   };
   viewMode = 'daily';
   filterOpen = false;
-  today = '2025-06-19';
+  today = new Date().toISOString().split('T')[0];
   departments = ['HR', 'IT', 'Finance'];
   statuses = [
     'Present',
@@ -83,25 +83,83 @@ export class AttendanceDashboardPageComponent implements OnInit {
     combineLatest([
       this.attendanceService.getAttendanceRecords(),
       of([] as Exception[]), // FIX: Correctly handle mock exceptions as an observable
-    ]).subscribe({
-      next: ([attendanceRecords, exceptions]) => {
-        this.masterAttendanceRecords = attendanceRecords;
-        this.masterExceptions = exceptions;
+    ])
+      .pipe(
+        map(
+          ([attendanceRecords, exceptions]: [
+            AttendanceRecord[],
+            Exception[]
+          ]) => {
+            // Extract issues from attendance records and convert to exceptions
+            const issuesAsExceptions =
+              this.convertIssuesToExceptions(attendanceRecords);
 
-        // Start listening to filter changes only after data is loaded
-        this.filterForm.valueChanges
-          .pipe(startWith(this.filterForm.value), debounceTime(300))
-          .subscribe((filters) => {
-            this.applyFilters(filters);
+            // Combine original exceptions with issues converted to exceptions
+            const combinedExceptions = [...exceptions, ...issuesAsExceptions];
+
+            return [attendanceRecords, combinedExceptions] as [
+              AttendanceRecord[],
+              Exception[]
+            ];
+          }
+        )
+      )
+      .subscribe({
+        next: ([attendanceRecords, combinedExceptions]: [
+          AttendanceRecord[],
+          Exception[]
+        ]) => {
+          this.masterAttendanceRecords = attendanceRecords;
+          this.masterExceptions = combinedExceptions;
+
+          // Start listening to filter changes only after data is loaded
+          this.filterForm.valueChanges
+            .pipe(startWith(this.filterForm.value), debounceTime(300))
+            .subscribe((filters) => {
+              this.applyFilters(filters);
+            });
+
+          this.isDataLoading = false;
+        },
+        error: (err) => {
+          console.error('Error fetching initial data', err);
+          this.isDataLoading = false;
+        },
+      });
+  }
+
+  /**
+   * Converts issues from attendance records to Exception objects
+   */
+  private convertIssuesToExceptions(
+    attendanceRecords: AttendanceRecord[]
+  ): Exception[] {
+    const exceptions: Exception[] = [];
+
+    attendanceRecords.forEach((record) => {
+      if (record.issues) {
+        // Handle both Set<string> and string[] types
+        const issuesArray = Array.isArray(record.issues)
+          ? record.issues
+          : Array.from(record.issues);
+
+        // Check if there are any issues
+        if (issuesArray.length > 0) {
+          issuesArray.forEach((issue) => {
+            // Only add non-empty issues
+            if (issue && issue.trim()) {
+              exceptions.push({
+                employee: record.employeeName,
+                date: record.date,
+                issue: issue.trim(),
+              });
+            }
           });
-
-        this.isDataLoading = false;
-      },
-      error: (err) => {
-        console.error('Error fetching initial data', err);
-        this.isDataLoading = false;
-      },
+        }
+      }
     });
+
+    return exceptions;
   }
 
   applyFilters(filters: any): void {
@@ -112,8 +170,7 @@ export class AttendanceDashboardPageComponent implements OnInit {
         const matchesSearch =
           !searchStr || record.employeeName.toLowerCase().includes(searchStr);
         const matchesDept =
-          !filters.department ||
-          record.employeeDepartment === filters.department;
+          !filters.department || record.department === filters.department;
         const matchesStatus =
           !filters.status || record.status === filters.status.toUpperCase();
 
@@ -134,13 +191,26 @@ export class AttendanceDashboardPageComponent implements OnInit {
 
     // Filter exceptions from the master list
     this.filteredExceptions = this.masterExceptions.filter((exception) => {
+      const searchStr = filters.search?.toLowerCase() || '';
+
+      // Add search functionality for exceptions
+      const matchesSearch =
+        !searchStr ||
+        exception.employee.toLowerCase().includes(searchStr) ||
+        exception.issue.toLowerCase().includes(searchStr);
+
       let matchesDate = true;
       if (this.viewMode === 'daily' && filters.date) {
         matchesDate = exception.date === filters.date;
       } else if (this.viewMode === 'monthly' && filters.month) {
         matchesDate = exception.date.startsWith(filters.month);
+      } else if (filters.dateRangeStart && filters.dateRangeEnd) {
+        matchesDate =
+          exception.date >= filters.dateRangeStart &&
+          exception.date <= filters.dateRangeEnd;
       }
-      return matchesDate;
+
+      return matchesSearch && matchesDate;
     });
 
     this.updateKpis();

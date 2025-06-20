@@ -188,7 +188,7 @@
           <td>{{ record.firstPunch || "-" }}</td>
           <td>{{ record.lastPunch || "-" }}</td>
           <td>{{ record.totalHours }}</td>
-          <td>{{ record.punches }}</td>
+          <td>{{ record.punchCount }}</td>
           <td>
             <!-- FIX: Changed [aria-label] to [attr.aria-label] for dynamic accessibility labels -->
             <button
@@ -275,7 +275,6 @@
             <th>Employee</th>
             <th>Issue</th>
             <th>Date</th>
-            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -283,23 +282,11 @@
             <td>{{ exception.employee }}</td>
             <td>
               <span class="exception-badge"
-                ><i class="fa-solid {{ exception.icon }}"></i>
+                ><i class="fa-solid fa-exclamation-triangle"></i>
                 {{ exception.issue }}</span
               >
             </td>
             <td>{{ exception.date | date : "MMM d, yyyy" }}</td>
-            <td>
-              <!-- FIX: Changed [aria-label] to [attr.aria-label] for dynamic accessibility labels -->
-              <button
-                class="action-btn"
-                (click)="openExceptionDetail(exception)"
-                [attr.aria-label]="
-                  'View exception details for ' + exception.employee
-                "
-              >
-                <i class="fa-solid fa-eye"></i> View
-              </button>
-            </td>
           </tr>
         </tbody>
       </table>

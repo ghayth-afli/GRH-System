@@ -1,27 +1,22 @@
 package com.otbs.attendance.dto;
 
 import com.otbs.attendance.model.EStatus;
-import com.otbs.attendance.model.Employee;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
-@AllArgsConstructor
-@Data
-@Builder
-public class AttendanceRecordResponseDTO {
-    private String employeeId;
-    private String employeeName;
-    private String employeeDepartment;
-    private LocalDate date;
-    private EStatus status;
-    private LocalTime firstPunch;
-    private LocalTime lastPunch;
-    private String totalHours;
-    private List<LocalTime> punchTimes;
-    private Integer punches;
-}
+public record AttendanceRecordResponseDTO(
+        String employeeId,
+        String employeeName,
+        String department,
+        LocalDate date,
+        EStatus status,
+        LocalTime firstPunch,
+        LocalTime lastPunch,
+        String totalHours,
+        List<LocalTime> allPunches,
+        int punchCount,
+        Set<String> issues
+) {}
