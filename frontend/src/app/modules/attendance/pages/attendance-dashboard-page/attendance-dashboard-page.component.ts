@@ -9,6 +9,7 @@ import { AttendanceService } from '../../service/attendance.service';
 // NOTE: Dialog component imports are unused in this logic but kept for context.
 import { AttendanceDetailDialogComponent } from '../../components/attendance-detail-dialog/attendance-detail-dialog.component';
 import { ExceptionDetailDialogComponent } from '../../components/exception-detail-dialog/exception-detail-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-attendance-dashboard-page',
@@ -64,6 +65,7 @@ export class AttendanceDashboardPageComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
+    private dialog: MatDialog,
     private attendanceService: AttendanceService
   ) {
     this.filterForm = this.fb.group({
@@ -332,7 +334,12 @@ export class AttendanceDashboardPageComponent implements OnInit {
   }
 
   openAttendanceDetail(record: AttendanceRecord): void {
-    console.log('Opening attendance detail for:', record);
+    this.dialog.open(AttendanceDetailDialogComponent, {
+      data: record,
+      width: '500px',
+      height: 'auto',
+      panelClass: 'custom-dialog-container',
+    });
   }
 
   openExceptionDetail(exception: Exception): void {

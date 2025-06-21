@@ -10,9 +10,13 @@
         <span
           class="status-tag"
           [ngClass]="{
-            'status-on-time': data.status === 'On-Time',
-            'status-late': data.status === 'Late',
-            'status-absent': data.status === 'Absent'
+            'status-present': data.status === 'PRESENT',
+            'status-late': data.status === 'LATE',
+            'status-absent': data.status === 'ABSENT',
+            'status-awaiting': data.status === 'AWAITING',
+            'status-half-day': data.status === 'HALF_DAY',
+            'status-weekend': data.status === 'WEEKEND',
+            'status-on-leave': data.status === 'ON_LEAVE'
           }"
           >{{ data.status }}</span
         >
@@ -29,29 +33,6 @@
       </div>
     </div>
     <div class="empty-state" *ngIf="!punches.length">No punches recorded.</div>
-  </div>
-  <div class="punch-form">
-    <h3>Add Manual Punch</h3>
-    <form [formGroup]="punchForm">
-      <div class="form-group">
-        <label for="punchTime">Punch Time (HH:MM)</label>
-        <input
-          type="text"
-          id="punchTime"
-          formControlName="punchTime"
-          class="custom-input"
-          placeholder="e.g., 08:00"
-        />
-      </div>
-      <button
-        class="dialog-btn"
-        (click)="addPunch()"
-        [disabled]="punchForm.invalid"
-        aria-label="Add punch"
-      >
-        Add Punch
-      </button>
-    </form>
   </div>
   <div class="dialog-actions">
     <button

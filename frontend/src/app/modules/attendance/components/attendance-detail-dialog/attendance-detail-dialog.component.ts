@@ -1,7 +1,8 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AttendanceRecord } from '../../models/attendance-record';
 import { AttendanceService } from '../../service/attendance.service';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 @Component({
   selector: 'app-attendance-detail-dialog',
   standalone: false,
@@ -11,9 +12,10 @@ import { AttendanceService } from '../../service/attendance.service';
 export class AttendanceDetailDialogComponent {
   punchForm: FormGroup;
   punches: { time: string; type: string }[] = [];
+  dialogRef = inject(MatDialogRef);
 
   constructor(
-    @Inject('DIALOG_DATA') public data: AttendanceRecord,
+    @Inject(MAT_DIALOG_DATA) public data: AttendanceRecord,
     private fb: FormBuilder,
     private attendanceService: AttendanceService
   ) {
@@ -26,8 +28,16 @@ export class AttendanceDetailDialogComponent {
         ],
       ],
     });
+    // Exclude the first and last punches from allPunches
+    const allPunches = data.allPunches || [];
+    const middlePunches = allPunches.slice(1, allPunches.length - 1);
+
     this.punches = [
       ...(data.firstPunch ? [{ time: data.firstPunch, type: 'In' }] : []),
+      ...middlePunches.map((p) => ({
+        time: p,
+        type: 'IN',
+      })),
       ...(data.lastPunch ? [{ time: data.lastPunch, type: 'Out' }] : []),
     ];
   }
@@ -37,5 +47,6 @@ export class AttendanceDetailDialogComponent {
     // Logic to close the dialog
     // This could be a method to close the dialog in your dialog service or component
     console.log('Dialog closed');
+    this.dialogRef.close();
   }
 }
