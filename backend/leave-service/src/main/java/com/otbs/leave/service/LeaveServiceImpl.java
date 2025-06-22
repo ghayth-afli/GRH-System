@@ -247,15 +247,15 @@ public class LeaveServiceImpl implements LeaveService {
         UserResponse currentUser = getCurrentUser();
         String leaveUserRole = getRoleByUserDn(leave.getUserDn());
         boolean isAuthorized = switch (leave.getDepartment()) {
-            case "HR" -> "Manager".equals(currentUser.role()) && "HR".equals(currentUser.department());
+            case "HR" -> "HRD".equals(currentUser.role());
             default -> switch (leaveUserRole) {
-                case "Manager" -> "Manager".equals(currentUser.role()) && "HR".equals(currentUser.department());
+                case "Manager" -> "HRD".equals(currentUser.role());
                 case "Employee" -> "Manager".equals(currentUser.role()) && currentUser.department().equals(leave.getDepartment());
                 default -> false;
             };
         };
         if (!isAuthorized) {
-            throw new LeaveException("User is not authorized to approve this leave request.");
+            throw new LeaveException("User is not authorized to reject this leave request.");
         }
     }
 

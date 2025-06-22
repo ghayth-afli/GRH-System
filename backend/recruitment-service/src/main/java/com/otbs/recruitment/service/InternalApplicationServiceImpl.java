@@ -1,7 +1,6 @@
 package com.otbs.recruitment.service;
 
 import com.otbs.feign.client.candidate.CandidateClient;
-import com.otbs.feign.client.user.UserClient;
 import com.otbs.feign.client.resumeMatcher.ResumeMatcherClient;
 import com.otbs.feign.client.user.dto.UserResponse;
 import com.otbs.recruitment.dto.ApplicationDetailsResponseDTO;
@@ -9,12 +8,10 @@ import com.otbs.recruitment.dto.ApplicationResponseDTO;
 import com.otbs.recruitment.exception.ApplicationException;
 import com.otbs.recruitment.exception.FileUploadException;
 import com.otbs.recruitment.exception.JobOfferException;
-import com.otbs.recruitment.exception.UserException;
 import com.otbs.recruitment.mapper.ApplicationAttributesMapper;
 import com.otbs.recruitment.model.*;
 import com.otbs.recruitment.repository.InternalApplicationRepository;
 import com.otbs.recruitment.repository.JobOfferRepository;
-import com.otbs.recruitment.repository.MatchResultRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContextException;
@@ -25,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
