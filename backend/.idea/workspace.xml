@@ -6,17 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="8831ef2c-5863-4771-acbe-37c7b2e108e5" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/candidate-service/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/candidate-service/target/classes/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/service/LeaveServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/service/LeaveServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/leave-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/service/InternalApplicationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/java/com/otbs/recruitment/service/InternalApplicationServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/service/InternalApplicationServiceImpl$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/service/InternalApplicationServiceImpl$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/service/InternalApplicationServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/recruitment-service/target/classes/com/otbs/recruitment/service/InternalApplicationServiceImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training-management-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/training-management-service/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -524,7 +513,8 @@
       <workItem from="1750330885441" duration="9831000" />
       <workItem from="1750433461414" duration="5368000" />
       <workItem from="1750496899449" duration="2687000" />
-      <workItem from="1750598393327" duration="513000" />
+      <workItem from="1750598393327" duration="1242000" />
+      <workItem from="1750667158571" duration="519000" />
     </task>
     <servers />
   </component>

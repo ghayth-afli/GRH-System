@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { AttendanceRecord } from '../../models/attendance-record';
 import { Exception } from '../../models/exception';
-import { combineLatest, of } from 'rxjs';
+import { combineLatest, of, Subscription } from 'rxjs';
 import { startWith, debounceTime, map } from 'rxjs/operators';
 import { AttendanceService } from '../../service/attendance.service';
 
@@ -17,7 +17,7 @@ import { MatDialog } from '@angular/material/dialog';
   templateUrl: './attendance-dashboard-page.component.html',
   styleUrls: ['./attendance-dashboard-page.component.css'],
 })
-export class AttendanceDashboardPageComponent implements OnInit {
+export class AttendanceDashboardPageComponent implements OnInit, OnDestroy {
   filterForm: FormGroup;
 
   // Master lists to hold the original data
@@ -63,6 +63,8 @@ export class AttendanceDashboardPageComponent implements OnInit {
   exceptionsTotalPages = 1;
   paginatedExceptions: Exception[] = [];
 
+  private subscriptions: Subscription = new Subscription();
+
   constructor(
     private fb: FormBuilder,
     private dialog: MatDialog,
@@ -82,7 +84,7 @@ export class AttendanceDashboardPageComponent implements OnInit {
   ngOnInit() {
     this.isDataLoading = true;
     // Fetch initial data once. Use `of([])` for mock/non-existent services.
-    combineLatest([
+    const dataSub = combineLatest([
       this.attendanceService.getAttendanceRecords(),
       of([] as Exception[]), // FIX: Correctly handle mock exceptions as an observable
     ])
@@ -115,11 +117,12 @@ export class AttendanceDashboardPageComponent implements OnInit {
           this.masterExceptions = combinedExceptions;
 
           // Start listening to filter changes only after data is loaded
-          this.filterForm.valueChanges
+          const filterSub = this.filterForm.valueChanges
             .pipe(startWith(this.filterForm.value), debounceTime(300))
             .subscribe((filters) => {
               this.applyFilters(filters);
             });
+          this.subscriptions.add(filterSub);
 
           this.isDataLoading = false;
         },
@@ -128,6 +131,11 @@ export class AttendanceDashboardPageComponent implements OnInit {
           this.isDataLoading = false;
         },
       });
+    this.subscriptions.add(dataSub);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   /**
