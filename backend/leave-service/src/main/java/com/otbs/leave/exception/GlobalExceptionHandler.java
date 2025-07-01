@@ -53,4 +53,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleFeignException(FeignException e) {
         return ResponseEntity.status(e.status()).body(new MessageResponseDTO(e.getMessage()));
     }
+
+    @ExceptionHandler({RemoteWorkPolicyException.class})
+    public ResponseEntity<?> handleRemoteWorkPolicyException(RemoteWorkPolicyException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponseDTO(e.getMessage()));
+    }
 }

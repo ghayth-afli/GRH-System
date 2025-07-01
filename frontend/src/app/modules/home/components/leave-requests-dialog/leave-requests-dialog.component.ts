@@ -1,9 +1,21 @@
-import { Component, Inject, ViewChild, AfterViewInit } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import {
+  Component,
+  Inject,
+  ViewChild,
+  AfterViewInit,
+  inject,
+} from '@angular/core';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { Leave } from '../../../leave/models/leave';
+import { LeaveService } from '../../../leave/services/leave.service';
+import { ConfirmationModalComponent } from '../../../../shared/components/confirmation-modal/confirmation-modal.component';
 interface LeaveRequestDisplay {
   id: number;
   status: string;
@@ -26,11 +38,15 @@ export class LeaveRequestsDialogComponent {
     'endDate',
     'leaveType',
     'duration',
+    'actions',
   ];
   dataSource: MatTableDataSource<LeaveRequestDisplay>;
 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  private dialog = inject(MatDialog);
+
+  leaveService = inject(LeaveService);
 
   constructor(
     public dialogRef: MatDialogRef<LeaveRequestsDialogComponent>,
@@ -91,5 +107,39 @@ export class LeaveRequestsDialogComponent {
     } catch (e) {
       return 'N/A';
     }
+  }
+
+  onCancelLeave(leaveId: number): void {
+    const dialogRef = this.dialog.open(ConfirmationModalComponent, {
+      data: {
+        title: 'Cancel Leave Request',
+        message: 'Are you sure you want to cancel this leave request?',
+        confirmButtonText: 'Yes, Cancel',
+        cancelButtonText: 'No, Keep',
+      },
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.confirmed) {
+        this.cancelLeaveRequest(leaveId);
+      }
+    });
+  }
+
+  cancelLeaveRequest(leaveId: number) {
+    this.leaveService.cancelLeave(leaveId).subscribe({
+      next: (response) => {
+        console.log('Leave request cancelled:', response);
+        const leaveRequest = this.dataSource.data.find(
+          (leave) => leave.id === leaveId
+        );
+        if (leaveRequest) {
+          leaveRequest.status = 'CANCELLED';
+          this.dataSource.data = [...this.dataSource.data];
+        }
+      },
+      error: (error) => {
+        console.error('Error cancelling leave request:', error);
+      },
+    });
   }
 }

@@ -82,7 +82,7 @@ public class LeaveController {
     )
     @ApiResponse(responseCode = "404", description = "Leave not found")
     @ApiResponse(responseCode = "403", description = "Unauthorized access")
-    @DeleteMapping("/cancel/{leaveId}")
+    @PutMapping("/cancel/{leaveId}")
     @PreAuthorize("hasAuthority('Employee') or hasAuthority('Manager') or hasAuthority('HR')")
     public ResponseEntity<MessageResponseDTO> cancelLeave(
             @Parameter(description = "ID of the leave request", example = "1")
