@@ -66,6 +66,15 @@ const routes: Routes = [
             (m) => m.RecruitmentModule
           ),
       },
+      {
+        path: 'attendance',
+        loadChildren: () =>
+          import('./modules/attendance/attendance.module').then(
+            (m) => m.AttendanceModule
+          ),
+        canActivate: [RoleGuard],
+        data: { roles: ['HR', 'HRD'] },
+      },
     ],
   },
   { path: '**', redirectTo: '/not-found' },

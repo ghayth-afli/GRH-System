@@ -137,6 +137,8 @@ export class SubmitLeaveRequestDialogComponent implements OnInit {
         this.dateValidator,
         this.timeValidator,
       ]);
+    } else if (leaveType === 'TÉLÉTRAVAIL') {
+      this.leaveRequestForm.removeControl('endDate');
     } else if (this.requestTypesRequireAttachment.includes(leaveType)) {
       // Add attachment control for types that require it
       this.leaveRequestForm.addControl(
@@ -179,9 +181,11 @@ export class SubmitLeaveRequestDialogComponent implements OnInit {
       leaveType: formValue.leaveType,
       startDate: formValue.startDate,
       endDate:
-        formValue.leaveType === 'AUTORISATION'
+        formValue.leaveType === 'AUTORISATION' ||
+        formValue.leaveType === 'TÉLÉTRAVAIL'
           ? formValue.startDate
           : formValue.endDate,
+
       startTime: formValue.startTime,
       endTime: formValue.endTime,
       attachment: this.selectedFile ?? undefined,

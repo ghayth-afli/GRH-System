@@ -61,6 +61,10 @@ td {
   background-color: var(--danger); /* #dc3545 */
 }
 
+.status-cancelled {
+  background-color: var(--gray); /* #6c757d */
+}
+
 .leave-type-tag {
   display: inline-block;
   font-size: 12px;

@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -40,7 +41,10 @@ public class LeaveServiceImpl implements LeaveService {
     public void applyLeave(LeaveRequestDTO leaveRequestDTO, MultipartFile attachment) {
         validateLeaveRequest(leaveRequestDTO);
         Leave leave = createLeaveEntity(leaveRequestDTO, attachment);
+        // NEW: Validate remote work policy before saving
+        validateRemoteWorkPolicy(leave);
         leaveRepository.save(leave);
+
         UserResponse currentUser = getCurrentUser();
         if (currentUser.email() != null && !currentUser.email().isEmpty()) {
             asyncProcessingService.sendMailNotification(
@@ -80,7 +84,9 @@ public class LeaveServiceImpl implements LeaveService {
         validateLeaveRequest(leaveRequestDTO);
         Leave leave = getLeaveForUpdate(leaveId);
         updateLeaveEntity(leave, leaveRequestDTO, attachment);
+        validateRemoteWorkPolicy(leave);
         leaveRepository.save(leave);
+
         UserResponse currentUser = getCurrentUser();
         if (currentUser.email() != null && !currentUser.email().isEmpty()) {
             asyncProcessingService.sendMailNotification(
@@ -91,6 +97,51 @@ public class LeaveServiceImpl implements LeaveService {
         }
     }
 
+    private void validateRemoteWorkPolicy(Leave leave) {
+        if (leave.getLeaveType() != ELeaveType.TÉLÉTRAVAIL) {
+            return;
+        }
+
+        String department = leave.getDepartment();
+
+        long totalUsersInDept = getAllUsersByDepartment(department).size();
+
+        if (totalUsersInDept < 3) {
+            log.info("Department '{}' has fewer than 3 members, skipping remote work policy check.", department);
+            return;
+        }
+
+
+
+        long remoteWorkLimit = (long) Math.ceil(totalUsersInDept / 3.0);
+        log.info("Validating remote work policy for department '{}'. Total users: {}, Limit: {}.",
+                department, totalUsersInDept, remoteWorkLimit);
+
+        List<EStatus> statusesToCheck = List.of(EStatus.PENDING, EStatus.APPROVED);
+
+        Long leaveIdToExclude = (leave.getId() == null) ? 0L : leave.getId();
+
+        for (LocalDate date = leave.getStartDate(); !date.isAfter(leave.getEndDate()); date = date.plusDays(1)) {
+            long existingRequests = leaveRepository.countOverlappingRequests(
+                    department,
+                    ELeaveType.TÉLÉTRAVAIL,
+                    statusesToCheck,
+                    date,
+                    leaveIdToExclude
+            );
+
+            log.debug("Checking date {}: Found {} existing remote work requests for department '{}'.",
+                    date, existingRequests, department);
+
+            if (existingRequests >= remoteWorkLimit) {
+                throw new RemoteWorkPolicyException(
+                        String.format("Remote work limit for department '%s' exceeded on %s. " +
+                                        "The maximum allowed is %d, but %d requests already exist.",
+                                department, date, remoteWorkLimit, existingRequests)
+                );
+            }
+        }
+    }
     @Override
     public void cancelLeave(Long leaveId) {
         Leave leave = getLeaveForUpdate(leaveId);
@@ -189,6 +240,14 @@ public class LeaveServiceImpl implements LeaveService {
                 .orElseGet(() -> leaveBalanceRepository.save(new LeaveBalance(getCurrentUser().id(), 0.0, 0.0, 0.0)));
     }
 
+    @Override
+    public boolean isUserOnLeave(String userDn, LocalDate date) {
+        List<Leave> approvedLeaves = leaveRepository.findByUserDnAndStartDateLessThanEqualAndEndDateGreaterThanEqualAndStatus(
+                userDn, date, date, EStatus.APPROVED);
+
+        return !approvedLeaves.isEmpty();
+    }
+
     @Scheduled(cron = "0 0 0 1 * *")
     @Transactional
     protected void addMonthlyLeaveForAllUsers() {
@@ -238,15 +297,15 @@ public class LeaveServiceImpl implements LeaveService {
         UserResponse currentUser = getCurrentUser();
         String leaveUserRole = getRoleByUserDn(leave.getUserDn());
         boolean isAuthorized = switch (leave.getDepartment()) {
-            case "HR" -> "Manager".equals(currentUser.role()) && "HR".equals(currentUser.department());
+            case "HR" -> "HRD".equals(currentUser.role());
             default -> switch (leaveUserRole) {
-                case "Manager" -> "Manager".equals(currentUser.role()) && "HR".equals(currentUser.department());
+                case "Manager" -> "HRD".equals(currentUser.role());
                 case "Employee" -> "Manager".equals(currentUser.role()) && currentUser.department().equals(leave.getDepartment());
                 default -> false;
             };
         };
         if (!isAuthorized) {
-            throw new LeaveException("User is not authorized to approve this leave request.");
+            throw new LeaveException("User is not authorized to reject this leave request.");
         }
     }
 
@@ -381,5 +440,15 @@ public class LeaveServiceImpl implements LeaveService {
             throw new UserException( String.format("Manager not found for department: %s", department));
         }
         return manager;
+    }
+
+    private List<UserResponse> getAllUsersByDepartment(String department) {
+        List<UserResponse> users = userClient.getAllUsers();
+        if (users == null || users.isEmpty()) {
+            throw new UserException("No users found");
+        }
+        return users.stream()
+                .filter(user -> user.department().equals(department))
+                .toList();
     }
 }

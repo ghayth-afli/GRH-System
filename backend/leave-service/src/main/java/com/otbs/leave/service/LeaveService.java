@@ -5,6 +5,7 @@ import com.otbs.leave.dto.LeaveResponseDTO;
 import com.otbs.leave.model.LeaveBalance;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface LeaveService {
@@ -17,4 +18,5 @@ public interface LeaveService {
     List<LeaveResponseDTO> getAllSentLeavesRequests();
     byte[] downloadAttachment(Long leaveId);
     LeaveBalance getLeaveBalance();
+    boolean isUserOnLeave(String userDn, LocalDate date);
 }

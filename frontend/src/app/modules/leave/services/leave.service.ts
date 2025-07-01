@@ -57,7 +57,7 @@ export class LeaveService {
 
   // Cancel leave (Employee role required)
   cancelLeave(leaveId: number): Observable<{ message: string }> {
-    return this.http.delete<any>(`${this.apiUrl}/cancel/${leaveId}`);
+    return this.http.put<any>(`${this.apiUrl}/cancel/${leaveId}`, {});
   }
 
   // Approve leave (Manager role required)

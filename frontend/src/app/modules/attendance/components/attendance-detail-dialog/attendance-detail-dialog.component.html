@@ -1,0 +1,46 @@
+<div class="dialog">
+  <h2 class="dialog-title">Attendance Details</h2>
+  <div class="employee-card">
+    <div>
+      <h3>{{ data.employeeName }}</h3>
+      <p>ID: {{ data.employeeId }}</p>
+      <p>Date: {{ data.date | date : "MMM d, yyyy" }}</p>
+      <p>
+        Status:
+        <span
+          class="status-tag"
+          [ngClass]="{
+            'status-present': data.status === 'PRESENT',
+            'status-late': data.status === 'LATE',
+            'status-absent': data.status === 'ABSENT',
+            'status-awaiting': data.status === 'AWAITING',
+            'status-half-day': data.status === 'HALF_DAY',
+            'status-weekend': data.status === 'WEEKEND',
+            'status-on-leave': data.status === 'ON_LEAVE'
+          }"
+          >{{ data.status }}</span
+        >
+      </p>
+    </div>
+  </div>
+  <div class="timeline">
+    <h3>Punch Timeline</h3>
+    <div class="timeline-item" *ngFor="let punch of punches">
+      <div class="timeline-dot"></div>
+      <div class="timeline-content">
+        <span>{{ punch.time }}</span>
+        <span>{{ punch.type }}</span>
+      </div>
+    </div>
+    <div class="empty-state" *ngIf="!punches.length">No punches recorded.</div>
+  </div>
+  <div class="dialog-actions">
+    <button
+      class="dialog-btn cancel"
+      (click)="close()"
+      aria-label="Close dialog"
+    >
+      Close
+    </button>
+  </div>
+</div>

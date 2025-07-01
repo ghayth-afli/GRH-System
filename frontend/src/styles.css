@@ -3511,6 +3511,489 @@ header {
   background-color: #e65000;
 }
 
+/* Attendance page */
+.attendance-page {
+  padding: 20px;
+  font-family: "Open Sans", sans-serif;
+  color: var(--primary-dark);
+}
+
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: #fff;
+  border: 1px solid var(--silver);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon {
+  font-size: 24px;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-family: "Kode Mono", monospace;
+  font-size: 14px;
+  color: var(--primary-dark);
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+.controls {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.view-toggle {
+  display: flex;
+  border: 1px solid var(--silver);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+.view-toggle button {
+  padding: 8px 16px;
+  font-family: "Kode Mono", monospace;
+  font-size: 14px;
+  background: #fff;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-toggle button.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.filter-btn,
+.report-btn {
+  padding: 8px 16px;
+  font-family: "Kode Mono", monospace;
+  font-size: 14px;
+  background: #fff;
+  border: 1px solid var(--silver);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover,
+.report-btn:hover {
+  background: var(--silver);
+}
+
+.filter-panel {
+  background: #fff;
+  border: 1px solid var(--silver);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  margin-bottom: 16px;
+  max-height: 0px;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  display: none;
+}
+
+.filter-panel.open {
+  display: block;
+  max-height: 500px;
+}
+
+.filter-group {
+  margin-bottom: 12px;
+}
+
+.filter-group label {
+  display: block;
+  font-family: "Kode Mono", monospace;
+  font-size: 12px;
+  color: var(--primary-dark);
+  margin-bottom: 4px;
+}
+
+.custom-input,
+.custom-select {
+  width: 100%;
+  padding: 8px;
+  font-family: "Open Sans", sans-serif;
+  font-size: 14px;
+  border: 1px solid var(--silver);
+  border-radius: var(--border-radius);
+  background: #fff;
+  color: var(--primary-dark);
+}
+
+.table-container {
+  background: #fff;
+  border: 1px solid var(--silver);
+  border-radius: var(--border-radius);
+  overflow: auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.table-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--silver);
+  border-top: 4px solid var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  font-family: "Kode Mono", monospace;
+  font-size: 14px;
+  color: var(--primary-dark);
+  background: var(--silver);
+  padding: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.data-table td {
+  font-size: 14px;
+  padding: 12px;
+  border-bottom: 1px solid var(--silver);
+}
+
+.employee-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.employee-photo {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.status-tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.status-present {
+  background: var(--success);
+}
+
+.status-late {
+  background: var(--danger);
+}
+
+.status-absent {
+  background: var(--gray);
+}
+
+.status-awaiting {
+  background: var(--warning);
+}
+
+.status-half-day {
+  background: var(--info);
+}
+
+.status-weekend {
+  background: var(--silver);
+}
+
+.status-on-leave {
+  background: var(--primary);
+}
+
+.action-btn {
+  padding: 8px 16px;
+  font-family: "Kode Mono", monospace;
+  font-size: 12px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-btn:hover {
+  background: #e65000;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
+  color: var(--gray);
+}
+
+.exceptions-section h2 {
+  font-family: "Kode Mono", monospace;
+  font-size: 18px;
+  color: var(--primary-dark);
+  margin: 20px 0 12px;
+}
+
+.exception-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--danger);
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-top: 1px solid var(--silver);
+}
+
+.page-size {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-size label {
+  font-family: "Kode Mono", monospace;
+  font-size: 12px;
+  color: var(--primary-dark);
+}
+
+.page-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-btn {
+  padding: 6px;
+  font-size: 14px;
+  background: #fff;
+  border: 1px solid var(--silver);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: var(--silver);
+}
+
+.page-info {
+  font-family: "Open Sans", sans-serif;
+  font-size: 14px;
+  color: var(--primary-dark);
+}
+
+/* Attendance Dialog */
+.dialog {
+  max-width: 500px;
+  padding: 20px;
+  font-family: "Open Sans", sans-serif;
+  background: #fff;
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.dialog-title {
+  font-family: "Kode Mono", monospace;
+  font-size: 20px;
+  color: var(--primary-dark);
+  margin: 0 0 16px;
+}
+
+.employee-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 16px;
+  border: 1px solid var(--silver);
+  border-radius: var(--border-radius);
+}
+
+.employee-photo {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.employee-card h3 {
+  font-family: "Kode Mono", monospace;
+  font-size: 16px;
+  margin: 0;
+}
+
+.employee-card p {
+  font-size: 14px;
+  color: var(--gray);
+  margin: 4px 0;
+}
+
+.timeline {
+  margin-bottom: 20px;
+}
+
+.timeline h3 {
+  font-family: "Kode Mono", monospace;
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.timeline-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.timeline-dot {
+  width: 12px;
+  height: 12px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+
+.timeline-content {
+  display: flex;
+  justify-content: space-between;
+  flex: 1;
+  font-size: 14px;
+}
+
+.punch-form h3 {
+  font-family: "Kode Mono", monospace;
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  font-family: "Kode Mono", monospace;
+  font-size: "12px";
+  color: var(--primary-dark);
+  margin-bottom: 4px;
+  display: block;
+}
+
+.custom-input {
+  width: 100%;
+  padding: #fff;
+  font-family: "Open Sans", sans-serif;
+  font-size: 14px;
+  border: 1px solid var(--silver);
+  border-radius: var(--border-radius);
+  background: #fff;
+  color: var(--primary-dark);
+}
+
+.dialog-btn {
+  padding: 8px 16px;
+  font-family: "Kode Mono", monospace;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dialog-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+}
+
+.dialog-btn:disabled {
+  background: lighten(var(--accent), 20%);
+  cursor: 0.5;
+}
+
+.dialog-btn.cancel {
+  background: transparent;
+  color: var(--primary-dark);
+  border: 1px solid var(--silver);
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
 /* Responsive */
 @media (max-width: 768px) {
   .loader {
@@ -4110,6 +4593,69 @@ header {
   }
 
   .alert-message {
+    font-size: 12px;
+  }
+
+  /* Attendance page */
+  .stat-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .controls {
+    flex-direction: column;
+  }
+
+  .filter-panel {
+    padding: 12px;
+  }
+
+  .data-table th,
+  .data-table td {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .employee-photo {
+    width: 24px;
+    height: 24px;
+  }
+
+  .status-tag,
+  .action-btn {
+    font-size: 10px;
+    padding: 3px 6px;
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .spinner {
+    width: 32px;
+    height: 32px;
+    border-width: 3px;
+  }
+
+  /* Attendance Dialog */
+  .dialog {
+    padding: size 16px;
+    max-width: 90%;
+  }
+
+  .employee-photo {
+    width: 48px;
+    height: 48px;
+  }
+
+  .dialog-title,
+  .employee-card h3,
+  .timeline h3,
+  .punch-form h3 {
+    font-size: 14px;
+  }
+
+  .timeline-content {
     font-size: 12px;
   }
 }

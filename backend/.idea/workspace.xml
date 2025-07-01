@@ -6,7 +6,14 @@
   <component name="ChangeListManager">
     <list default="true" id="8831ef2c-5863-4771-acbe-37c7b2e108e5" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/controller/LeaveController.java" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/controller/LeaveController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/exception/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/repository/LeaveRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/repository/LeaveRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/service/LeaveServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/service/LeaveServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/exception/GlobalExceptionHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/exception/GlobalExceptionHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/repository/LeaveRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/repository/LeaveRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/service/LeaveServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/service/LeaveServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/app/modules/home/components/submit-leave-request-dialog/submit-leave-request-dialog.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/modules/home/components/submit-leave-request-dialog/submit-leave-request-dialog.component.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,6 +27,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Record" />
+        <option value="Interface" />
+        <option value="Enum" />
         <option value="Class" />
       </list>
     </option>
@@ -58,6 +67,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;Spring Boot.ApiGWApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.AttendanceApplication.executor&quot;: &quot;Run&quot;,
     &quot;Spring Boot.AuthApplication.executor&quot;: &quot;Run&quot;,
     &quot;Spring Boot.CandidateApplication.executor&quot;: &quot;Run&quot;,
     &quot;Spring Boot.EurekaServerApplication.executor&quot;: &quot;Run&quot;,
@@ -67,10 +77,10 @@
     &quot;Spring Boot.RecruitmentApplication.executor&quot;: &quot;Run&quot;,
     &quot;Spring Boot.TrainingApplication.executor&quot;: &quot;Run&quot;,
     &quot;Spring Boot.UserApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;recruitment-service-new-ui-styles&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/limit-remote-per-day&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/Tekup/internship/GRH-System/backend/med-visit-service/src/main/java/com/otbs/medVisit/service&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Tekup/internship/GRH-System/backend/attendance-service/src/main/java/com/otbs/attendance/security&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -89,16 +99,18 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Tekup\internship\GRH-System\backend\attendance-service\src\main\java\com\otbs\attendance\security" />
+      <recent name="D:\Tekup\internship\GRH-System\backend\attendance-service\src\main\resources" />
       <recent name="D:\Tekup\internship\GRH-System\backend\med-visit-service\src\main\java\com\otbs\medVisit\service" />
       <recent name="D:\Tekup\internship\GRH-System\backend\feign-clients\src\main\java\com\otbs\feign\client\candidate\dto" />
       <recent name="D:\Tekup\internship\GRH-System\backend\auth-service\src\main\java\com\otbs\auth\config" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.otbs.attendance.config" />
+      <recent name="com.otbs.attendance.util" />
       <recent name="com.otbs.training.config" />
       <recent name="com.otbs.training.service" />
       <recent name="com.otbs.recruitment.service" />
-      <recent name="com.otbs.recruitment.config" />
-      <recent name="com.otbs.medVisit.config" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -110,7 +122,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Spring Boot.UserApplication">
+  <component name="RunManager" selected="Spring Boot.AttendanceApplication">
     <configuration name="ApiGWApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
       <envs>
         <env name="JWT_ACCESS_TOKEN_EXPIRATION_MS" value="900000" />
@@ -120,6 +132,34 @@
       </envs>
       <module name="api-gateway" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.otbs.apigw.ApiGWApplication" />
+      <extension name="net.ashald.envfile">
+        <option name="IS_ENABLED" value="false" />
+        <option name="IS_SUBST" value="false" />
+        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+        <option name="IS_IGNORE_MISSING_FILES" value="false" />
+        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+        <ENTRIES>
+          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+        </ENTRIES>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="AttendanceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <option name="ALTERNATIVE_JRE_PATH" value="23" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <envs>
+        <env name="JWT_ACCESS_TOKEN_EXPIRATION_MS" value="900000" />
+        <env name="JWT_REFRESH_TOKEN_EXPIRATION_MS" value="2592000000" />
+        <env name="JWT_SECRET_KEY" value="AAAAB3NzaC1yc2EAAAADAQABAAABAQDxYHbbvdhISpB+qW6WgoRW/hjsRp04ApneIy9xFPtd9HcREGbkswGI8B0C8xGXHcXjqiuDgPk8i+nuQsAR5cexZOzRTxyJHgBk/cnOLyiTKsOGzipymf6RVB6xjrdic98C++7RUaCy48NhCRRlhEkhH9Z0hyk5an+qbmp3l8uiVpssA5X2HHtOCr2r0AjGtFySXEOKTb1/wMewN5sgJmwulcFGseNn5MGGshTYbzkAFz0oT5aBvvGAJEb9vFCANZNvcBpowkf1HaQiavYhp6t/tnWiDWsTUnwEM4ufd1b60zO70" />
+        <env name="JWT_TOKEN_EXPIRATION_MS" value="86400000" />
+        <env name="POSTGRES_DB" value="biotime" />
+        <env name="POSTGRES_PASSWORD" value="admin" />
+        <env name="POSTGRES_USER" value="admin" />
+      </envs>
+      <module name="attendance-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.otbs.attendance.AttendanceApplication" />
       <extension name="net.ashald.envfile">
         <option name="IS_ENABLED" value="false" />
         <option name="IS_SUBST" value="false" />
@@ -415,6 +455,7 @@
       <item itemvalue="Spring Boot.LeaveApplication" />
       <item itemvalue="Spring Boot.MedVisitApplication" />
       <item itemvalue="Spring Boot.UserApplication" />
+      <item itemvalue="Spring Boot.AttendanceApplication" />
       <item itemvalue="Spring Boot.ApiGWApplication" />
     </list>
   </component>
@@ -472,6 +513,19 @@
       <workItem from="1749780517410" duration="4911000" />
       <workItem from="1749862044995" duration="8562000" />
       <workItem from="1749953183847" duration="4305000" />
+      <workItem from="1750141937250" duration="693000" />
+      <workItem from="1750205223673" duration="6625000" />
+      <workItem from="1750212369344" duration="56000" />
+      <workItem from="1750212669331" duration="2645000" />
+      <workItem from="1750227251349" duration="1459000" />
+      <workItem from="1750330885441" duration="9831000" />
+      <workItem from="1750433461414" duration="5368000" />
+      <workItem from="1750496899449" duration="2687000" />
+      <workItem from="1750598393327" duration="1242000" />
+      <workItem from="1750667158571" duration="519000" />
+      <workItem from="1750749966175" duration="4904000" />
+      <workItem from="1750772816796" duration="1221000" />
+      <workItem from="1751393863535" duration="1741000" />
     </task>
     <servers />
   </component>
