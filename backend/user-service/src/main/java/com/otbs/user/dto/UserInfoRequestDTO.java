@@ -31,6 +31,8 @@ public record UserInfoRequestDTO(
         String phoneNumber1,
 
         @Pattern(regexp = "^\\+216\\d{8}$", message = "Phone number must be in the format +216XXXXXXXX")
-        String phoneNumber2
+        String phoneNumber2,
+
+        String gender
 
 ) {}

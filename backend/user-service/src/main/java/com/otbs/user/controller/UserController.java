@@ -98,6 +98,7 @@ public class UserController {
             @Parameter(description = "User's username", example = "john.doe", required = true)
             @RequestParam("username") String username
     ) {
+        log.info("Retrievingggggggg user: {}", userService.getUserByUsername(username));
         return userService.getUserByUsername(username);
     }
 
@@ -146,9 +147,11 @@ public class UserController {
             @Parameter(description = "User's phone number 1", example = "+21612345678", required = true)
             @RequestParam("phoneNumber1") String phoneNumber1,
             @Parameter(description = "User's phone number 2", example = "+21687654321", required = false)
-            @RequestParam(value = "phoneNumber2", required = false) String phoneNumber2
-    ) {
-        UserInfoRequestDTO userInfoRequestDTO = new UserInfoRequestDTO(firstName, lastName, email, department, phoneNumber1, phoneNumber2);
+            @RequestParam(value = "phoneNumber2", required = false) String phoneNumber2,
+            @Parameter(description = "User's gender", example = "Male", required = false)
+            @RequestParam(value = "gender", required = false) String gender
+            ) {
+        UserInfoRequestDTO userInfoRequestDTO = new UserInfoRequestDTO(firstName, lastName, email, department, phoneNumber1, phoneNumber2,gender);
         userService.updateUserInfo(userInfoRequestDTO, picture);
         return ResponseEntity.ok(new MessageResponseDTO("User updated successfully"));
     }

@@ -34,15 +34,11 @@ public class AuthServiceImpl implements AuthService{
         try {
             log.info("Authenticating user: {}", authRequestDTO.username());
             UserResponse user = userClient.getUserByUsername(authRequestDTO.username());
-            log.info("User found: {}", user.username());
+            log.info("User found: {}", user);
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequestDTO.username(), authRequestDTO.password()));
 
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-//            List<String> roles = userDetails.getAuthorities().stream()
-//                    .map(GrantedAuthority::getAuthority)
-//                    .collect(Collectors.toList());
-            // use user.role() directly instead of roles from UserDetails
             List<String> roles = List.of(user.role());
             log.info("User roles: {}", roles);
 

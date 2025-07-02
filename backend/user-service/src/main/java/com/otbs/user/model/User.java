@@ -19,6 +19,8 @@ public class User {
     private String firstName;
     private String lastName;
     private String email;
+    @Column(nullable = true)
+    private String gender;
     private String phoneNumber1;
     @Column(nullable = true)
     private String phoneNumber2;
@@ -31,4 +33,7 @@ public class User {
     private String pictureType;
     @Column(nullable = true)
     private String jobTitle;
+
+    @Column(nullable = false)
+    private boolean isInfoComplete;
 }

@@ -6,14 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="8831ef2c-5863-4771-acbe-37c7b2e108e5" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/controller/LeaveController.java" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/controller/LeaveController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/exception/GlobalExceptionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/repository/LeaveRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/repository/LeaveRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/service/LeaveServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/src/main/java/com/otbs/leave/service/LeaveServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/exception/GlobalExceptionHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/exception/GlobalExceptionHandler.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/repository/LeaveRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/repository/LeaveRepository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/service/LeaveServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/leave-service/target/classes/com/otbs/leave/service/LeaveServiceImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/app/modules/home/components/submit-leave-request-dialog/submit-leave-request-dialog.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/modules/home/components/submit-leave-request-dialog/submit-leave-request-dialog.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/service/AuthServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/otbs/auth/service/AuthServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/user/dto/UserResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/feign-clients/src/main/java/com/otbs/feign/client/user/dto/UserResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/otbs/user/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/otbs/user/controller/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/otbs/user/dto/UserInfoRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/otbs/user/dto/UserInfoRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/otbs/user/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/otbs/user/model/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/otbs/user/service/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/otbs/user/service/UserServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -526,6 +524,7 @@
       <workItem from="1750749966175" duration="4904000" />
       <workItem from="1750772816796" duration="1221000" />
       <workItem from="1751393863535" duration="1741000" />
+      <workItem from="1751461942687" duration="9940000" />
     </task>
     <servers />
   </component>

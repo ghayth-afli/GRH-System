@@ -1,5 +1,6 @@
 package com.otbs.feign.client.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public record UserResponse(
@@ -12,7 +13,7 @@ public record UserResponse(
         String role,
         String jobTitle,
         String phoneNumber1,
-        String phoneNumber2
+        String phoneNumber2,
+        String gender
 ) {
-
 }

@@ -9,6 +9,7 @@ export interface User {
   jobTitle: string;
   phoneNumber1: string;
   phoneNumber2: string;
+  gender?: string;
 }
 
 export interface LoginResponse {

@@ -1,0 +1,158 @@
+<div class="onboarding-page">
+  <!-- Loading Overlay -->
+  <div class="overlay" *ngIf="isLoading" aria-hidden="true">
+    <div class="spinner"></div>
+    <span class="visually-hidden" aria-live="polite"
+      >Almost there! We’re setting things up for you.</span
+    >
+  </div>
+
+  <!-- Success Overlay -->
+  <div class="overlay success-overlay" *ngIf="isSuccess" aria-hidden="true">
+    <div class="success-message">
+      <i class="fa-solid fa-check-circle"></i>
+      <h2>Everything is ready!</h2>
+      <p>Your profile is now set up.</p>
+    </div>
+    <span class="visually-hidden" aria-live="polite"
+      >Profile setup complete. Redirecting to dashboard.</span
+    >
+  </div>
+
+  <!-- Main Content -->
+  <div class="content" *ngIf="!isLoading && !isSuccess">
+    <!-- Title & Subtitle -->
+    <h1 class="page-title">Let’s Set Up Your Profile</h1>
+    <p class="page-subtitle">This helps us personalize your experience.</p>
+
+    <!-- Form -->
+    <form [formGroup]="onboardingForm" (ngSubmit)="submitForm()" novalidate>
+      <!-- Profile Photo -->
+      <div class="form-group">
+        <label for="profilePhoto">Profile Photo (Optional)</label>
+        <div class="photo-upload">
+          <img
+            [src]="photoPreview"
+            alt="Profile photo preview"
+            class="photo-preview"
+          />
+          <input
+            type="file"
+            id="profilePhoto"
+            accept="image/*"
+            (change)="handlePhotoUpload($event)"
+            aria-label="Upload profile photo"
+          />
+          <button
+            type="button"
+            class="upload-btn"
+            aria-label="Choose profile photo"
+          >
+            <i class="fa-solid fa-camera"></i> Choose Photo
+          </button>
+        </div>
+      </div>
+      <!-- Gender Selection -->
+      <div class="form-group">
+        <label for="gender">Gender <span class="required">*</span></label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input
+              type="radio"
+              id="male"
+              formControlName="gender"
+              value="Male"
+              aria-label="Male"
+            />
+            <span>Male</span>
+          </label>
+          <label class="radio-option">
+            <input
+              type="radio"
+              id="female"
+              formControlName="gender"
+              value="Female"
+              aria-label="Female"
+            />
+            <span>Female</span>
+          </label>
+        </div>
+        <div
+          class="error"
+          *ngIf="
+            onboardingForm.get('gender')?.touched &&
+            onboardingForm.get('gender')?.hasError('required')
+          "
+        >
+          Please select a gender.
+        </div>
+      </div>
+
+      <!-- Job Title -->
+      <div class="form-group">
+        <label for="jobTitle">Job Title</label>
+        <input
+          type="text"
+          id="jobTitle"
+          formControlName="jobTitle"
+          placeholder="e.g., Software Engineer"
+          class="form-input"
+          aria-describedby="jobTitleHelp"
+        />
+        <span id="jobTitleHelp" class="visually-hidden"
+          >Enter your job title, for example, Software Engineer. This field is
+          optional.</span
+        >
+      </div>
+
+      <!-- Phone Number -->
+      <div class="form-group">
+        <label for="phoneNumber"
+          >Phone Number <span class="required">*</span></label
+        >
+        <div class="phone-input-group">
+          <span class="country-code">+216</span>
+          <input
+            type="tel"
+            id="phoneNumber"
+            formControlName="phoneNumber"
+            placeholder="12345678"
+            class="form-input"
+            aria-describedby="phoneNumberHelp"
+            maxlength="8"
+          />
+        </div>
+        <span id="phoneNumberHelp" class="visually-hidden"
+          >Enter an 8-digit Tunisian phone number. Country code +216 is
+          pre-filled.</span
+        >
+        <div
+          class="error"
+          *ngIf="
+            onboardingForm.get('phoneNumber')?.touched &&
+            onboardingForm.get('phoneNumber')?.hasError('required')
+          "
+        >
+          Phone number is required.
+        </div>
+        <div
+          class="error"
+          *ngIf="
+            onboardingForm.get('phoneNumber')?.touched &&
+            onboardingForm.get('phoneNumber')?.hasError('pattern')
+          "
+        >
+          Please enter a valid 8-digit phone number.
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="form-actions">
+        <button type="submit" class="btn primary-btn" [disabled]="isLoading">
+          <i class="fa-solid fa-check"></i>
+          Finish
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
