@@ -21,6 +21,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -149,9 +150,11 @@ public class UserController {
             @Parameter(description = "User's phone number 2", example = "+21687654321", required = false)
             @RequestParam(value = "phoneNumber2", required = false) String phoneNumber2,
             @Parameter(description = "User's gender", example = "Male", required = false)
-            @RequestParam(value = "gender", required = false) String gender
+            @RequestParam(value = "gender", required = false) String gender,
+            @Parameter(description = "User's birthdate in YYYY-MM-DD format", example = "1990-01-01", required = false)
+            @RequestParam(value = "birthDate", required = false) String birthdate
             ) {
-        UserInfoRequestDTO userInfoRequestDTO = new UserInfoRequestDTO(firstName, lastName, email, department, phoneNumber1, phoneNumber2,gender);
+        UserInfoRequestDTO userInfoRequestDTO = new UserInfoRequestDTO(firstName, lastName, email, department, phoneNumber1, phoneNumber2,gender,birthdate);
         userService.updateUserInfo(userInfoRequestDTO, picture);
         return ResponseEntity.ok(new MessageResponseDTO("User updated successfully"));
     }

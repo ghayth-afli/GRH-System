@@ -10,6 +10,7 @@ export interface User {
   phoneNumber1: string;
   phoneNumber2: string;
   gender?: string;
+  birthDate?: string;
 }
 
 export interface LoginResponse {

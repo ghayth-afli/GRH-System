@@ -22,7 +22,13 @@ export class OnboardingCompleteGuard implements CanActivate {
     const user = this.authService.authenticatedUser;
 
     // Check if the user has completed the onboarding process
-    if (user && user.jobTitle && user.phoneNumber1 && user.gender) {
+    if (
+      user &&
+      user.jobTitle &&
+      user.phoneNumber1 &&
+      user.gender &&
+      user.birthDate
+    ) {
       return true;
     } else {
       // Redirect to the onboarding page if not completed

@@ -14,6 +14,7 @@ public record UserResponse(
         String jobTitle,
         String phoneNumber1,
         String phoneNumber2,
-        String gender
+        String gender,
+        String birthDate
 ) {
 }

@@ -87,7 +87,31 @@
           Please select a gender.
         </div>
       </div>
-
+      <!-- Birth Date -->
+      <div class="form-group">
+        <label for="birthDate"
+          >Birth Date <span class="required">*</span></label
+        >
+        <input
+          type="date"
+          id="birthDate"
+          formControlName="birthDate"
+          class="form-input"
+          aria-describedby="birthDateHelp"
+        />
+        <span id="birthDateHelp" class="visually-hidden"
+          >Select your birth date. This field is required.</span
+        >
+        <div
+          class="error"
+          *ngIf="
+            onboardingForm.get('birthDate')?.touched &&
+            onboardingForm.get('birthDate')?.hasError('required')
+          "
+        >
+          Birth date is required.
+        </div>
+      </div>
       <!-- Job Title -->
       <div class="form-group">
         <label for="jobTitle">Job Title</label>

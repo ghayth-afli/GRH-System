@@ -30,6 +30,7 @@ export class OnboardingPageComponent {
     phoneNumber1: '',
     phoneNumber2: '',
     gender: '',
+    birthDate: '',
   };
 
   constructor(
@@ -40,6 +41,7 @@ export class OnboardingPageComponent {
   ) {
     this.onboardingForm = this.fb.group({
       gender: ['', Validators.required],
+      birthDate: ['', Validators.required],
       jobTitle: ['', Validators.required],
       phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
       profilePhoto: [null],
@@ -85,6 +87,7 @@ export class OnboardingPageComponent {
         phoneNumber2: this.user.phoneNumber2 || '',
         profilePicture: this.selectedFile,
         gender: this.onboardingForm.get('gender'),
+        birthDate: this.onboardingForm.get('birthDate')?.value || '',
       };
       this.userService
         .updateEmployeeInfo(
@@ -95,6 +98,7 @@ export class OnboardingPageComponent {
           formData.phoneNumber1,
           formData.phoneNumber2,
           formData.gender?.value || '',
+          formData.birthDate,
           this.selectedFile ?? undefined
         )
         .subscribe({
@@ -116,6 +120,7 @@ export class OnboardingPageComponent {
               phoneNumber1: formData.phoneNumber1,
               phoneNumber2: formData.phoneNumber2,
               gender: formData.gender?.value,
+              birthDate: formData.birthDate,
             };
             localStorage.setItem('user', JSON.stringify(this.user));
           },

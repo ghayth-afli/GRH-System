@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+import java.util.Date;
+
 public record UserInfoRequestDTO(
 
         @NotBlank(message = "First name is required")
@@ -33,6 +35,11 @@ public record UserInfoRequestDTO(
         @Pattern(regexp = "^\\+216\\d{8}$", message = "Phone number must be in the format +216XXXXXXXX")
         String phoneNumber2,
 
-        String gender
+        String gender,
+
+        //birthdate
+        @NotBlank(message = "Birthdate is required")
+        @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Birthdate must be in the format YYYY-MM-DD" )
+        String birthdate
 
 ) {}

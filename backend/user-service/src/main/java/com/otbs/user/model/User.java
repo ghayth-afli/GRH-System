@@ -3,6 +3,8 @@ package com.otbs.user.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -33,7 +35,6 @@ public class User {
     private String pictureType;
     @Column(nullable = true)
     private String jobTitle;
-
-    @Column(nullable = false)
-    private boolean isInfoComplete;
+    @Column(nullable = true)
+    private String birthDate;
 }

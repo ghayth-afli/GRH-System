@@ -24,7 +24,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserRepository userRepository;
     private final UserInfoRepository userInfoRepository;
     private final UserAttributesMapper userAttributesMapper;
@@ -57,8 +56,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll().stream()
                 .map(userAttributesMapper)
                 .map(this::enrichUserRole)
-                .filter(user -> !user.getDepartment().equals("Unknown")
-                        && !user.getDepartment().equals("Domain Controllers"))
+                .filter(user -> !List.of("Unknown", "Domain Controllers").contains(user.getDepartment()))
                 .toList();
     }
 
@@ -68,12 +66,8 @@ public class UserServiceImpl implements UserService {
                 .map(userAttributesMapper)
                 .map(this::enrichUserRole)
                 .orElseThrow(() -> new UserException("User not found"));
-        log.info("User info retrieved: {}", user);
 
-        Optional<User> userInfoOpt = userInfoRepository.findById(user.getId());
-
-        if (userInfoOpt.isPresent()) {
-            User info = userInfoOpt.get();
+        userInfoRepository.findById(user.getId()).ifPresentOrElse(info -> {
             user.setFirstName(info.getFirstName());
             user.setLastName(info.getLastName());
             user.setEmail(info.getEmail());
@@ -83,24 +77,17 @@ public class UserServiceImpl implements UserService {
             user.setPhoneNumber1(info.getPhoneNumber1());
             user.setPhoneNumber2(info.getPhoneNumber2());
             user.setGender(info.getGender());
-            user.setInfoComplete(info.isInfoComplete());
-        } else {
-            User userInfo = User.builder()
-                    .id(user.getId())
-                    .username(user.getUsername())
-                    .firstName(user.getFirstName())
-                    .lastName(user.getLastName())
-                    .email(user.getEmail())
-                    .department(user.getDepartment())
-                    .role(user.getRole())
-                    .isInfoComplete(false)
-                    .build();
+            user.setBirthDate(info.getBirthDate());
+        }, () -> userInfoRepository.save(User.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .department(user.getDepartment())
+                .role(user.getRole())
+                .build()));
 
-            User savedUserInfo = userInfoRepository.save(userInfo);
-            user.setInfoComplete(savedUserInfo.isInfoComplete());
-        }
-
-        log.info("User info retrieved for username: {} - isInfoComplete: {}", user.getUsername(), user.isInfoComplete());
         return user;
     }
 
@@ -108,8 +95,8 @@ public class UserServiceImpl implements UserService {
     public User getManagerByDepartment(String department) {
         return userRepository.findAll().stream()
                 .map(userAttributesMapper)
-                .filter(user -> user.getDepartment().equals(department))
-                .filter(user -> user.getRole().equals("Manager") || user.getRole().equals("HRD"))
+                .filter(user -> department.equals(user.getDepartment()))
+                .filter(user -> List.of("Manager", "HRD").contains(user.getRole()))
                 .findFirst()
                 .map(this::enrichUserRole)
                 .orElseThrow(() -> new UserException("Manager not found"));
@@ -118,8 +105,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUserInfo(UserInfoRequestDTO userInfoRequestDTO, MultipartFile picture) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        log.info("Updating user info for: {} - Before update isInfoComplete: {}", user.getUsername(), user.isInfoComplete());
 
         if (picture != null && !picture.isEmpty()) {
             try {
@@ -131,47 +116,22 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setJobTitle(userInfoRequestDTO.jobTitle());
-        user.setEmail(Optional.ofNullable(userInfoRequestDTO.email())
-                .filter(email -> !email.isEmpty())
-                .orElse(user.getEmail()));
-        user.setGender(Optional.ofNullable(userInfoRequestDTO.gender())
-                .filter(gender -> !gender.isEmpty())
-                .orElse(user.getGender()));
+        user.setEmail(Optional.ofNullable(userInfoRequestDTO.email()).filter(email -> !email.isEmpty()).orElse(user.getEmail()));
+        user.setGender(Optional.ofNullable(userInfoRequestDTO.gender()).filter(gender -> !gender.isEmpty()).orElse(user.getGender()));
         user.setLastName(userInfoRequestDTO.lastName());
         user.setFirstName(userInfoRequestDTO.firstName());
         user.setPhoneNumber1(userInfoRequestDTO.phoneNumber1());
-        user.setPhoneNumber2(Optional.ofNullable(userInfoRequestDTO.phoneNumber2())
-                .filter(phone -> !phone.isEmpty())
-                .orElse(user.getPhoneNumber2()));
+        user.setPhoneNumber2(Optional.ofNullable(userInfoRequestDTO.phoneNumber2()).filter(phone -> !phone.isEmpty()).orElse(user.getPhoneNumber2()));
+        user.setBirthDate(userInfoRequestDTO.birthdate());
 
-        boolean isComplete = isNotEmpty(user.getFirstName()) &&
-                isNotEmpty(user.getLastName()) &&
-                isNotEmpty(user.getEmail()) &&
-                isNotEmpty(user.getJobTitle()) &&
-                isNotEmpty(user.getPhoneNumber1()) &&
-                isNotEmpty(user.getGender());
-
-        user.setInfoComplete(isComplete);
-
-        log.info("Field values - firstName: {}, lastName: {}, email: {}, jobTitle: {}, phoneNumber1: {}, gender: {}",
-                user.getFirstName(), user.getLastName(), user.getEmail(),
-                user.getJobTitle(), user.getPhoneNumber1(), user.getGender());
-        log.info("Completeness check - firstName: {}, lastName: {}, email: {}, jobTitle: {}, phoneNumber1: {}, gender: {}",
-                isNotEmpty(user.getFirstName()), isNotEmpty(user.getLastName()), isNotEmpty(user.getEmail()),
-                isNotEmpty(user.getJobTitle()), isNotEmpty(user.getPhoneNumber1()), isNotEmpty(user.getGender()));
-        log.info("Updating user info for user: {} - Info complete: {}", user.getUsername(), isComplete);
-
-        User savedUser = userInfoRepository.save(user);
-        log.info("User saved successfully - isInfoComplete in DB: {}", savedUser.isInfoComplete());
-    }
-
-    private boolean isNotEmpty(String value) {
-        return value != null && !value.trim().isEmpty();
+        userInfoRepository.save(user);
     }
 
     @Override
     public ProfilePictureDTO getProfilePicture(String username) {
-        Optional<User> user = userInfoRepository.findByUsername(username);
-        return user.filter(value -> value.getPicture() != null).map(value -> new ProfilePictureDTO(value.getPictureType(), value.getPicture())).orElse(null);
+        return userInfoRepository.findByUsername(username)
+                .filter(user -> user.getPicture() != null)
+                .map(user -> new ProfilePictureDTO(user.getPictureType(), user.getPicture()))
+                .orElse(null);
     }
 }
