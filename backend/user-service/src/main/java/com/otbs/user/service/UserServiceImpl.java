@@ -9,6 +9,8 @@ import com.otbs.user.model.User;
 import com.otbs.user.repository.UserInfoRepository;
 import com.otbs.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,12 +28,6 @@ public class UserServiceImpl implements UserService {
     private final UserInfoRepository userInfoRepository;
     private final UserAttributesMapper userAttributesMapper;
 
-    /**
-     * Applies business logic to a User object.
-     * If the user is in the "HR" department and has the "Manager" role, it changes the role to "HRD".
-     * @param user The user object to process.
-     * @return The user object with potentially an updated role.
-     */
     private User enrichUserRole(User user) {
         if (user != null && "HR".equals(user.getDepartment()) && "Manager".equals(user.getRole())) {
             user.setRole("HRD");
@@ -43,17 +39,15 @@ public class UserServiceImpl implements UserService {
     public User getUserByDn(Name dn) {
         return userRepository.findById(dn)
                 .map(userAttributesMapper)
-                .map(this::enrichUserRole) // Apply role enrichment
+                .map(this::enrichUserRole)
                 .orElseThrow(() -> new UserException("User not found"));
     }
-
-
 
     @Override
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .map(userAttributesMapper)
-                .map(this::enrichUserRole) // Apply role enrichment
+                .map(this::enrichUserRole)
                 .orElseThrow(() -> new UserException("User not found"));
     }
 
@@ -61,9 +55,8 @@ public class UserServiceImpl implements UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll().stream()
                 .map(userAttributesMapper)
-                .map(this::enrichUserRole) // Apply role enrichment
-                .filter(user -> !user.getDepartment().equals("Unknown")
-                        && !user.getDepartment().equals("Domain Controllers"))
+                .map(this::enrichUserRole)
+                .filter(user -> !List.of("Unknown", "Domain Controllers").contains(user.getDepartment()))
                 .toList();
     }
 
@@ -74,53 +67,43 @@ public class UserServiceImpl implements UserService {
                 .map(this::enrichUserRole)
                 .orElseThrow(() -> new UserException("User not found"));
 
-        userInfoRepository.findById(user.getId())
-                .ifPresentOrElse(
-                        info -> {
-                            user.setFirstName(info.getFirstName());
-                            user.setLastName(info.getLastName());
-                            user.setEmail(info.getEmail());
-                            user.setPicture(info.getPicture());
-                            user.setPictureType(info.getPictureType());
-                            user.setJobTitle(info.getJobTitle());
-                            user.setPhoneNumber1(info.getPhoneNumber1());
-                            user.setPhoneNumber2(info.getPhoneNumber2());
-                        },
-                        () -> {
-                            User userInfo = User.builder()
-                                    .id(user.getId())
-                                    .username(user.getUsername())
-                                    .firstName(user.getFirstName())
-                                    .lastName(user.getLastName())
-                                    .email(user.getEmail())
-                                    .department(user.getDepartment())
-                                    // The role will already be enriched from the 'user' object
-                                    .role(user.getRole())
-                                    .build();
-                            userInfoRepository.save(userInfo);
-                        }
-                );
+        userInfoRepository.findById(user.getId()).ifPresentOrElse(info -> {
+            user.setFirstName(info.getFirstName());
+            user.setLastName(info.getLastName());
+            user.setEmail(info.getEmail());
+            user.setPicture(info.getPicture());
+            user.setPictureType(info.getPictureType());
+            user.setJobTitle(info.getJobTitle());
+            user.setPhoneNumber1(info.getPhoneNumber1());
+            user.setPhoneNumber2(info.getPhoneNumber2());
+            user.setGender(info.getGender());
+            user.setBirthDate(info.getBirthDate());
+        }, () -> userInfoRepository.save(User.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .department(user.getDepartment())
+                .role(user.getRole())
+                .build()));
 
         return user;
     }
 
     @Override
     public User getManagerByDepartment(String department) {
-        // Here, we find the manager based on the original "Manager" role first,
-        // and then apply the enrichment to the final result.
         return userRepository.findAll().stream()
                 .map(userAttributesMapper)
-                .filter(user -> user.getDepartment().equals(department))
-                .filter(user -> user.getRole().equals("Manager") || user.getRole().equals("HRD"))
+                .filter(user -> department.equals(user.getDepartment()))
+                .filter(user -> List.of("Manager", "HRD").contains(user.getRole()))
                 .findFirst()
-                .map(this::enrichUserRole) // Apply role enrichment to the found manager
+                .map(this::enrichUserRole)
                 .orElseThrow(() -> new UserException("Manager not found"));
-
     }
 
     @Override
     public void updateUserInfo(UserInfoRequestDTO userInfoRequestDTO, MultipartFile picture) {
-
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (picture != null && !picture.isEmpty()) {
@@ -133,20 +116,22 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setJobTitle(userInfoRequestDTO.jobTitle());
-        if(userInfoRequestDTO.email() != null && !userInfoRequestDTO.email().isEmpty()) {
-            user.setEmail(userInfoRequestDTO.email());
-        }
+        user.setEmail(Optional.ofNullable(userInfoRequestDTO.email()).filter(email -> !email.isEmpty()).orElse(user.getEmail()));
+        user.setGender(Optional.ofNullable(userInfoRequestDTO.gender()).filter(gender -> !gender.isEmpty()).orElse(user.getGender()));
         user.setLastName(userInfoRequestDTO.lastName());
         user.setFirstName(userInfoRequestDTO.firstName());
         user.setPhoneNumber1(userInfoRequestDTO.phoneNumber1());
-        user.setPhoneNumber2(userInfoRequestDTO.phoneNumber2());
+        user.setPhoneNumber2(Optional.ofNullable(userInfoRequestDTO.phoneNumber2()).filter(phone -> !phone.isEmpty()).orElse(user.getPhoneNumber2()));
+        user.setBirthDate(userInfoRequestDTO.birthdate());
+
         userInfoRepository.save(user);
     }
 
     @Override
     public ProfilePictureDTO getProfilePicture(String username) {
-        Optional<User> user = userInfoRepository.findByUsername(username);
-        return user.filter(value -> value.getPicture() != null).map(value -> new ProfilePictureDTO(value.getPictureType(), value.getPicture())).orElse(null);
+        return userInfoRepository.findByUsername(username)
+                .filter(user -> user.getPicture() != null)
+                .map(user -> new ProfilePictureDTO(user.getPictureType(), user.getPicture()))
+                .orElse(null);
     }
-
 }

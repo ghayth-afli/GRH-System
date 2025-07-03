@@ -21,6 +21,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -98,6 +99,7 @@ public class UserController {
             @Parameter(description = "User's username", example = "john.doe", required = true)
             @RequestParam("username") String username
     ) {
+        log.info("Retrievingggggggg user: {}", userService.getUserByUsername(username));
         return userService.getUserByUsername(username);
     }
 
@@ -146,9 +148,13 @@ public class UserController {
             @Parameter(description = "User's phone number 1", example = "+21612345678", required = true)
             @RequestParam("phoneNumber1") String phoneNumber1,
             @Parameter(description = "User's phone number 2", example = "+21687654321", required = false)
-            @RequestParam(value = "phoneNumber2", required = false) String phoneNumber2
-    ) {
-        UserInfoRequestDTO userInfoRequestDTO = new UserInfoRequestDTO(firstName, lastName, email, department, phoneNumber1, phoneNumber2);
+            @RequestParam(value = "phoneNumber2", required = false) String phoneNumber2,
+            @Parameter(description = "User's gender", example = "Male", required = false)
+            @RequestParam(value = "gender", required = false) String gender,
+            @Parameter(description = "User's birthdate in YYYY-MM-DD format", example = "1990-01-01", required = false)
+            @RequestParam(value = "birthDate", required = false) String birthdate
+            ) {
+        UserInfoRequestDTO userInfoRequestDTO = new UserInfoRequestDTO(firstName, lastName, email, department, phoneNumber1, phoneNumber2,gender,birthdate);
         userService.updateUserInfo(userInfoRequestDTO, picture);
         return ResponseEntity.ok(new MessageResponseDTO("User updated successfully"));
     }

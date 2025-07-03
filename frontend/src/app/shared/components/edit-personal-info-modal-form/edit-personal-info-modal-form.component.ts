@@ -118,6 +118,8 @@ export class EditPersonalInfoModalFormComponent implements OnInit {
           formData.jobTitle,
           formData.phoneNumber1,
           formData.phoneNumber2,
+          undefined,
+          undefined,
           this.selectedFile ?? undefined
         )
         .subscribe({

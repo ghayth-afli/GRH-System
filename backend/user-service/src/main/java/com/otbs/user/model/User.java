@@ -3,6 +3,8 @@ package com.otbs.user.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -19,6 +21,8 @@ public class User {
     private String firstName;
     private String lastName;
     private String email;
+    @Column(nullable = true)
+    private String gender;
     private String phoneNumber1;
     @Column(nullable = true)
     private String phoneNumber2;
@@ -31,4 +35,6 @@ public class User {
     private String pictureType;
     @Column(nullable = true)
     private String jobTitle;
+    @Column(nullable = true)
+    private String birthDate;
 }

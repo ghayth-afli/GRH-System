@@ -7,6 +7,7 @@ import { RoleGuard } from './core/guards/role.guard';
 import { LeaveBalanceResolver } from './modules/leave/resolvers/leave-balance.resolver';
 import { UnauthorizedComponent } from './core/pages/unauthorized/unauthorized.component';
 import { NotFoundComponent } from './core/pages/not-found/not-found.component';
+import { OnboardingCompleteGuard } from './core/guards/onboarding-complete.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: '', pathMatch: 'full' },
@@ -21,7 +22,7 @@ const routes: Routes = [
   {
     path: '',
     component: LayoutComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, OnboardingCompleteGuard],
     resolve: {
       leaveBalance: LeaveBalanceResolver,
     },
@@ -76,6 +77,13 @@ const routes: Routes = [
         data: { roles: ['HR', 'HRD'] },
       },
     ],
+  },
+  {
+    path: 'onboarding',
+    loadChildren: () =>
+      import('./modules/onboarding-page/onboarding-page.module').then(
+        (m) => m.OnboardingPageModule
+      ),
   },
   { path: '**', redirectTo: '/not-found' },
 ];
