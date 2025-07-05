@@ -1,0 +1,71 @@
+<div class="documents-page">
+  <div class="overlay" *ngIf="isLoading" aria-hidden="true">
+    <div class="spinner"></div>
+    <span class="visually-hidden" aria-live="polite">Loading documents...</span>
+  </div>
+
+  <div class="error-message" *ngIf="errorMessage" aria-live="assertive">
+    {{ errorMessage }}
+  </div>
+
+  <div class="content" *ngIf="!isLoading && !errorMessage">
+    <div class="header">
+      <h1 class="page-title">Internal Documents</h1>
+      <button
+        *ngIf="isHRD"
+        class="publish-button"
+        (click)="openPublishDialog()"
+        aria-label="Publish new document"
+      >
+        <i class="fa-solid fa-file-circle-plus"></i> Publish Document
+      </button>
+    </div>
+    <div class="document-grid">
+      <div class="document-card" *ngFor="let doc of documents">
+        <h2 class="document-title">{{ doc.title }}</h2>
+        <p class="document-description">
+          {{ doc.description || "No description" }}
+        </p>
+        <span class="document-category">{{ doc.category }}</span>
+        <a
+          class="download-button"
+          [href]="doc.fileUrl"
+          target="_blank"
+          [attr.aria-label]="'Download ' + doc.title"
+        >
+          <i class="fa-solid fa-download"></i> Download
+        </a>
+      </div>
+    </div>
+    <div class="empty-state" *ngIf="!documents.length" aria-live="polite">
+      No documents available.
+    </div>
+    <div class="pagination" *ngIf="totalItems > pageSize">
+      <button
+        (click)="changePage(currentPage - 1)"
+        [disabled]="currentPage === 1"
+        aria-label="Previous page"
+      >
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+      <span
+        *ngFor="let page of getPageNumbers()"
+        [ngClass]="{ active: page === currentPage }"
+      >
+        <button
+          (click)="changePage(page)"
+          [attr.aria-label]="'Go to page ' + page"
+        >
+          {{ page }}
+        </button>
+      </span>
+      <button
+        (click)="changePage(currentPage + 1)"
+        [disabled]="currentPage === Math.ceil(totalItems / pageSize)"
+        aria-label="Next page"
+      >
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</div>

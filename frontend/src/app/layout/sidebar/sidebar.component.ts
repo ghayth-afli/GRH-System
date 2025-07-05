@@ -10,16 +10,20 @@ import { Router } from '@angular/router';
   styleUrl: './sidebar.component.css',
 })
 export class SidebarComponent {
-  authService = inject(AuthService);
-  private router = inject(Router);
   isExpanded = true;
+  isDocumentsExpanded = false; // Track Documents sub-menu state
+
+  constructor(public authService: AuthService) {}
 
   toggleSidebar() {
     this.isExpanded = !this.isExpanded;
   }
+
+  toggleDocumentsMenu() {
+    this.isDocumentsExpanded = !this.isDocumentsExpanded;
+  }
+
   logout() {
     this.authService.logout();
-
-    this.router.navigate(['/auth/login']);
   }
 }

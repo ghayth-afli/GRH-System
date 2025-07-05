@@ -1,56 +1,64 @@
 <nav
   class="sidebar"
   [ngClass]="{ collapsed: !isExpanded, expanded: isExpanded }"
+  aria-label="Main navigation"
 >
   <div class="sidebar-header">
-    <span class="sidebar-logo"
-      ><img
+    <span class="sidebar-logo">
+      <img
         src="assets/images/onetech_Logo-300x300.png"
-        alt="Logo"
+        alt="OneTech Logo"
         class="logo"
         width="120"
-    /></span>
-    <button class="sidebar-toggle" (click)="toggleSidebar()">
+      />
+    </span>
+    <button
+      class="sidebar-toggle"
+      (click)="toggleSidebar()"
+      aria-label="Toggle sidebar"
+    >
       <i class="fa-solid fa-bars"></i>
     </button>
   </div>
   <div class="sidebar-nav">
     <div class="sidebar-nav-top">
-      <!-- @if (authService.hasRole('HR') || authService.hasRole('Manager')) {
-      <a routerLink="/dashboard" class="nav-item" routerLinkActive="active">
-        <i class="nav-icon-fa fa-solid fa-gauge"></i>
-        <span class="nav-text">Dashboard</span>
-      </a>
-      }  -->
-
-      @if (!authService.hasRole('HRD') ) {
-      <a routerLink="/home" class="nav-item" routerLinkActive="active">
+      @if (!authService.hasRole('HRD')) {
+      <a
+        routerLink="/home"
+        class="nav-item"
+        routerLinkActive="active"
+        aria-current="page"
+      >
         <i class="nav-icon-fa fa-solid fa-house"></i>
         <span class="nav-text">Home</span>
       </a>
-      }
-      <!-- @if (authService.hasRole('HR')) {
-      <a routerLink="/employees" class="nav-item" routerLinkActive="active">
-        <i class="nav-icon-fa fa-solid fa-users"></i>
-        <span class="nav-text">Employees</span>
+      } @if (authService.hasRole('HRD') || authService.hasRole('HR')) {
+      <a
+        routerLink="/dashboard"
+        class="nav-item"
+        routerLinkActive="active"
+        aria-current="page"
+      >
+        <i class="nav-icon-fa fa-solid fa-tachometer-alt"></i>
+        <span class="nav-text">Dashboard</span>
       </a>
-      } -->
-
-      <!-- <a routerLink="/attendance" class="nav-item" routerLinkActive="active">
-        <i class="nav-icon-fa fa-solid fa-clock"></i>
-        <span class="nav-text">Attendance</span>
-      </a> -->
-      @if (authService.hasRole('HRD') || authService.hasRole('HR')) {
+      } @if (authService.hasRole('HRD') || authService.hasRole('HR')) {
       <a
         routerLink="/recruitment/job-offers"
         class="nav-item"
         routerLinkActive="active"
+        aria-current="page"
       >
         <i class="nav-icon-fa fa-solid fa-user-plus"></i>
         <span class="nav-text">Recruitment</span>
       </a>
       } @if (authService.hasRole('HRD') || authService.hasRole('HR')) {
-      <a routerLink="/attendance" class="nav-item" routerLinkActive="active">
+      <a
+        routerLink="/attendance"
+        class="nav-item"
+        routerLinkActive="active"
+        aria-current="page"
+      >
         <i class="nav-icon-fa fa-solid fa-clock"></i>
         <span class="nav-text">Attendance</span>
       </a>
@@ -59,53 +67,93 @@
         routerLink="/recruitment/job-offers"
         class="nav-item"
         routerLinkActive="active"
+        aria-current="page"
       >
-        <i class="nav-icon-fa fa-solid fa-briefcase"> </i>
-        <span class="nav-text">Job offers</span>
+        <i class="nav-icon-fa fa-solid fa-briefcase"></i>
+        <span class="nav-text">Job Offers</span>
       </a>
       } @if (authService.hasRole('HRD') || authService.hasRole('HR') ||
       authService.hasRole('Manager')) {
-      <a routerLink="/leave" class="nav-item" routerLinkActive="active">
+      <a
+        routerLink="/leave"
+        class="nav-item"
+        routerLinkActive="active"
+        aria-current="page"
+      >
         <i class="nav-icon-fa fa-solid fa-calendar-check"></i>
         <span class="nav-text">Leave Request</span>
       </a>
       }
-
+      <div
+        class="nav-item nav-item-parent"
+        [ngClass]="{ expanded: isDocumentsExpanded }"
+      >
+        <button
+          class="nav-item-button"
+          (click)="toggleDocumentsMenu()"
+          [attr.aria-expanded]="isDocumentsExpanded"
+          aria-label="Toggle Documents menu"
+        >
+          <i class="nav-icon-fa fa-solid fa-file-lines"></i>
+          <span class="nav-text">Documents</span>
+          <i
+            class="fa-solid fa-chevron-down"
+            [ngClass]="{ rotated: isDocumentsExpanded }"
+          ></i>
+        </button>
+        <div class="sub-menu" *ngIf="isDocumentsExpanded">
+          <a
+            routerLink="/documents"
+            class="nav-item sub-nav-item"
+            routerLinkActive="active"
+            aria-current="page"
+          >
+            <i class="nav-icon-fa fa-solid fa-file"></i>
+            <span class="nav-text">Internal Documents</span>
+          </a>
+          <a
+            routerLink="/document-requests"
+            class="nav-item sub-nav-item"
+            routerLinkActive="active"
+            aria-current="page"
+          >
+            <i class="nav-icon-fa fa-solid fa-file"></i>
+            <span class="nav-text">My Document Requests</span>
+          </a>
+          @if (authService.hasRole('HRD') || authService.hasRole('HR')) {
+          <a
+            routerLink="/received-requests"
+            class="nav-item sub-nav-item"
+            routerLinkActive="active"
+            aria-current="page"
+          >
+            <i class="nav-icon-fa fa-solid fa-file"></i>
+            <span class="nav-text">Received Requests</span>
+          </a>
+          }
+        </div>
+      </div>
       <a
         routerLink="/medical-visits"
         class="nav-item"
         routerLinkActive="active"
+        aria-current="page"
       >
         <i class="nav-icon-fa fa-solid fa-briefcase-medical"></i>
         <span class="nav-text">Medical Visit</span>
       </a>
-      <a routerLink="/trainings" class="nav-item" routerLinkActive="active">
+      <a
+        routerLink="/trainings"
+        class="nav-item"
+        routerLinkActive="active"
+        aria-current="page"
+      >
         <i class="nav-icon-fa fa-solid fa-graduation-cap"></i>
         <span class="nav-text">Training</span>
       </a>
-      <!-- @if (authService.hasRole('HR')) {
-      <a routerLink="/payroll" class="nav-item" routerLinkActive="active">
-        <i class="nav-icon-fa fa-solid fa-wallet"></i>
-        <span class="nav-text">Payroll</span>
-      </a>
-      }  -->
-      <!-- @if (authService.hasRole('Employee')) {
-      <a routerLink="/documents" class="nav-item" routerLinkActive="active">
-        <i class="nav-icon-fa fa-solid fa-folder-open"></i>
-        <span class="nav-text">Documents</span>
-      </a>
-      } -->
-      <!-- <a routerLink="/documents" class="nav-item" routerLinkActive="active">
-        <i class="nav-icon-fa fa-solid fa-gift"></i>
-        <span class="nav-text">Perks & Benefits</span>
-      </a> -->
     </div>
     <div class="sidebar-nav-bottom">
-      <!-- <a routerLink="/settings" class="nav-item" routerLinkActive="active">
-        <i class="nav-icon-fa fa-solid fa-sliders"></i>
-        <span class="nav-text">Settings</span>
-      </a> -->
-      <a href="#" class="nav-item" (click)="logout()">
+      <a href="#" class="nav-item" (click)="logout()" aria-label="Logout">
         <i class="nav-icon-fa fa-solid fa-right-from-bracket"></i>
         <span class="nav-text">Logout</span>
       </a>

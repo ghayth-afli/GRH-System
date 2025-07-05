@@ -1,0 +1,137 @@
+.received-requests-page {
+  padding: 20px;
+  font-family: "Open Sans", sans-serif;
+  color: var(--primary-dark);
+}
+
+.page-title {
+  font-family: "Kode Mono", monospace;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin-bottom: 20px;
+}
+
+.requests-table {
+  margin-bottom: 24px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--white);
+  border: 1px solid var(--silver);
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.data-table th {
+  font-family: "Kode Mono", monospace;
+  font-size: 14px;
+  color: var(--primary-dark);
+  background: var(--silver);
+  padding: 12px;
+  text-align: left;
+}
+
+.data-table td {
+  font-size: 14px;
+  padding: 12px;
+  border-bottom: 1px solid var(--silver);
+}
+
+.status-pending {
+  color: var(--warning);
+}
+.status-in-progress {
+  color: var(--accent);
+}
+.status-completed {
+  color: var(--success);
+}
+.status-rejected {
+  color: var(--danger);
+}
+
+.process-button {
+  display: inline-flex;
+  align-items: center;
+  background: var(--accent);
+  color: var(--white);
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.process-button:hover {
+  background: #e04a00;
+}
+
+.process-button i {
+  margin-right: 8px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.pagination button {
+  background: var(--white);
+  border: 1px solid var(--silver);
+  border-radius: var(--border-radius);
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: var(--silver);
+}
+
+.pagination button:disabled {
+  color: var(--gray);
+  cursor: not-allowed;
+}
+
+.pagination span.active button {
+  background: var(--accent);
+  color: var(--white);
+  border-color: var(--accent);
+}
+
+.empty-state,
+.overlay,
+.spinner,
+.visually-hidden,
+.error-message {
+  /* Reuse styles from global styles.css */
+}
+
+@media (max-width: 768px) {
+  .received-requests-page {
+    padding: 16px;
+  }
+
+  .page-title {
+    font-size: 20px;
+  }
+
+  .data-table th,
+  .data-table td {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .pagination button {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
