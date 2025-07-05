@@ -1,0 +1,93 @@
+<div class="dialog-content">
+  <h2 class="dialog-title">Publish Document</h2>
+  <form [formGroup]="publishForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="title">Title</label>
+      <input
+        type="text"
+        id="title"
+        formControlName="title"
+        aria-required="true"
+      />
+      <div
+        class="error"
+        *ngIf="
+          publishForm.get('title')?.touched &&
+          publishForm.get('title')?.hasError('required')
+        "
+      >
+        Title is required.
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="description">Description (Optional)</label>
+      <textarea
+        id="description"
+        formControlName="description"
+        rows="4"
+        aria-label="Document description"
+      ></textarea>
+    </div>
+    <div class="form-group">
+      <label for="category">Category</label>
+      <select id="category" formControlName="category" aria-required="true">
+        <option value="" disabled>Select category</option>
+        <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+      </select>
+      <div
+        class="error"
+        *ngIf="
+          publishForm.get('category')?.touched &&
+          publishForm.get('category')?.hasError('required')
+        "
+      >
+        Category is required.
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="visibility">Visibility</label>
+      <select id="visibility" formControlName="visibility" aria-required="true">
+        <option *ngFor="let vis of visibilities" [value]="vis">
+          {{ vis }}
+        </option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="fileUrl">Upload Document</label>
+      <input
+        type="file"
+        id="fileUrl"
+        formControlName="fileUrl"
+        placeholder="Enter file URL (mock)"
+        aria-required="true"
+      />
+      <div
+        class="error"
+        *ngIf="
+          publishForm.get('fileUrl')?.touched &&
+          publishForm.get('fileUrl')?.hasError('required')
+        "
+      >
+        Document file is required.
+      </div>
+    </div>
+    <div class="dialog-actions">
+      <button
+        type="button"
+        class="cancel-button"
+        (click)="onCancel()"
+        aria-label="Cancel publishing"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="submit-button"
+        [disabled]="publishForm.invalid"
+        aria-label="Publish document"
+      >
+        Publish
+      </button>
+    </div>
+  </form>
+</div>

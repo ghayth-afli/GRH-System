@@ -83,6 +83,13 @@ const routes: Routes = [
         canActivate: [RoleGuard],
         data: { roles: ['HR', 'HRD'] },
       },
+      {
+        path: '',
+        loadChildren: () =>
+          import('./modules/document/document.module').then(
+            (m) => m.DocumentModule
+          ),
+      },
     ],
   },
   {

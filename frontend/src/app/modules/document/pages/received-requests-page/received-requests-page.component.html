@@ -1,0 +1,85 @@
+<div class="received-requests-page">
+  <div class="overlay" *ngIf="isLoading" aria-hidden="true">
+    <div class="spinner"></div>
+    <span class="visually-hidden" aria-live="polite"
+      >Loading received requests...</span
+    >
+  </div>
+
+  <div class="error-message" *ngIf="errorMessage" aria-live="assertive">
+    {{ errorMessage }}
+  </div>
+
+  <div class="content" *ngIf="!isLoading && !errorMessage && isHRD">
+    <h1 class="page-title">Received Document Requests</h1>
+    <div class="requests-table">
+      <table class="data-table" aria-label="Received document requests">
+        <thead>
+          <tr>
+            <th>Employee Name</th>
+            <th>Document Type</th>
+            <th>Submission Date</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let req of requests">
+            <td>{{ req.employeeName }}</td>
+            <td>{{ req.documentType }}</td>
+            <td>{{ req.submissionDate | date : "MMM d, yyyy" }}</td>
+            <td
+              [ngClass]="{
+                'status-pending': req.status === 'Pending',
+                'status-in-progress': req.status === 'In Progress',
+                'status-completed': req.status === 'Completed',
+                'status-rejected': req.status === 'Rejected'
+              }"
+            >
+              {{ req.status }}
+            </td>
+            <td>
+              <button
+                class="process-button"
+                (click)="openProcessDialog(req)"
+                [attr.aria-label]="'Process request for ' + req.documentType"
+              >
+                <i class="fa-solid fa-gears"></i> Process
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="empty-state" *ngIf="!requests.length" aria-live="polite">
+        No received requests.
+      </div>
+      <div class="pagination" *ngIf="totalItems > pageSize">
+        <button
+          (click)="changePage(currentPage - 1)"
+          [disabled]="currentPage === 1"
+          aria-label="Previous page"
+        >
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <span
+          *ngFor="let page of getPageNumbers()"
+          [ngClass]="{ active: page === currentPage }"
+        >
+          <button
+            (click)="changePage(page)"
+            [attr.aria-label]="'Go to page ' + page"
+          >
+            {{ page }}
+          </button>
+        </span>
+        <button
+          (click)="changePage(currentPage + 1)"
+          [disabled]="currentPage === Math.ceil(totalItems / pageSize)"
+          aria-label="Next page"
+        >
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,54 @@
+<div class="dialog-content">
+  <h2 class="dialog-title">Request Document</h2>
+  <form [formGroup]="requestForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="documentType">Document Type</label>
+      <select
+        id="documentType"
+        formControlName="documentType"
+        aria-required="true"
+      >
+        <option value="" disabled>Select document type</option>
+        <option *ngFor="let type of documentTypes" [value]="type">
+          {{ type }}
+        </option>
+      </select>
+      <div
+        class="error"
+        *ngIf="
+          requestForm.get('documentType')?.touched &&
+          requestForm.get('documentType')?.hasError('required')
+        "
+      >
+        Document type is required.
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="notes">Notes (Optional)</label>
+      <textarea
+        id="notes"
+        formControlName="notes"
+        rows="4"
+        aria-label="Optional notes"
+      ></textarea>
+    </div>
+    <div class="dialog-actions">
+      <button
+        type="button"
+        class="cancel-button"
+        (click)="onCancel()"
+        aria-label="Cancel request"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="submit-button"
+        [disabled]="requestForm.invalid"
+        aria-label="Submit request"
+      >
+        Submit
+      </button>
+    </div>
+  </form>
+</div>

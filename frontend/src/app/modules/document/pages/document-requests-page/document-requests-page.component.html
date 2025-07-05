@@ -1,0 +1,158 @@
+<div class="document-requests-page">
+  <div class="overlay" *ngIf="isLoading" aria-hidden="true">
+    <div class="spinner"></div>
+    <span class="visually-hidden" aria-live="polite">Loading requests...</span>
+  </div>
+
+  <div class="error-message" *ngIf="errorMessage" aria-live="assertive">
+    {{ errorMessage }}
+  </div>
+
+  <div class="content" *ngIf="!isLoading && !errorMessage">
+    <div class="header">
+      <h1 class="page-title">My Document Requests</h1>
+      <button
+        class="request-button"
+        (click)="openRequestDialog()"
+        aria-label="Request a new document"
+      >
+        <i class="fa-solid fa-file-circle-plus"></i> Request Document
+      </button>
+    </div>
+    <div class="requests-table">
+      <table class="data-table" aria-label="Document requests">
+        <thead>
+          <tr>
+            <th>Document Type</th>
+            <th>Submission Date</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let req of requests">
+            <td>{{ req.documentType }}</td>
+            <td>{{ req.submissionDate | date : "MMM d, yyyy" }}</td>
+            <td
+              [ngClass]="{
+                'status-pending': req.status === 'Pending',
+                'status-in-progress': req.status === 'In Progress',
+                'status-completed': req.status === 'Completed',
+                'status-rejected': req.status === 'Rejected'
+              }"
+            >
+              {{ req.status }}
+            </td>
+            <td>
+              <a
+                *ngIf="req.status === 'Completed' && req.fileUrl"
+                [href]="req.fileUrl"
+                target="_blank"
+                class="download-button"
+                [attr.aria-label]="'Download ' + req.documentType"
+              >
+                <i class="fa-solid fa-download"></i> Download
+              </a>
+              <span *ngIf="req.status === 'Rejected'">{{
+                req.notes || "Request rejected."
+              }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="empty-state" *ngIf="!requests.length" aria-live="polite">
+        No document requests.
+      </div>
+      <div class="pagination" *ngIf="totalRequestItems > requestPageSize">
+        <button
+          (click)="changeRequestPage(currentRequestPage - 1)"
+          [disabled]="currentRequestPage === 1"
+          aria-label="Previous page"
+        >
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <span
+          *ngFor="let page of getRequestPageNumbers()"
+          [ngClass]="{ active: page === currentRequestPage }"
+        >
+          <button
+            (click)="changeRequestPage(page)"
+            [attr.aria-label]="'Go to page ' + page"
+          >
+            {{ page }}
+          </button>
+        </span>
+        <button
+          (click)="changeRequestPage(currentRequestPage + 1)"
+          [disabled]="
+            currentRequestPage ===
+            Math.ceil(totalRequestItems / requestPageSize)
+          "
+          aria-label="Next page"
+        >
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <h1 class="page-title">My Payslips</h1>
+    <div class="payslips-table">
+      <table class="data-table" aria-label="Payslips">
+        <thead>
+          <tr>
+            <th>Month</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let payslip of payslips">
+            <td>{{ payslip.month }}</td>
+            <td>
+              <a
+                [href]="payslip.fileUrl"
+                target="_blank"
+                class="download-button"
+                [attr.aria-label]="'Download payslip for ' + payslip.month"
+              >
+                <i class="fa-solid fa-download"></i> Download
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="empty-state" *ngIf="!payslips.length" aria-live="polite">
+        No payslips available.
+      </div>
+      <div class="pagination" *ngIf="totalPayslipItems > payslipPageSize">
+        <button
+          (click)="changePayslipPage(currentPayslipPage - 1)"
+          [disabled]="currentPayslipPage === 1"
+          aria-label="Previous page"
+        >
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <span
+          *ngFor="let page of getPayslipPageNumbers()"
+          [ngClass]="{ active: page === currentPayslipPage }"
+        >
+          <button
+            (click)="changePayslipPage(page)"
+            [attr.aria-label]="'Go to page ' + page"
+          >
+            {{ page }}
+          </button>
+        </span>
+        <button
+          (click)="changePayslipPage(currentPayslipPage + 1)"
+          [disabled]="
+            currentPayslipPage ===
+            Math.ceil(totalPayslipItems / payslipPageSize)
+          "
+          aria-label="Next page"
+        >
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
