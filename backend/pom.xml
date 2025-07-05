@@ -23,6 +23,7 @@
     <module>recruitment-service</module>
       <module>candidate-service</module>
     <module>attendance-service</module>
+      <module>dashboard-service</module>
   </modules>
 
   <properties>

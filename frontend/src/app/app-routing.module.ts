@@ -28,6 +28,13 @@ const routes: Routes = [
     },
     children: [
       {
+        path: 'dashboard',
+        loadChildren: () =>
+          import('./modules/dashboard/dashboard.module').then(
+            (m) => m.DashboardModule
+          ),
+      },
+      {
         path: 'home',
         loadChildren: () =>
           import('./modules/home/home.module').then((m) => m.HomeModule),

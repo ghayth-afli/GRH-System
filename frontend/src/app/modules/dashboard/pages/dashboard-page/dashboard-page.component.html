@@ -1,0 +1,158 @@
+<div class="dashboard-page">
+  <!-- Loading Overlay -->
+  <div class="overlay" *ngIf="isLoading" aria-hidden="true">
+    <div class="spinner"></div>
+    <span class="visually-hidden" aria-live="polite"
+      >Loading dashboard data...</span
+    >
+  </div>
+
+  <!-- Error Message -->
+  <div class="error-message" *ngIf="errorMessage" aria-live="assertive">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Main Content -->
+  <div class="content" *ngIf="!isLoading && !errorMessage">
+    <!-- Header -->
+    <h1 class="page-title">HR Dashboard</h1>
+
+    <!-- KPI Cards -->
+    <div class="kpi-cards">
+      <div class="kpi-card">
+        <i class="fa-solid fa-users kpi-icon"></i>
+        <div class="kpi-label">Total Employees</div>
+        <div class="kpi-value">
+          {{ dashboardData.kpiMetrics?.totalEmployees || "N/A" }}
+        </div>
+      </div>
+      <div class="kpi-card">
+        <i class="fa-solid fa-clock kpi-icon"></i>
+        <div class="kpi-label">Time to Hire</div>
+        <div class="kpi-value">
+          {{ dashboardData.kpiMetrics?.timeToHire || "N/A" }} days
+        </div>
+      </div>
+      <div class="kpi-card">
+        <i class="fa-solid fa-graduation-cap kpi-icon"></i>
+        <div class="kpi-label">Training Participation</div>
+        <div class="kpi-value">
+          {{
+            (
+              dashboardData.kpiMetrics?.trainingParticipationRate * 100 || 0
+            ).toFixed(1)
+          }}%
+        </div>
+      </div>
+      <div class="kpi-card">
+        <i class="fa-solid fa-check-circle kpi-icon"></i>
+        <div class="kpi-label">Leave Approval Rate</div>
+        <div class="kpi-value">
+          {{
+            (dashboardData.kpiMetrics?.leaveApprovalRate * 100 || 0).toFixed(1)
+          }}%
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="charts-grid">
+      <!-- Gender Distribution (Doughnut) -->
+      <div class="chart-card">
+        <h2>Gender Distribution</h2>
+        <canvas id="genderChart"></canvas>
+      </div>
+
+      <!-- Age Distribution (Bar/Histogram) -->
+      <div class="chart-card">
+        <h2>Age Distribution</h2>
+        <canvas id="ageChart"></canvas>
+      </div>
+
+      <!-- Employees by Department (Grouped Bar) -->
+      <div class="chart-card">
+        <h2>Employees by Department</h2>
+        <canvas id="departmentChart"></canvas>
+      </div>
+
+      <!-- Leave by Type (Bar) -->
+      <div class="chart-card">
+        <h2>Leave by Type</h2>
+        <canvas id="leaveTypeChart"></canvas>
+      </div>
+
+      <!-- Recruitment Funnel (Horizontal Bar) -->
+      <div class="chart-card">
+        <h2>Recruitment Funnel</h2>
+        <canvas id="funnelChart"></canvas>
+      </div>
+
+      <!-- Leave Trend (Line) -->
+      <div class="chart-card">
+        <h2>Leave Trend</h2>
+        <canvas id="leaveTrendChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Tables -->
+    <div class="tables-grid">
+      <!-- Upcoming Trainings -->
+      <div class="table-card">
+        <h2>Upcoming Trainings</h2>
+        <table class="data-table" aria-label="Upcoming trainings">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Enrolled</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let training of dashboardData.upcomingTrainings || []">
+              <td>{{ training.title || "N/A" }}</td>
+              <td>
+                {{ (training.startDate | date : "MMM d, yyyy") || "N/A" }}
+              </td>
+              <td>{{ (training.endDate | date : "MMM d, yyyy") || "N/A" }}</td>
+              <td>{{ training.enrolled || "N/A" }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div
+          class="empty-state"
+          *ngIf="!dashboardData.upcomingTrainings?.length"
+          aria-live="polite"
+        >
+          No upcoming trainings.
+        </div>
+      </div>
+
+      <!-- Open Positions -->
+      <div class="table-card">
+        <h2>Open Positions</h2>
+        <table class="data-table" aria-label="Open positions">
+          <thead>
+            <tr>
+              <th>Department</th>
+              <th>Open Positions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let position of dashboardData.openPositions || []">
+              <td>{{ position.department || "N/A" }}</td>
+              <td>{{ position.count || "N/A" }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div
+          class="empty-state"
+          *ngIf="!dashboardData.openPositions?.length"
+          aria-live="polite"
+        >
+          No open positions.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

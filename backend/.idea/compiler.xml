@@ -10,16 +10,17 @@
         <outputRelativeToContentRoot value="true" />
         <module name="feign-clients" />
         <module name="candidate-service" />
-        <module name="auth-service" />
         <module name="attendance-service" />
-        <module name="api-gateway" />
         <module name="leave-service" />
-        <module name="med-visit-service" />
-        <module name="training-management-service" />
         <module name="user-service" />
         <module name="eureka-server" />
-        <module name="recruitment-service" />
         <module name="notification-service" />
+        <module name="auth-service" />
+        <module name="dashboard-service" />
+        <module name="api-gateway" />
+        <module name="med-visit-service" />
+        <module name="training-management-service" />
+        <module name="recruitment-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
